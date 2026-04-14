@@ -386,7 +386,7 @@ revealEl(cornerRight, cornersStart + 90, 18);
 // ─────────────────────────────────────────────────────────────────
 const canvas1El = document.querySelector('.canvas1');
 
-// ── State flag to prevent repeat triggers ─────────────────────────
+// ── State flag to prevent repeat triggers ─────────────────
 let bentoVisible = false;
 
 // ── Stagger bento cards in (blur→clear) ──────────────────────────
@@ -1736,3 +1736,74 @@ initCubeViewer();
   }
 })();
 
+// ─────────────────────────────────────────────────────────────────
+// Marquee — slow on hover, restart from start on leave + tooltip
+// ─────────────────────────────────────────────────────────────────
+(function initMarqueeTooltip() {
+  const section = document.getElementById('marqueeSection');
+  const tooltip = document.getElementById('marqueeTooltip');
+  const wrap    = section && section.querySelector('.marquee-track-wrap');
+  if (!section || !tooltip || !wrap) return;
+
+  const normalSpeed = '28s';
+  const slowSpeed   = '90s';   // slows on hover
+
+  let mx = 0, my = 0;
+  let tx = 0, ty = 0;
+  let rafId = null;
+  const maxRot = 8;
+
+  function lerp(a, b, t) { return a + (b - a) * t; }
+
+  function tickTooltip() {
+    tx = lerp(tx, mx, 0.12);
+    ty = lerp(ty, my, 0.12);
+    const mid  = window.innerWidth / 2;
+    const dist = (tx - mid) / mid;
+    const rot  = dist * maxRot;
+    tooltip.style.left      = `${tx}px`;
+    tooltip.style.top       = `${ty}px`;
+    tooltip.style.transform = `translate(-50%, -160%) rotate(${rot}deg)`;
+    rafId = requestAnimationFrame(tickTooltip);
+  }
+
+  section.addEventListener('mouseenter', () => {
+    // Slow the loop
+    wrap.style.animationDuration = slowSpeed;
+    // Show tooltip
+    tooltip.classList.add('visible');
+    rafId = requestAnimationFrame(tickTooltip);
+  });
+
+  section.addEventListener('mouseleave', () => {
+    // Hide tooltip
+    tooltip.classList.remove('visible');
+    cancelAnimationFrame(rafId);
+
+    // Reset animation to start from beginning at normal speed
+    wrap.style.animation = 'none';
+    wrap.offsetHeight;   // force reflow — flushes the removal
+    wrap.style.animation = `marqueeScroll ${normalSpeed} linear infinite`;
+  });
+
+  section.addEventListener('mousemove', (e) => {
+    mx = e.clientX;
+    my = e.clientY;
+  });
+})();
+
+// ─────────────────────────────────────────────────────────────────
+// About section — ethereal hue-rotate animation (same as other pages)
+// ─────────────────────────────────────────────────────────────────
+(function initUaEthereal() {
+  const hueEl = document.getElementById('uaEtherHue');
+  if (!hueEl) return;
+  let hue = 0;
+  const DEG_PER_FRAME = 360 / (5.84 * 60);
+  function animUaEther() {
+    hue = (hue + DEG_PER_FRAME) % 360;
+    hueEl.setAttribute('values', hue.toFixed(2));
+    requestAnimationFrame(animUaEther);
+  }
+  animUaEther();
+})();
