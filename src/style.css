@@ -33,23 +33,33 @@ body,
   background: #ffffff;
   pointer-events: none;
   z-index: 99999;
-  left: -100px;
-  top: -100px;
-  /* Center the dot on the pointer */
-  transform: translate(-50%, -50%) scale(1);
+  left: 0;
+  top: 0;
+  /* JS sets translate3d for positioning; margin offsets center the dot */
+  margin-left: -5px;
+  margin-top: -5px;
   mix-blend-mode: difference;
-  will-change: left, top, transform;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s;
+  will-change: transform;
+  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              margin 0.35s cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 0.2s;
 }
 
 /* Grow + keep centered when hovering clickable elements */
 .cursor-arrow.is-hovering {
-  transform: translate(-50%, -50%) scale(2);
+  width: 20px;
+  height: 20px;
+  margin-left: -10px;
+  margin-top: -10px;
 }
 
 /* Large invert circle over the hero name */
 .cursor-arrow.is-name-hover {
-  transform: translate(-50%, -50%) scale(8);
+  width: 80px;
+  height: 80px;
+  margin-left: -40px;
+  margin-top: -40px;
 }
 
 /* Mobile / touch — no mouse needed, restore normal cursor */
@@ -139,13 +149,16 @@ body {
   pointer-events: none;
   z-index: 6;
   /* just above canvas1, below hero content */
-  transform: translate(-50%, -50%);
+  left: 0;
+  top: 0;
+  margin-left: -280px;
+  margin-top: -280px;
   background: radial-gradient(circle,
       rgba(255, 255, 255, 0.05) 0%,
       rgba(255, 255, 255, 0.018) 35%,
       transparent 70%);
-  will-change: left, top;
-  /* position is set by JS */
+  will-change: transform;
+  /* position is set by JS via translate3d */
 }
 
 /* ── Navbar ────────────────────────────────────────────────────────────────── */

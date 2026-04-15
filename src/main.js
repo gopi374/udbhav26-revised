@@ -49,10 +49,20 @@ initHeroBgShader(document.getElementById('heroShaderBg'));
   const arrow = document.getElementById('cursorArrow');
   if (!arrow) return;
 
-  // Track mouse — center dot on pointer
+  // Use transform instead of left/top — avoids layout thrashing
+  arrow.style.willChange = 'transform';
+  let cursorRaf = false;
+  let cx = 0, cy = 0;
   document.addEventListener('mousemove', (e) => {
-    arrow.style.left = e.clientX + 'px';
-    arrow.style.top  = e.clientY + 'px';
+    cx = e.clientX;
+    cy = e.clientY;
+    if (!cursorRaf) {
+      cursorRaf = true;
+      requestAnimationFrame(() => {
+        arrow.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
+        cursorRaf = false;
+      });
+    }
   });
 
   // Grow on hover over interactive elements
@@ -169,9 +179,9 @@ const scene    = new THREE.Scene();
 const camera   = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
 camera.position.z = 1;
 
-const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
 renderer.setClearColor(0x000000, 0);
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
 renderer.setSize(window.innerWidth, window.innerHeight);
 container.appendChild(renderer.domElement);
 
@@ -196,7 +206,7 @@ window.addEventListener('resize', () => {
 });
 
 // ─────────────────────────────────────────────────────────────────
-// Mouse glow — lerped radial gradient
+// Mouse glow — lerped radial gradient (GPU-accelerated transform)
 // ─────────────────────────────────────────────────────────────────
 const glow   = document.getElementById('mouseGlow');
 let mouseX   = window.innerWidth  / 2;
@@ -204,25 +214,36 @@ let mouseY   = window.innerHeight / 2;
 let glowX    = mouseX;
 let glowY    = mouseY;
 
+if (glow) glow.style.willChange = 'transform';
+
 document.addEventListener('mousemove', (e) => {
   mouseX = e.clientX;
   mouseY = e.clientY;
 });
 
-// Smooth glow follow runs inside the RAF below
+// Smooth glow follow — use transform instead of left/top
 function tickGlow() {
   glowX += (mouseX - glowX) * 0.08;
   glowY += (mouseY - glowY) * 0.08;
-  glow.style.left = `${glowX}px`;
-  glow.style.top  = `${glowY}px`;
+  if (glow) glow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
 }
 
 // ─────────────────────────────────────────────────────────────────
 // Unified RAF — Lenis + Three.js renderer + glow lerp
+// Renderer only renders when hero is visible (IntersectionObserver)
 // ─────────────────────────────────────────────────────────────────
+let heroVisible = true;
+const heroEl = document.querySelector('.hero');
+if ('IntersectionObserver' in window && heroEl) {
+  const heroObs = new IntersectionObserver(([entry]) => {
+    heroVisible = entry.isIntersecting;
+  }, { threshold: 0.01 });
+  heroObs.observe(heroEl);
+}
+
 function raf(time) {
   lenis.raf(time);
-  renderer.render(scene, camera);
+  if (heroVisible) renderer.render(scene, camera);
   tickGlow();
   requestAnimationFrame(raf);
 }
@@ -312,20 +333,30 @@ if (heroCatWrap) {
   const pupils = [pupilLeft, pupilRight];
   const MAX_PX = 6; // max pupil travel from centre
 
-  // Track mouse → move pupils ──────────────────────────────────────
+  // Track mouse → move pupils (throttled with rAF) ──────────────────
+  let eyeRaf = false;
+  let lastEyeX = 0, lastEyeY = 0;
   document.addEventListener('mousemove', (e) => {
-    eyes.forEach((eye, i) => {
-      const r  = eye.getBoundingClientRect();
-      const cx = r.left + r.width  / 2;
-      const cy = r.top  + r.height / 2;
-      const dx = e.clientX - cx;
-      const dy = e.clientY - cy;
-      const dist  = Math.sqrt(dx * dx + dy * dy);
-      const ratio = Math.min(dist, 80) / 80; // normalise 0→1 within 80px
-      const px = (dx / (dist || 1)) * MAX_PX * ratio;
-      const py = (dy / (dist || 1)) * MAX_PX * ratio;
-      pupils[i].style.transform = `translate(${px}px, ${py}px)`;
-    });
+    lastEyeX = e.clientX;
+    lastEyeY = e.clientY;
+    if (!eyeRaf) {
+      eyeRaf = true;
+      requestAnimationFrame(() => {
+        eyes.forEach((eye, i) => {
+          const r  = eye.getBoundingClientRect();
+          const cx = r.left + r.width  / 2;
+          const cy = r.top  + r.height / 2;
+          const dx = lastEyeX - cx;
+          const dy = lastEyeY - cy;
+          const dist  = Math.sqrt(dx * dx + dy * dy);
+          const ratio = Math.min(dist, 80) / 80;
+          const px = (dx / (dist || 1)) * MAX_PX * ratio;
+          const py = (dy / (dist || 1)) * MAX_PX * ratio;
+          pupils[i].style.transform = `translate(${px}px, ${py}px)`;
+        });
+        eyeRaf = false;
+      });
+    }
   });
 
   // Blinking — random interval between 2.5s and 5s ─────────────────
@@ -1216,19 +1247,33 @@ document.querySelectorAll('.nav-link').forEach(link => {
 })();
 
 // ─────────────────────────────────────────────────────────────────
-// About section — ethereal hue-rotate animation (same as other pages)
+// About section — ethereal hue-rotate animation (paused when off-screen)
 // ─────────────────────────────────────────────────────────────────
 (function initUaEthereal() {
   const hueEl = document.getElementById('uaEtherHue');
   if (!hueEl) return;
   let hue = 0;
+  let hueRunning = true;
+  let hueRafId = null;
   const DEG_PER_FRAME = 360 / (5.84 * 60);
   function animUaEther() {
     hue = (hue + DEG_PER_FRAME) % 360;
     hueEl.setAttribute('values', hue.toFixed(2));
-    requestAnimationFrame(animUaEther);
+    if (hueRunning) hueRafId = requestAnimationFrame(animUaEther);
   }
-  animUaEther();
+
+  // Only animate when section is visible
+  const aboutEl = document.getElementById('udbhavAbout');
+  if ('IntersectionObserver' in window && aboutEl) {
+    const aboutObs = new IntersectionObserver(([entry]) => {
+      hueRunning = entry.isIntersecting;
+      if (hueRunning && !hueRafId) hueRafId = requestAnimationFrame(animUaEther);
+      else if (!hueRunning && hueRafId) { cancelAnimationFrame(hueRafId); hueRafId = null; }
+    }, { threshold: 0.01 });
+    aboutObs.observe(aboutEl);
+  }
+
+  hueRafId = requestAnimationFrame(animUaEther);
 })();
 
 // ─────────────────────────────────────────────────────────────────
