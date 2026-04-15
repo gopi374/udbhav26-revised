@@ -730,7 +730,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
     { id:'6',  label:'Code of Conduct',   icon:'link',      description:'Rules & Guidelines',           short:'',   end:'Page',  href:'/links.html',      color:'#22d3ee', external:false },
     { id:'7',  label:'Uses & Gear',       icon:'monitor',   description:'My setup & tools',             short:'',   end:'Page',  href:'/uses.html',       color:'#e2e8f0', external:false },
     { id:'8',  label:'Sponsors',          icon:'music',     description:'Our partners & supporters',    short:'',   end:'Page',  href:'/jamify.html',     color:'#f59e0b', external:false },
-    { id:'9',  label:'Register Now',      icon:'calendar',  description:'Register for UDBHAV\'26',     short:'⌘K', end:'Page',  href:'/book-a-call.html',color:'#4ade80', external:false },
+    { id:'9',  label:'Register Now',      icon:'calendar',  description:'Register for UDBHAV\'26',     short:'⌘K', end:'Page',  href:'/register.html',   color:'#8b5cf6', external:false },
   ];
 
   const SVGS = {
