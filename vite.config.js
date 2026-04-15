@@ -5,6 +5,16 @@ export default defineConfig({
   // Multi-page app — lets Vite resolve /404 to 404.html
   appType: 'mpa',
 
+  // Development server configuration
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080',
+        changeOrigin: true,
+      },
+    },
+  },
+
   build: {
     rollupOptions: {
       input: {
@@ -24,6 +34,8 @@ export default defineConfig({
         adminDashboard:   resolve(__dirname, 'admin/dashboard.html'),
         adminRegistrations: resolve(__dirname, 'admin/registrations.html'),
       },
+      // mobile-perf.js is a legacy (non-module) script served statically
+      external: ['/mobile-perf.js'],
     },
   },
 });

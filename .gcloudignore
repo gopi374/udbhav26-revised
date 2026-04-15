@@ -1,0 +1,13 @@
+.git
+.gitignore
+node_modules
+.env
+.env.*
+.vscode
+.claude
+.kilo
+*.md
+*.sh
+*.ps1
+.DS_Store
+rzp-key.csv

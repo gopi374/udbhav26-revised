@@ -1593,8 +1593,7 @@
 
           <!-- PAY NOW BUTTON -->
           <div class="pay-btn-wrap">
-            <button type="button" class="pay-btn disabled" id="payBtn" disabled
-                    onclick="openPayModal()">
+            <button type="submit" class="pay-btn disabled" id="payBtn" disabled>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
               <span id="payBtnLabel">Pay ₹800 Securely</span>
             </button>
@@ -2123,11 +2122,10 @@
 
       // ── Loading state ───────────────────────────────────────────────────────
       const payBtn   = document.getElementById('payBtn');
-      const payLabel = document.getElementById('payLabel');
       payBtn.classList.remove('enabled');
       payBtn.classList.add('loading');
       payBtn.disabled = true;
-      payLabel.textContent = 'Creating order\u2026';
+      if (payLabel) payLabel.textContent = 'Creating order…';
 
       const spinner = document.createElement('div');
       spinner.className = 'pay-spinner';
@@ -2167,7 +2165,7 @@
         payBtn.classList.remove('loading');
         payBtn.classList.add('enabled');
         payBtn.disabled = false;
-        payLabel.textContent = mentorSelected ? 'Pay \u20b91,100 Securely' : 'Pay \u20b9800 Securely';
+        if (payLabel) payLabel.textContent = mentorSelected ? 'Pay ₹1,100 Securely' : 'Pay ₹800 Securely';
         if (toast && toastMsg && msg) {
           toastMsg.textContent = msg;
           toast.classList.add('visible');
@@ -2176,11 +2174,16 @@
       }
 
       try {
-        // STEP 1 \u2192 Create Razorpay order on the server
+        // STEP 1 → Create Razorpay order on the server
         const orderRes  = await fetch('/api/create-order', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ mentorSession: mentorSelected }),
+          body: JSON.stringify({ 
+            mentorSession: mentorSelected,
+            teamName: formData.teamName,
+            leaderName: formData.leader.name,
+            leaderEmail: formData.leader.email
+          }),
         });
         const orderData = await orderRes.json();
         if (!orderData.success) throw new Error(orderData.error || 'Could not create payment order.');
@@ -2199,7 +2202,7 @@
         payBtn.classList.remove('loading');
         payBtn.classList.add('enabled');
         payBtn.disabled = false;
-        payLabel.textContent = mentorSelected ? 'Pay \u20b91,100 Securely' : 'Pay \u20b9800 Securely';
+        if (payLabel) payLabel.textContent = mentorSelected ? 'Pay ₹1,100 Securely' : 'Pay ₹800 Securely';
 
         // STEP 3 \u2192 Open Razorpay Checkout modal
         const rzp = new window.Razorpay({
@@ -2229,7 +2232,7 @@
             const vSpin = document.createElement('div');
             vSpin.className = 'pay-spinner';
             payBtn.insertBefore(vSpin, payBtn.firstChild);
-            payLabel.textContent = 'Verifying payment\u2026';
+            if (payLabel) payLabel.textContent = 'Verifying payment…';
 
             try {
               const verifyRes  = await fetch('/api/verify-payment', {
@@ -2262,6 +2265,7 @@
           modal: {
             ondismiss: function () {
               console.log('[Razorpay] Modal dismissed.');
+              restoreBtn('Payment cancelled. Please try again when ready.');
             },
           },
         });
@@ -2488,625 +2492,6 @@
   </script>
 
   <script src="/mobile-perf.js" defer></script>
-
-</body>
-</html>
-  <style>
-    /* ── Modal Backdrop ──────────────────────────────────────────────────── */
-    .pay-modal-backdrop {
-      position: fixed;
-      inset: 0;
-      z-index: 8000;
-      background: rgba(0, 0, 0, 0.72);
-      backdrop-filter: blur(18px) saturate(0.6);
-      -webkit-backdrop-filter: blur(18px) saturate(0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 0.28s cubic-bezier(0.16, 1, 0.3, 1);
-    }
-    .pay-modal-backdrop.open {
-      opacity: 1;
-      pointer-events: auto;
-    }
-
-    /* ── Modal Card ─────────────────────────────────────────────────────── */
-    .pay-modal-card {
-      width: 100%;
-      max-width: 460px;
-      background: rgba(10, 10, 14, 0.92);
-      border: 1px solid rgba(139, 92, 246, 0.2);
-      border-radius: 24px;
-      padding: 2rem 2rem 1.75rem;
-      box-shadow:
-        0 0 0 1px rgba(255,255,255,0.04),
-        0 32px 80px rgba(0,0,0,0.7),
-        0 0 60px rgba(139,92,246,0.12);
-      backdrop-filter: blur(32px);
-      position: relative;
-      transform: scale(0.93) translateY(16px);
-      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
-      overflow: hidden;
-    }
-    .pay-modal-card::before {
-      content: '';
-      position: absolute;
-      top: -1px; left: 15%; right: 15%;
-      height: 1px;
-      background: linear-gradient(to right, transparent, rgba(139,92,246,0.7), transparent);
-    }
-    .pay-modal-backdrop.open .pay-modal-card {
-      transform: scale(1) translateY(0);
-    }
-
-    /* ── Modal Header ───────────────────────────────────────────────────── */
-    .pay-modal-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 1.5rem;
-    }
-    .pay-modal-title {
-      font-family: var(--font-ui);
-      font-size: 0.65rem;
-      font-weight: 600;
-      letter-spacing: 0.28em;
-      text-transform: uppercase;
-      color: var(--clr-purple);
-      display: flex;
-      align-items: center;
-      gap: 0.6rem;
-    }
-    .pay-modal-title::before {
-      content: '';
-      display: block;
-      width: 20px; height: 1.5px;
-      background: var(--clr-purple);
-    }
-    .pay-modal-close {
-      width: 32px; height: 32px;
-      border-radius: 50%;
-      border: 1px solid rgba(255,255,255,0.12);
-      background: rgba(255,255,255,0.05);
-      color: rgba(255,255,255,0.5);
-      display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all 0.18s;
-      flex-shrink: 0;
-    }
-    .pay-modal-close:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.25); }
-    .pay-modal-close svg { width: 14px; height: 14px; }
-
-    /* ── Team Code Input ────────────────────────────────────────────────── */
-    .modal-code-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-    .modal-code-label {
-      font-family: var(--font-ui);
-      font-size: 0.78rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.7);
-    }
-    .modal-code-row {
-      display: flex;
-      gap: 0.6rem;
-    }
-    .modal-code-input {
-      flex: 1;
-      padding: 0.85rem 1rem;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 12px;
-      color: #fff;
-      font-family: var(--font-mono);
-      font-size: 0.95rem;
-      font-weight: 600;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      outline: none;
-      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s;
-    }
-    .modal-code-input::placeholder { color: rgba(255,255,255,0.2); text-transform: none; letter-spacing: 0; font-weight: 400; font-size: 0.85rem; }
-    .modal-code-input:focus {
-      border-color: rgba(139,92,246,0.5);
-      background: rgba(139,92,246,0.06);
-      box-shadow: 0 0 0 3px rgba(139,92,246,0.12);
-    }
-    .modal-verify-btn {
-      padding: 0 1.25rem;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #6d28d9, #8b5cf6);
-      border: 1px solid rgba(139,92,246,0.4);
-      color: #fff;
-      font-family: var(--font-ui);
-      font-size: 0.82rem;
-      font-weight: 600;
-      white-space: nowrap;
-      cursor: pointer;
-      transition: opacity 0.2s, box-shadow 0.2s;
-      display: flex; align-items: center; gap: 0.5rem;
-    }
-    .modal-verify-btn:hover { box-shadow: 0 4px 20px rgba(139,92,246,0.4); }
-    .modal-verify-btn:disabled { opacity: 0.5; cursor: default; }
-    .modal-verify-btn .v-spin {
-      width: 14px; height: 14px;
-      border: 2px solid rgba(255,255,255,0.25);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-    .modal-verify-btn.verifying .v-spin { display: block; }
-    .modal-verify-btn.verifying .v-text { display: none; }
-
-    .modal-code-error {
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      color: rgba(248,113,113,0.85);
-      min-height: 1em;
-      opacity: 0;
-      transform: translateY(-4px);
-      transition: opacity 0.2s, transform 0.2s;
-    }
-    .modal-code-error.visible { opacity: 1; transform: translateY(0); }
-
-    /* ── Divider ────────────────────────────────────────────────────────── */
-    .modal-divider {
-      height: 1px;
-      background: rgba(255,255,255,0.07);
-      margin: 1.25rem 0;
-    }
-
-    /* ── Team Summary Card ──────────────────────────────────────────────── */
-    .team-summary {
-      display: none;
-      flex-direction: column;
-      gap: 0;
-    }
-    .team-summary.visible { display: flex; }
-
-    .team-summary-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0.75rem 0;
-      border-bottom: 1px solid rgba(255,255,255,0.06);
-    }
-    .team-summary-row:last-child { border-bottom: none; }
-
-    .ts-key {
-      font-family: var(--font-ui);
-      font-size: 0.72rem;
-      font-weight: 500;
-      color: rgba(255,255,255,0.38);
-      text-transform: uppercase;
-      letter-spacing: 0.1em;
-    }
-    .ts-val {
-      font-family: var(--font-ui);
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: rgba(255,255,255,0.88);
-      text-align: right;
-    }
-    .ts-val.code { font-family: var(--font-mono); color: rgba(167,139,250,0.9); letter-spacing: 0.1em; }
-    .ts-val.amount {
-      font-family: var(--font-display);
-      font-size: 1.5rem;
-      color: #fff;
-      letter-spacing: 0.02em;
-    }
-    .ts-badge-paid {
-      display: inline-flex; align-items: center; gap: 0.35rem;
-      padding: 0.2rem 0.6rem;
-      background: rgba(52,211,153,0.15);
-      border: 1px solid rgba(52,211,153,0.3);
-      border-radius: 999px;
-      font-family: var(--font-ui);
-      font-size: 0.62rem;
-      font-weight: 700;
-      color: rgba(52,211,153,0.9);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-
-    /* ── Confirm Pay Button ─────────────────────────────────────────────── */
-    .modal-pay-btn {
-      width: 100%;
-      margin-top: 1.25rem;
-      padding: 1rem 1.5rem;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #6d28d9 0%, #8b5cf6 100%);
-      border: 1px solid rgba(139,92,246,0.4);
-      color: #fff;
-      font-family: var(--font-ui);
-      font-size: 0.95rem;
-      font-weight: 700;
-      cursor: pointer;
-      display: flex; align-items: center; justify-content: center; gap: 0.65rem;
-      transition: transform 0.2s, box-shadow 0.2s;
-      position: relative; overflow: hidden;
-    }
-    .modal-pay-btn::before {
-      content: '';
-      position: absolute; inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.12), transparent);
-      opacity: 0; transition: opacity 0.2s;
-    }
-    .modal-pay-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 32px rgba(139,92,246,0.45); }
-    .modal-pay-btn:hover::before { opacity: 1; }
-    .modal-pay-btn:disabled { opacity: 0.45; transform: none; cursor: default; }
-    .modal-pay-btn .mp-spin {
-      width: 16px; height: 16px;
-      border: 2px solid rgba(255,255,255,0.3);
-      border-top-color: #fff;
-      border-radius: 50%;
-      animation: spin 0.7s linear infinite;
-      display: none;
-    }
-    .modal-pay-btn.loading .mp-spin { display: block; }
-    .modal-pay-btn.loading .mp-text { display: none; }
-
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    .modal-pay-note {
-      text-align: center;
-      font-family: var(--font-ui);
-      font-size: 0.68rem;
-      color: rgba(255,255,255,0.25);
-      margin-top: 0.75rem;
-      display: flex; align-items: center; justify-content: center; gap: 0.4rem;
-    }
-    .modal-pay-note svg { flex-shrink: 0; }
-
-    @media (max-width: 520px) {
-      .pay-modal-card { padding: 1.5rem 1.25rem; border-radius: 18px; }
-    }
-  </style>
-
-  <!-- ── Modal HTML ───────────────────────────────────────────────────────── -->
-  <div class="pay-modal-backdrop" id="payModalBackdrop" role="dialog" aria-modal="true" aria-label="Verify Team & Pay">
-    <div class="pay-modal-card" id="payModalCard">
-
-      <!-- Header -->
-      <div class="pay-modal-header">
-        <span class="pay-modal-title">Confirm & Pay</span>
-        <button class="pay-modal-close" id="payModalClose" aria-label="Close payment modal" onclick="closePayModal()">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-        </button>
-      </div>
-
-      <!-- Team Code Input -->
-      <div class="modal-code-wrap">
-        <label class="modal-code-label" for="modalTeamCode">Enter Your Team Code</label>
-        <div class="modal-code-row">
-          <input type="text" id="modalTeamCode" class="modal-code-input"
-            placeholder="e.g. UDB26-042"
-            maxlength="20"
-            autocomplete="off"
-            spellcheck="false"
-            aria-label="Team code" />
-          <button class="modal-verify-btn" id="modalVerifyBtn" onclick="verifyTeamCode()">
-            <div class="v-spin"></div>
-            <span class="v-text">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-              Verify
-            </span>
-          </button>
-        </div>
-        <span class="modal-code-error" id="modalCodeError"></span>
-      </div>
-
-      <!-- Divider -->
-      <div class="modal-divider"></div>
-
-      <!-- Team Summary (hidden until verified) -->
-      <div class="team-summary" id="teamSummary" aria-live="polite">
-        <div class="team-summary-row">
-          <span class="ts-key">Team Code</span>
-          <span class="ts-val code" id="tsCode">—</span>
-        </div>
-        <div class="team-summary-row">
-          <span class="ts-key">Team Name</span>
-          <span class="ts-val" id="tsName">—</span>
-        </div>
-        <div class="team-summary-row">
-          <span class="ts-key">Members</span>
-          <span class="ts-val" id="tsMembers">—</span>
-        </div>
-        <div class="team-summary-row">
-          <span class="ts-key">Date</span>
-          <span class="ts-val" id="tsDate">—</span>
-        </div>
-        <div class="team-summary-row">
-          <span class="ts-key">Mentor Session</span>
-          <span class="ts-val" id="tsMentor">—</span>
-        </div>
-        <div class="team-summary-row">
-          <span class="ts-key">Total Due</span>
-          <span class="ts-val amount" id="tsAmount">—</span>
-        </div>
-      </div>
-
-      <!-- Confirm Pay Button (hidden until verified) -->
-      <button class="modal-pay-btn" id="modalPayBtn" style="display:none"
-              onclick="confirmAndPay()" disabled>
-        <div class="mp-spin"></div>
-        <span class="mp-text">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
-          Confirm &amp; Pay <span id="modalPayAmount"></span>
-        </span>
-      </button>
-      <p class="modal-pay-note" id="modalPayNote" style="display:none">
-        <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-        Secured by Razorpay · 256-bit SSL
-      </p>
-
-    </div>
-  </div>
-
-  <!-- ── Modal JS ─────────────────────────────────────────────────────────── -->
-  <script>
-    /* ── State ──────────────────────────────────────────────────────────── */
-    let _verifiedTeam  = null;   // team data returned from /api/team
-
-    /* ── Open / Close ───────────────────────────────────────────────────── */
-    function openPayModal() {
-      const backdrop = document.getElementById('payModalBackdrop');
-      backdrop.classList.add('open');
-      // Trap focus inside modal
-      setTimeout(() => document.getElementById('modalTeamCode')?.focus(), 80);
-      // Close on backdrop click
-      backdrop.addEventListener('click', _backdropClick);
-      // Close on Escape
-      document.addEventListener('keydown', _escClose);
-    }
-
-    function closePayModal() {
-      const backdrop = document.getElementById('payModalBackdrop');
-      backdrop.classList.remove('open');
-      backdrop.removeEventListener('click', _backdropClick);
-      document.removeEventListener('keydown', _escClose);
-    }
-
-    function _backdropClick(e) {
-      if (e.target === document.getElementById('payModalBackdrop')) closePayModal();
-    }
-
-    function _escClose(e) {
-      if (e.key === 'Escape') closePayModal();
-    }
-
-    /* ── Verify Team Code ───────────────────────────────────────────────── */
-    async function verifyTeamCode() {
-      const input    = document.getElementById('modalTeamCode');
-      const verifyBtn = document.getElementById('modalVerifyBtn');
-      const errorEl  = document.getElementById('modalCodeError');
-      const code     = (input?.value || '').trim().toUpperCase();
-
-      // Reset error
-      errorEl.textContent = '';
-      errorEl.classList.remove('visible');
-
-      if (!code) {
-        errorEl.textContent = 'Please enter your team code.';
-        errorEl.classList.add('visible');
-        input?.focus();
-        return;
-      }
-
-      // Loading state
-      verifyBtn.classList.add('verifying');
-      verifyBtn.disabled = true;
-      input.disabled = true;
-      _hideSummary();
-
-      try {
-        const res  = await fetch(`/api/team?code=${encodeURIComponent(code)}`);
-        const data = await res.json();
-
-        if (!data.success) {
-          throw new Error(data.error || 'Team not found.');
-        }
-
-        _verifiedTeam = data.team;
-        _showSummary(data.team);
-
-      } catch (err) {
-        errorEl.textContent = err.message || 'Could not verify code. Please try again.';
-        errorEl.classList.add('visible');
-        _verifiedTeam = null;
-      } finally {
-        verifyBtn.classList.remove('verifying');
-        verifyBtn.disabled = false;
-        input.disabled = false;
-      }
-    }
-
-    /* ── Show / Hide Summary ────────────────────────────────────────────── */
-    function _showSummary(team) {
-      const today = new Date().toLocaleDateString('en-IN', {
-        day: '2-digit', month: 'long', year: 'numeric'
-      });
-
-      document.getElementById('tsCode').textContent    = team.code;
-      document.getElementById('tsName').textContent    = team.teamName;
-      document.getElementById('tsMembers').textContent = `${team.memberCount} member${team.memberCount !== 1 ? 's' : ''}`;
-      document.getElementById('tsDate').textContent    = today;
-      document.getElementById('tsMentor').textContent  = team.mentorSession ? 'Yes (+₹300)' : 'No';
-      document.getElementById('tsAmount').textContent  = `₹${team.totalAmount.toLocaleString('en-IN')}`;
-
-      document.getElementById('modalPayAmount').textContent = ` ₹${team.totalAmount.toLocaleString('en-IN')}`;
-
-      document.getElementById('teamSummary').classList.add('visible');
-      document.getElementById('modalPayBtn').style.display  = '';
-      document.getElementById('modalPayNote').style.display = '';
-
-      const payBtn = document.getElementById('modalPayBtn');
-      payBtn.disabled = false;
-
-      // Animate in with GSAP if available
-      if (typeof gsap !== 'undefined') {
-        gsap.from('#teamSummary .team-summary-row', {
-          opacity: 0, y: 10, stagger: 0.07, duration: 0.4, ease: 'power2.out'
-        });
-        gsap.from('#modalPayBtn', { opacity: 0, y: 10, duration: 0.4, delay: 0.35, ease: 'power2.out' });
-      }
-    }
-
-    function _hideSummary() {
-      _verifiedTeam = null;
-      document.getElementById('teamSummary').classList.remove('visible');
-      document.getElementById('modalPayBtn').style.display  = 'none';
-      document.getElementById('modalPayNote').style.display = 'none';
-    }
-
-    /* ── Confirm & Pay ──────────────────────────────────────────────────── */
-    async function confirmAndPay() {
-      if (!_verifiedTeam) return;
-
-      const payBtn = document.getElementById('modalPayBtn');
-      payBtn.classList.add('loading');
-      payBtn.disabled = true;
-
-      try {
-        // 1 — Create Razorpay order
-        const orderRes  = await fetch('/api/create-order', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ teamCode: _verifiedTeam.code }),
-        });
-        const orderData = await orderRes.json();
-        if (!orderData.success) throw new Error(orderData.error || 'Could not create order.');
-
-        // 2 — Load Razorpay script once
-        await new Promise((resolve, reject) => {
-          if (window.Razorpay) { resolve(); return; }
-          const s    = document.createElement('script');
-          s.src      = 'https://checkout.razorpay.com/v1/checkout.js';
-          s.onload   = resolve;
-          s.onerror  = () => reject(new Error('Failed to load payment gateway.'));
-          document.head.appendChild(s);
-        });
-
-        payBtn.classList.remove('loading');
-        payBtn.disabled = false;
-
-        const team = _verifiedTeam;
-
-        // 3 — Open Razorpay
-        const rzp = new window.Razorpay({
-          key:         orderData.key,
-          order_id:    orderData.orderId,
-          amount:      orderData.amount,
-          currency:    orderData.currency,
-          name:        "UDBHAV'26",
-          description: `Round 2 Registration — ${team.teamName}`,
-          image:       '/logo.png',
-          prefill: {
-            name:    team.leader.name,
-            email:   team.leader.email,
-            contact: team.leader.phone,
-          },
-          notes: {
-            teamCode: team.code,
-            teamName: team.teamName,
-          },
-          theme: { color: '#8b5cf6' },
-
-          // 4 — On payment success → verify + save to MongoDB
-          handler: async function (response) {
-            payBtn.classList.add('loading');
-            payBtn.disabled = true;
-
-            try {
-              const verifyRes  = await fetch('/api/verify-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                  razorpay_order_id:   response.razorpay_order_id,
-                  razorpay_payment_id: response.razorpay_payment_id,
-                  razorpay_signature:  response.razorpay_signature,
-                  teamCode:            team.code,
-                }),
-              });
-              const verifyData = await verifyRes.json();
-
-              if (verifyData.success) {
-                closePayModal();
-                // Show success screen
-                const form    = document.getElementById('regForm');
-                const success = document.getElementById('regSuccess');
-                const idEl    = document.getElementById('successRegId');
-                if (idEl) idEl.textContent = verifyData.id || team.code;
-                if (form) {
-                  if (typeof gsap !== 'undefined') {
-                    gsap.to(form, { opacity: 0, y: -20, duration: 0.4, ease: 'power2.in',
-                      onComplete: () => {
-                        form.style.display = 'none';
-                        if (success) {
-                          success.classList.add('visible');
-                          gsap.from(success.children, { opacity: 0, y: 30, stagger: 0.1, duration: 0.6, ease: 'power3.out' });
-                        }
-                      }
-                    });
-                  } else {
-                    form.style.display = 'none';
-                    success?.classList.add('visible');
-                  }
-                }
-                document.getElementById('regRight')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-              } else {
-                throw new Error(verifyData.error || 'Verification failed.');
-              }
-
-            } catch (verifyErr) {
-              payBtn.classList.remove('loading');
-              payBtn.disabled = false;
-              const errorEl = document.getElementById('modalCodeError');
-              if (errorEl) {
-                errorEl.textContent = verifyErr.message || 'Verification failed. Contact support with payment ID: ' + response.razorpay_payment_id;
-                errorEl.classList.add('visible');
-              }
-            }
-          },
-
-          modal: {
-            ondismiss: function () {
-              payBtn.classList.remove('loading');
-              payBtn.disabled = false;
-            },
-          },
-        });
-
-        // Close modal UI before Razorpay opens (Razorpay has its own overlay)
-        closePayModal();
-        rzp.open();
-
-      } catch (err) {
-        console.error('[PayModal] Error:', err);
-        payBtn.classList.remove('loading');
-        payBtn.disabled = false;
-        const errorEl = document.getElementById('modalCodeError');
-        if (errorEl) {
-          errorEl.textContent = err.message || 'Something went wrong. Please try again.';
-          errorEl.classList.add('visible');
-          if (!document.getElementById('payModalBackdrop').classList.contains('open')) openPayModal();
-        }
-      }
-    }
-
-    /* ── Enter key to verify ────────────────────────────────────────────── */
-    document.getElementById('modalTeamCode')?.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter') verifyTeamCode();
-    });
-  </script>
 
 </body>
 </html>

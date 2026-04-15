@@ -1,13 +1,7 @@
 /**
  * analytics.js
- * Initializes Vercel Analytics and Speed Insights for all pages
+ * Analytics stub — Vercel Analytics removed for Google Cloud Run deployment.
+ * Replace with Google Analytics or another provider if needed.
  */
 
-import { inject } from '@vercel/analytics';
-import { injectSpeedInsights } from '@vercel/speed-insights';
-
-// Initialize Vercel Analytics
-inject();
-
-// Initialize Vercel Speed Insights
-injectSpeedInsights();
+// No-op: analytics not needed on Cloud Run
