@@ -10,14 +10,6 @@
 
 import mongoose from 'mongoose';
 
-const MONGODB_URI = process.env.MONGODB_URI;
-
-if (!MONGODB_URI) {
-  throw new Error(
-    '⚠️  Please set MONGODB_URI in your .env file (local) or Vercel Environment Variables (production).'
-  );
-}
-
 /**
  * Global cache — persisted across hot-reloads in development
  * and across invocations of the same warm Lambda in production.
@@ -29,6 +21,14 @@ if (!cached) {
 }
 
 export async function connectDB() {
+  const MONGODB_URI = process.env.MONGODB_URI;
+
+  if (!MONGODB_URI) {
+    throw new Error(
+      '⚠️  Please set MONGODB_URI in your .env file (local) or Vercel Environment Variables (production).'
+    );
+  }
+
   // Already connected — return immediately
   if (cached.conn) {
     return cached.conn;
