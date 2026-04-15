@@ -1118,7 +1118,7 @@
         <ul class="nav-links" role="navigation" aria-label="Main navigation">
           <li><a href="/" class="nav-link" id="nav-home"><span class="link-text" data-text="Home">Home</span></a></li>
           <li><a href="/about.html" class="nav-link" id="nav-about"><span class="link-text" data-text="About">About</span></a></li>
-          <li><a href="/work.html" class="nav-link" id="nav-work"><span class="link-text" data-text="Schedule">Schedule</span></a></li>
+          <li><a href="/schedule.html" class="nav-link" id="nav-work"><span class="link-text" data-text="Schedule">Schedule</span></a></li>
           <li><a href="/blog.html" class="nav-link" id="nav-blogs"><span class="link-text" data-text="Problem Statement">Problem Statement</span></a></li>
           <li class="nav-more-wrap" id="navMoreWrap">
             <a href="#" class="nav-link nav-more" id="nav-more"
@@ -1130,7 +1130,7 @@
             </a>
             <div class="more-dropdown" id="moreDropdown" role="menu">
               <div class="md-grid">
-                <a href="/playground.html" class="md-feature" role="menuitem" tabindex="-1">
+                <a href="/winners.html" class="md-feature" role="menuitem" tabindex="-1">
                   <div class="md-feature__bg-icon" aria-hidden="true">
                     <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
                   </div>
@@ -1138,7 +1138,7 @@
                   <span class="md-feature__desc">Hackathon winners &amp; achievements</span>
                 </a>
                 <div class="md-items">
-                  <a href="/links.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/code-of-conduct.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
                     </div>
@@ -1147,16 +1147,16 @@
                       <span class="md-item__desc">Rules &amp; Guidelines</span>
                     </div>
                   </a>
-                  <a href="/uses.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/our-team.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
                     </div>
                     <div class="md-item__body">
-                      <span class="md-item__title">Uses</span>
-                      <span class="md-item__desc">My gear &amp; software</span>
+                      <span class="md-item__title">Our Team</span>
+                      <span class="md-item__desc">Meet the builders</span>
                     </div>
                   </a>
-                  <a href="/jamify.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/sponsors.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg>
                     </div>
@@ -1574,13 +1574,13 @@
             <label class="agreement-item" id="agreeTC" role="checkbox" aria-checked="false" tabindex="0">
               <div class="agreement-checkbox" id="checkTC" aria-hidden="true"></div>
               <span class="agreement-text">
-                I agree to the <a href="/links.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> of UDBHAV'26
+                I agree to the <a href="/code-of-conduct.html" target="_blank" rel="noopener">Terms &amp; Conditions</a> of UDBHAV'26
               </span>
             </label>
             <label class="agreement-item" id="agreeConduct" role="checkbox" aria-checked="false" tabindex="0">
               <div class="agreement-checkbox" id="checkConduct" aria-hidden="true"></div>
               <span class="agreement-text">
-                I have read and agree to the <a href="/links.html" target="_blank" rel="noopener">Code of Conduct</a>
+                I have read and agree to the <a href="/code-of-conduct.html" target="_blank" rel="noopener">Code of Conduct</a>
               </span>
             </label>
           </div>
@@ -1790,7 +1790,7 @@
             </div>
             <div class="cf-secondary-pills">
               <a href="/" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnHome">Home</a>
-              <a href="/work.html" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnSchedule">Schedule</a>
+              <a href="/schedule.html" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnSchedule">Schedule</a>
               <a href="/blog.html" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnPS">Problem Statements</a>
             </div>
           </div>
@@ -2400,11 +2400,11 @@
       const ACTIONS = [
         { id:'1', label:'Home',             icon:'home',      description:'Back to start',           short:'', end:'Page', href:'/',               color:'#60a5fa', external:false },
         { id:'2', label:'About',            icon:'user',      description:'About UDBHAV\'26',        short:'', end:'Page', href:'/about.html',     color:'#fb923c', external:false },
-        { id:'3', label:'Schedule',         icon:'calendar',  description:'Event schedule',           short:'', end:'Page', href:'/work.html',      color:'#a78bfa', external:false },
+        { id:'3', label:'Schedule',         icon:'calendar',  description:'Event schedule',           short:'', end:'Page', href:'/schedule.html',      color:'#a78bfa', external:false },
         { id:'4', label:'Problem Statement',icon:'pencil',    description:'Hackathon problems',       short:'', end:'Page', href:'/blog.html',      color:'#34d399', external:false },
-        { id:'5', label:'Winner',           icon:'grid',      description:'Hackathon winners',        short:'', end:'Page', href:'/playground.html',color:'#f59e0b', external:false },
-        { id:'6', label:'Code of Conduct',  icon:'link',      description:'Rules & Guidelines',       short:'', end:'Page', href:'/links.html',     color:'#22d3ee', external:false },
-        { id:'7', label:'Sponsors',         icon:'music',     description:'Our partners',             short:'', end:'Page', href:'/jamify.html',    color:'#f59e0b', external:false },
+        { id:'5', label:'Winner',           icon:'grid',      description:'Hackathon winners',        short:'', end:'Page', href:'/winners.html',color:'#f59e0b', external:false },
+        { id:'6', label:'Code of Conduct',  icon:'link',      description:'Rules & Guidelines',       short:'', end:'Page', href:'/code-of-conduct.html',     color:'#22d3ee', external:false },
+        { id:'7', label:'Sponsors',         icon:'music',     description:'Our partners',             short:'', end:'Page', href:'/sponsors.html',    color:'#f59e0b', external:false },
         { id:'8', label:'Register Now',     icon:'star',      description:'Round 2 registration',    short:'⌘K',end:'Page',href:'/register.html', color:'#8b5cf6', external:false },
       ];
 

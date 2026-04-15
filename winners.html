@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="UDBHAV'26 Winners — The results of India's premier 24-hour hackathon at Sage University." />
+  <title>Winners — UDBHAV'26</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,900;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800;900&family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/mobile-perf.css" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════════════
+       WINNER PAGE — BASE
+       ══════════════════════════════════════════════════════════════ */
+
+    /* ── Confetti canvas ────────────────────────────────────────── */
+    #confettiCanvas {
+      position: fixed; inset: 0; z-index: 9000;
+      pointer-events: none; width: 100%; height: 100%;
+    }
+
+    /* ── Burst overlay ──────────────────────────────────────────── */
+    #burstOverlay {
+      position: fixed; inset: 0; z-index: 8900;
+      background: radial-gradient(ellipse 50% 50% at 50% 50%, rgba(168,85,247,0.9) 0%, transparent 70%);
+      pointer-events: none; opacity: 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       STATE 1 — DEFAULT (pre-reveal)
+       ══════════════════════════════════════════════════════════════ */
+    #stateDefault {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 100px 2rem 80px;
+      overflow: hidden;
+    }
+
+    /* Floating "?" background */
+    .wn-float-bg {
+      position: fixed; inset: 0; z-index: 1;
+      pointer-events: none; overflow: hidden;
+    }
+    .wn-float-char {
+      position: absolute;
+      font-family: 'Bebas Neue', sans-serif;
+      color: rgba(255,255,255,0.03);
+      user-select: none; pointer-events: none;
+      animation: wn-float-drift linear infinite;
+    }
+    @keyframes wn-float-drift {
+      0%   { transform: translateY(110vh) rotate(0deg); opacity: 0; }
+      5%   { opacity: 1; }
+      95%  { opacity: 1; }
+      100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
+    }
+
+    /* Trophy + title */
+    .wn-trophy {
+      width: 90px; height: 90px; margin-bottom: 1.5rem;
+      position: relative; z-index: 2;
+      animation: wn-trophy-pulse 2.5s ease-in-out infinite alternate;
+      filter: drop-shadow(0 0 30px rgba(255,215,0,0.45));
+      color: #FFD700;
+    }
+    .wn-trophy svg { width: 90px; height: 90px; }
+    @keyframes wn-trophy-pulse {
+      from { transform: translateY(0) scale(1); filter: drop-shadow(0 0 20px rgba(255,215,0,0.3)); }
+      to   { transform: translateY(-8px) scale(1.04); filter: drop-shadow(0 0 55px rgba(255,215,0,0.65)); }
+    }
+
+    .wn-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(72px, 14vw, 140px);
+      line-height: 0.88; letter-spacing: 0.06em;
+      color: #fff; text-align: center;
+      position: relative; z-index: 2; margin-bottom: 0.6rem;
+      background: linear-gradient(180deg, #fff 40%, rgba(255,255,255,0.5) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .wn-subtitle {
+      font-family: 'Sora', sans-serif; font-size: 0.82rem; font-weight: 400;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(255,255,255,0.28); position: relative; z-index: 2;
+      margin-bottom: 4rem;
+    }
+
+    /* ── PODIUM ─────────────────────────────────────────────────── */
+    .wn-podium {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 1.2rem; position: relative; z-index: 2;
+      margin-bottom: 4rem; width: 100%; max-width: 860px;
+    }
+
+    .wn-pod {
+      display: flex; flex-direction: column; align-items: center;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.025);
+      backdrop-filter: blur(12px);
+      overflow: hidden; position: relative;
+      flex: 1; max-width: 280px;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .wn-pod:hover { border-color: rgba(255,255,255,0.2); }
+
+    /* Heights: 1st tallest, 2nd medium, 3rd smallest */
+    .wn-pod--1st { min-height: 380px; order: 2; border-color: rgba(255,215,0,0.25); background: rgba(255,215,0,0.03); }
+    .wn-pod--2nd { min-height: 310px; order: 1; }
+    .wn-pod--3rd { min-height: 265px; order: 3; }
+
+    .wn-pod--1st:hover { box-shadow: 0 0 50px rgba(255,215,0,0.15); border-color: rgba(255,215,0,0.4); }
+    .wn-pod--2nd:hover { box-shadow: 0 0 35px rgba(192,192,192,0.12); border-color: rgba(192,192,192,0.3); }
+    .wn-pod--3rd:hover { box-shadow: 0 0 30px rgba(205,127,50,0.1); border-color: rgba(205,127,50,0.25); }
+
+    /* Top accent */
+    .wn-pod::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+    }
+    .wn-pod--1st::before { background: linear-gradient(90deg, transparent, #FFD700, transparent); }
+    .wn-pod--2nd::before { background: linear-gradient(90deg, transparent, #C0C0C0, transparent); }
+    .wn-pod--3rd::before { background: linear-gradient(90deg, transparent, #CD7F32, transparent); }
+
+    /* Glow behind 1st */
+    .wn-pod--1st::after {
+      content: ''; position: absolute; inset: 0; z-index: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(255,215,0,0.06) 0%, transparent 70%);
+    }
+
+    .wn-pod__rank {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3rem, 6vw, 5rem); line-height: 1;
+      position: relative; z-index: 1;
+      margin-top: auto; padding-top: 2rem;
+    }
+    .wn-pod--1st .wn-pod__rank { color: #FFD70066; }
+    .wn-pod--2nd .wn-pod__rank { color: #C0C0C040; }
+    .wn-pod--3rd .wn-pod__rank { color: #CD7F3240; }
+
+    .wn-pod__body {
+      padding: 1.2rem 1.4rem 2rem; width: 100%;
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 0.5rem; align-items: center; text-align: center;
+    }
+    .wn-pod__place {
+      font-family: 'Bebas Neue', sans-serif; font-size: 0.9rem; letter-spacing: 0.2em;
+    }
+    .wn-pod--1st .wn-pod__place { color: #FFD700; }
+    .wn-pod--2nd .wn-pod__place { color: #C0C0C0; }
+    .wn-pod--3rd .wn-pod__place { color: #CD7F32; }
+
+    .wn-pod__team {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.2rem); letter-spacing: 0.06em; line-height: 1;
+      color: rgba(255,255,255,0.2);
+    }
+    .wn-pod__project {
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 400;
+      color: rgba(255,255,255,0.15); letter-spacing: 0.06em;
+    }
+    .wn-pod__members {
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; font-weight: 300;
+      color: rgba(255,255,255,0.12);
+    }
+    .wn-pod__domain {
+      font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 600;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.22rem 0.7rem; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.15);
+    }
+
+    /* ── COUNTDOWN ──────────────────────────────────────────────── */
+    .wn-announce {
+      font-family: 'Sora', sans-serif; font-size: 0.88rem; font-weight: 300;
+      color: rgba(255,255,255,0.35); text-align: center;
+      position: relative; z-index: 2; margin-bottom: 2rem;
+      letter-spacing: 0.04em;
+    }
+    .wn-countdown {
+      display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap; justify-content: center;
+      position: relative; z-index: 2; margin-bottom: 1rem;
+    }
+    .wn-cd-block {
+      display: flex; flex-direction: column; align-items: center; gap: 0.3rem;
+    }
+    .wn-cd-num {
+      font-family: 'Bebas Neue', sans-serif; font-size: 3.5rem; line-height: 1;
+      color: #fff; min-width: 80px; text-align: center;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 0.4rem 0.8rem;
+    }
+    .wn-cd-label {
+      font-family: 'Inter', sans-serif; font-size: 0.55rem; font-weight: 600;
+      letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+    }
+    .wn-cd-sep {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem;
+      color: rgba(255,255,255,0.2); padding-bottom: 1.5rem;
+    }
+    .wn-cd-expired {
+      font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 400;
+      color: rgba(255,255,255,0.4); text-align: center; padding: 1.5rem 0;
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       STATE 2 — PUBLISHED (winners revealed)
+       ══════════════════════════════════════════════════════════════ */
+    #statePublished {
+      display: none;
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      padding: 120px 2rem 80px;
+    }
+
+    /* Big heading */
+    .wn-pub-hero {
+      text-align: center; margin-bottom: 5rem;
+      opacity: 0; transform: translateY(-40px);
+    }
+    .wn-pub-eyebrow {
+      font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      padding: 0.35rem 1rem; border-radius: 999px; margin-bottom: 2rem;
+    }
+    .wn-pub-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(56px, 12vw, 120px);
+      line-height: 0.88; letter-spacing: 0.05em; color: #fff;
+      background: linear-gradient(180deg, #fff 30%, rgba(255,255,255,0.5) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Winner cards (published) ────────────────────────────────── */
+    .wn-pub-podium {
+      display: flex; align-items: flex-end; justify-content: center;
+      gap: 1.5rem; max-width: 1100px; margin: 0 auto 5rem; width: 100%;
+    }
+
+    .wn-pub-card {
+      flex: 1; max-width: 340px; border-radius: 24px;
+      border: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.025);
+      overflow: hidden; position: relative;
+      opacity: 0; transform: translateY(60px) scale(0.96);
+      transition: transform 0.4s cubic-bezier(0.16,1,0.3,1), box-shadow 0.4s, border-color 0.4s;
+    }
+    .wn-pub-card:hover { transform: translateY(-6px) scale(1.01) !important; }
+    .wn-pub-card--1st {
+      min-height: 460px; order: 2;
+      border-color: rgba(255,215,0,0.3);
+      box-shadow: 0 0 60px rgba(255,215,0,0.08), 0 0 120px rgba(255,215,0,0.03);
+    }
+    .wn-pub-card--1st:hover { box-shadow: 0 24px 70px rgba(0,0,0,0.6), 0 0 60px rgba(255,215,0,0.2); border-color: rgba(255,215,0,0.5); }
+    .wn-pub-card--2nd { min-height: 390px; order: 1; }
+    .wn-pub-card--2nd:hover { box-shadow: 0 24px 60px rgba(0,0,0,0.5), 0 0 40px rgba(192,192,192,0.1); border-color: rgba(192,192,192,0.3); }
+    .wn-pub-card--3rd { min-height: 345px; order: 3; }
+    .wn-pub-card--3rd:hover { box-shadow: 0 24px 55px rgba(0,0,0,0.5), 0 0 35px rgba(205,127,50,0.1); border-color: rgba(205,127,50,0.25); }
+
+    /* Rank glow layer */
+    .wn-pub-card__glow {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+    }
+    .wn-pub-card--1st .wn-pub-card__glow {
+      background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(255,215,0,0.1) 0%, transparent 65%);
+    }
+    .wn-pub-card--2nd .wn-pub-card__glow {
+      background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(192,192,192,0.06) 0%, transparent 65%);
+    }
+    .wn-pub-card--3rd .wn-pub-card__glow {
+      background: radial-gradient(ellipse 100% 60% at 50% 0%, rgba(205,127,50,0.06) 0%, transparent 65%);
+    }
+
+    /* Top stripe */
+    .wn-pub-card__stripe {
+      height: 3px; width: 100%; position: relative; z-index: 1;
+    }
+    .wn-pub-card--1st .wn-pub-card__stripe { background: linear-gradient(90deg, #b8860b, #FFD700, #fffacd, #FFD700, #b8860b); }
+    .wn-pub-card--2nd .wn-pub-card__stripe { background: linear-gradient(90deg, #777, #C0C0C0, #e8e8e8, #C0C0C0, #777); }
+    .wn-pub-card--3rd .wn-pub-card__stripe { background: linear-gradient(90deg, #7a4f2d, #CD7F32, #e8a87c, #CD7F32, #7a4f2d); }
+
+    .wn-pub-card__inner {
+      padding: 2rem 1.8rem 2.2rem;
+      position: relative; z-index: 1;
+      display: flex; flex-direction: column; gap: 1rem; height: 100%;
+    }
+
+    .wn-pub-card__place-row {
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .wn-pub-card__medal {
+      width: 36px; height: 36px; display: flex; align-items: center; justify-content: center;
+      border-radius: 50%; flex-shrink: 0;
+      filter: drop-shadow(0 2px 8px rgba(0,0,0,0.4));
+    }
+    .wn-pub-card__medal svg { width: 36px; height: 36px; }
+    .wn-pub-card--1st .wn-pub-card__medal { width: 46px; height: 46px; }
+    .wn-pub-card--1st .wn-pub-card__medal svg { width: 46px; height: 46px; }
+    .wn-pub-card__place-label {
+      font-family: 'Bebas Neue', sans-serif; letter-spacing: 0.15em;
+    }
+    .wn-pub-card--1st .wn-pub-card__place-label { font-size: 1.4rem; color: #FFD700; }
+    .wn-pub-card--2nd .wn-pub-card__place-label { font-size: 1.2rem; color: #C0C0C0; }
+    .wn-pub-card--3rd .wn-pub-card__place-label { font-size: 1.1rem; color: #CD7F32; }
+
+    .wn-pub-card__divider {
+      height: 1px; background: rgba(255,255,255,0.06);
+    }
+
+    .wn-pub-card__team {
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: clamp(1.1rem, 2.5vw, 1.6rem);
+      line-height: 1.15; letter-spacing: -0.03em; color: #fff;
+    }
+    .wn-pub-card--1st .wn-pub-card__team { font-size: clamp(1.3rem, 2.8vw, 1.9rem); }
+
+    .wn-pub-card__project {
+      font-family: 'Fraunces', serif; font-style: italic;
+      font-size: 0.9rem; color: rgba(255,255,255,0.55); margin-top: -0.5rem;
+    }
+    .wn-pub-card__tagline {
+      font-family: 'Inter', sans-serif; font-size: 0.82rem;
+      font-weight: 300; line-height: 1.6; color: rgba(255,255,255,0.4);
+    }
+    .wn-pub-card__domain {
+      display: inline-flex;
+      font-family: 'Inter', sans-serif; font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.25rem 0.75rem; border-radius: 999px;
+    }
+    .wn-pub-card--1st .wn-pub-card__domain { background: rgba(255,215,0,0.1); border: 1px solid rgba(255,215,0,0.25); color: #FFD700; }
+    .wn-pub-card--2nd .wn-pub-card__domain { background: rgba(192,192,192,0.08); border: 1px solid rgba(192,192,192,0.2); color: #C0C0C0; }
+    .wn-pub-card--3rd .wn-pub-card__domain { background: rgba(205,127,50,0.08); border: 1px solid rgba(205,127,50,0.2); color: #CD7F32; }
+
+    .wn-pub-card__members {
+      font-family: 'Sora', sans-serif; font-size: 0.78rem; font-weight: 300;
+      color: rgba(255,255,255,0.35); line-height: 1.5; margin-top: auto;
+      border-top: 1px solid rgba(255,255,255,0.06); padding-top: 0.9rem;
+    }
+    .wn-pub-card__members strong {
+      font-weight: 600; color: rgba(255,255,255,0.6);
+      font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase;
+      display: block; margin-bottom: 0.3rem;
+    }
+
+    /* ── Share button ────────────────────────────────────────────── */
+    .wn-share-row {
+      display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 4rem;
+      opacity: 0;
+    }
+    .wn-share-btn {
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'Inter', sans-serif; font-size: 0.88rem; font-weight: 600;
+      text-decoration: none; padding: 0.85rem 2rem; border-radius: 999px;
+      letter-spacing: 0.02em; cursor: pointer;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), box-shadow 0.3s;
+      border: none; outline: none;
+    }
+    .wn-share-btn--primary {
+      background: #fff; color: #080808; border: 2px solid #fff;
+    }
+    .wn-share-btn--primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 18px 45px rgba(255,255,255,0.2), 0 0 0 4px rgba(255,255,255,0.06);
+    }
+    .wn-share-btn--ghost {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+    }
+    .wn-share-btn--ghost:hover {
+      background: rgba(255,255,255,0.1); color: #fff; transform: translateY(-2px);
+    }
+
+    /* Share toast */
+    .wn-toast {
+      position: fixed; bottom: 2.5rem; left: 50%; transform: translateX(-50%) translateY(8px);
+      font-family: 'Inter', sans-serif; font-size: 0.82rem; font-weight: 600;
+      color: #fff; background: rgba(30,30,30,0.95);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 999px;
+      padding: 0.7rem 1.6rem; backdrop-filter: blur(20px);
+      z-index: 9999; opacity: 0; transition: opacity 0.3s, transform 0.3s;
+      pointer-events: none;
+    }
+    .wn-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* Responsive */
+    @media (max-width: 860px) {
+      .wn-podium, .wn-pub-podium { flex-direction: column; align-items: center; }
+      .wn-pod, .wn-pub-card { order: unset !important; min-height: unset !important; max-width: 100%; width: 100%; }
+      .wn-pod--1st, .wn-pub-card--1st { min-height: 280px; }
+    }
+    @media (max-width: 480px) {
+      .wn-countdown { gap: 0.7rem; }
+      .wn-cd-num { font-size: 2.8rem; min-width: 64px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="cursor-arrow" id="cursorArrow" aria-hidden="true"></div>
+  <div class="canvas1" id="canvas1"></div>
+  <div class="grain-overlay" aria-hidden="true"></div>
+  <div class="mouse-glow" id="mouseGlow" aria-hidden="true"></div>
+
+  <!-- Purple burst overlay (STATE 2 entrance) -->
+  <div id="burstOverlay" aria-hidden="true"></div>
+  <!-- Confetti canvas -->
+  <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <img src="/logo.png" alt="Vedansh logo" class="nav-logo-img" id="logoImg" />
+      <div class="logo-divider" aria-hidden="true"></div>
+      <span class="tagline-dot" aria-hidden="true"></span>
+      <div class="logo-tagline">
+        <span class="tagline-role">Creative engineer</span>
+        <span class="tagline-motto">building the future</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-pill" id="navPill">
+        <ul class="nav-links" role="navigation" aria-label="Main navigation">
+          <li><a href="/" class="nav-link" id="nav-home"><span class="link-text">Home</span></a></li>
+          <li><a href="/about.html" class="nav-link" id="nav-about"><span class="link-text">About</span></a></li>
+          <li><a href="/schedule.html" class="nav-link" id="nav-work"><span class="link-text">Schedule</span></a></li>
+          <li><a href="/blog.html" class="nav-link" id="nav-blogs"><span class="link-text">Problem Statement</span></a></li>
+          <li class="nav-more-wrap" id="navMoreWrap">
+            <a href="#" class="nav-link nav-more" id="nav-more" role="button" aria-haspopup="menu" aria-expanded="false">
+              <span class="link-text">More</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <div class="more-dropdown" id="moreDropdown" role="menu">
+              <div class="md-grid">
+                <a href="/winners.html" class="md-feature active" role="menuitem" tabindex="-1">
+                  <div class="md-feature__bg-icon" aria-hidden="true">
+                    <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3H5a2 2 0 0 0-2 2v4m6-6h10a2 2 0 0 1 2 2v4M9 3v18m0 0h10a2 2 0 0 0 2-2v-4M9 21H5a2 2 0 0 1-2-2v-4m0 0h18"/></svg>
+                  </div>
+                  <span class="md-feature__title">Winner</span>
+                  <span class="md-feature__desc">Hackathon winners &amp; achievements</span>
+                </a>
+                <div class="md-items">
+                  <a href="/code-of-conduct.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Code of Conduct</span><span class="md-item__desc">Rules &amp; Guidelines</span></div>
+                  </a>
+                  <a href="/our-team.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Our Team</span><span class="md-item__desc">Meet the builders</span></div>
+                  </a>
+                  <a href="/sponsors.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Sponsors</span><span class="md-item__desc">Our partners &amp; supporters</span></div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="nav-pill-sep" aria-hidden="true"></div>
+        <a href="/register.html" class="btn-cta" id="bookCallBtn">Register</a>
+      </div>
+      <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <svg class="menu-toggle-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+          <path class="mti-path1" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"/>
+          <path d="M7 16 27 16"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-nav-pill" id="mobileNavPill">
+      <img src="/logo.png" alt="Logo" class="mobile-logo-img" />
+      <div class="mobile-nav-sep" aria-hidden="true"></div>
+      <span class="mobile-nav-name">VEDANSH DANOT</span>
+      <div class="mobile-nav-sep" aria-hidden="true"></div>
+      <button class="nav-menu-btn" id="menuBtnMobile" aria-label="Open menu" style="padding:0;background:transparent;border:none;box-shadow:none;backdrop-filter:none;">
+        <svg class="menu-toggle-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+          <path class="mti-path1" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"/>
+          <path d="M7 16 27 16"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Menu overlay -->
+  <div id="menuOverlay" class="menu-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="menu-overlay__panel">
+      <p class="action-search__label">Search Commands</p>
+      <div class="action-search__input-wrap">
+        <input type="text" id="actionSearchInput" class="action-search__input" placeholder="What's up?" autocomplete="off" spellcheck="false" aria-label="Search commands" />
+        <div class="action-search__icon" id="actionSearchIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="action-search__results" id="actionSearchResults" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       MAIN
+       ══════════════════════════════════════════════════════════════ -->
+  <main>
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STATE 1 — DEFAULT
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="stateDefault">
+
+      <!-- Floating "?" background chars -->
+      <div class="wn-float-bg" id="floatBg" aria-hidden="true"></div>
+
+      <div class="wn-trophy" aria-label="Trophy">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+          <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+          <path d="M4 22h16"/>
+          <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+          <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+          <path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/>
+        </svg>
+      </div>
+      <h1 class="wn-title">WINNERS</h1>
+      <p class="wn-subtitle">UDBHAV'26 &nbsp;·&nbsp; 26 APRIL 2026</p>
+
+      <div class="wn-podium" aria-label="Podium (results pending)">
+
+        <!-- 2nd place left -->
+        <div class="wn-pod wn-pod--2nd">
+          <div class="wn-pod__rank">2</div>
+          <div class="wn-pod__body">
+            <span class="wn-pod__place">2nd Place</span>
+            <div class="wn-pod__team">????</div>
+            <div class="wn-pod__project">????????</div>
+            <div class="wn-pod__members">?? · ?? · ??</div>
+            <div class="wn-pod__domain">??????????</div>
+          </div>
+        </div>
+
+        <!-- 1st place center -->
+        <div class="wn-pod wn-pod--1st">
+          <div class="wn-pod__rank">1</div>
+          <div class="wn-pod__body">
+            <span class="wn-pod__place">1st Place</span>
+            <div class="wn-pod__team">????</div>
+            <div class="wn-pod__project">????????</div>
+            <div class="wn-pod__members">?? · ?? · ??</div>
+            <div class="wn-pod__domain">??????????</div>
+          </div>
+        </div>
+
+        <!-- 3rd place right -->
+        <div class="wn-pod wn-pod--3rd">
+          <div class="wn-pod__rank">3</div>
+          <div class="wn-pod__body">
+            <span class="wn-pod__place">3rd Place</span>
+            <div class="wn-pod__team">????</div>
+            <div class="wn-pod__project">????????</div>
+            <div class="wn-pod__members">?? · ??</div>
+            <div class="wn-pod__domain">??????????</div>
+          </div>
+        </div>
+
+      </div><!-- /wn-podium -->
+
+      <p class="wn-announce" id="announceText">Results will be announced at 8:30 AM on 26 April 2026</p>
+      <div class="wn-countdown" id="countdown" aria-live="polite">
+        <div class="wn-cd-block"><div class="wn-cd-num" id="cdDays">--</div><div class="wn-cd-label">Days</div></div>
+        <div class="wn-cd-sep" aria-hidden="true">:</div>
+        <div class="wn-cd-block"><div class="wn-cd-num" id="cdHours">--</div><div class="wn-cd-label">Hours</div></div>
+        <div class="wn-cd-sep" aria-hidden="true">:</div>
+        <div class="wn-cd-block"><div class="wn-cd-num" id="cdMins">--</div><div class="wn-cd-label">Minutes</div></div>
+        <div class="wn-cd-sep" aria-hidden="true">:</div>
+        <div class="wn-cd-block"><div class="wn-cd-num" id="cdSecs">--</div><div class="wn-cd-label">Seconds</div></div>
+      </div>
+
+    </div><!-- /stateDefault -->
+
+    <!-- ═══════════════════════════════════════════════════════════
+         STATE 2 — PUBLISHED
+         ═══════════════════════════════════════════════════════════ -->
+    <div id="statePublished">
+
+      <div class="wn-pub-hero" id="pubHero">
+        <p class="wn-pub-eyebrow">
+          <svg width="7" height="7" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+          UDBHAV'26 &nbsp;·&nbsp; 26 APRIL 2026
+        </p>
+        <div class="wn-pub-title" id="pubTitle" style="display:flex;align-items:center;justify-content:center;gap:1.2rem;">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="opacity:0.85;flex-shrink:0;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+          WINNERS
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="opacity:0.85;flex-shrink:0;"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+        </div>
+      </div>
+
+      <div class="wn-pub-podium" id="pubPodium" aria-label="Winners podium">
+        <!-- Populated by JS from API -->
+      </div>
+
+      <div class="wn-share-row" id="shareRow">
+        <button class="wn-share-btn wn-share-btn--primary" id="shareLinkBtn" aria-label="Copy share link">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+          Share the Results
+        </button>
+        <button class="wn-share-btn wn-share-btn--ghost" id="replayBtn" aria-label="Replay reveal animation">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.96"/></svg>
+          Replay Reveal
+        </button>
+      </div>
+
+    </div><!-- /statePublished -->
+
+    <!-- ── CINEMATIC FOOTER ────────────────────────────────────── -->
+    <div class="cf-wrapper" id="cinematicFooterWrapper">
+      <footer class="cf-footer" id="cinematicFooter" aria-label="Site footer">
+        <div class="cf-aurora" aria-hidden="true"></div>
+        <div class="cf-grid-bg" aria-hidden="true"></div>
+        <div class="cf-giant-text" id="cfGiantText" aria-hidden="true">UDBHAV'26</div>
+        <div class="cf-marquee-wrap" aria-hidden="true">
+          <div class="cf-marquee-track">
+            <div class="cf-marquee-item"><span>Creative Engineer</span> <span class="cf-star">✦</span><span>Full Stack Dev</span> <span class="cf-star cf-star--sec">✦</span><span>UI / UX Design</span> <span class="cf-star">✦</span><span>Open to Work</span> <span class="cf-star cf-star--sec">✦</span><span>Based in India</span> <span class="cf-star">✦</span></div>
+            <div class="cf-marquee-item" aria-hidden="true"><span>Creative Engineer</span> <span class="cf-star">✦</span><span>Full Stack Dev</span> <span class="cf-star cf-star--sec">✦</span><span>UI / UX Design</span> <span class="cf-star">✦</span><span>Open to Work</span> <span class="cf-star cf-star--sec">✦</span><span>Based in India</span> <span class="cf-star">✦</span></div>
+          </div>
+        </div>
+        <div class="cf-center" id="cfCenter">
+          <h2 class="cf-heading">Ready to begin?</h2>
+          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div></div>
+        </div>
+        <div class="cf-bottom-bar">
+          <p class="cf-copyright">© 2026 UDBHAV'26. All rights reserved.</p>
+          <div class="cf-badge"><span class="cf-badge-text">Crafted with</span><span class="cf-heart" aria-hidden="true">❤</span><span class="cf-badge-text">by</span><span class="cf-badge-name">UDBHAV'26</span></div>
+          <button class="cf-pill cf-pill--icon js-magnetic" id="cfBackToTop" aria-label="Back to top">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+  </main>
+
+  <!-- Toast -->
+  <div class="wn-toast" id="wnToast" role="alert" aria-live="polite"></div>
+
+  <script type="module" src="/src/main.js"></script>
+  <script src="/mobile-perf.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.2/dist/confetti.browser.min.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    /* ── Smooth scroll ─────────────────────────────────────────── */
+    const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true, smoothTouch: false });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    /* ── Custom cursor ─────────────────────────────────────────── */
+    const cursor = document.getElementById('cursorArrow');
+    if (cursor) {
+      document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+      document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('is-hovering'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('is-hovering'));
+      });
+      document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+      document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+    }
+
+    /* ── Floating "?" background ───────────────────────────────── */
+    (function spawnFloaters() {
+      const bg = document.getElementById('floatBg');
+      if (!bg) return;
+      const chars = ['?', '?', '?', '?', '✦', '?', '?'];
+      for (let i = 0; i < 22; i++) {
+        const el = document.createElement('span');
+        el.className = 'wn-float-char';
+        el.textContent = chars[i % chars.length];
+        const size = Math.random() * 60 + 30;
+        el.style.cssText = `
+          left: ${Math.random() * 100}%;
+          font-size: ${size}px;
+          animation-duration: ${Math.random() * 18 + 14}s;
+          animation-delay: ${Math.random() * -20}s;
+          opacity: ${Math.random() * 0.03 + 0.01};
+        `;
+        bg.appendChild(el);
+      }
+    })();
+
+    /* ── Countdown ─────────────────────────────────────────────── */
+    // Target: 8:30 AM IST on 26 April 2026 = UTC 03:00 on 26 April
+    const TARGET_IST = new Date('2026-04-26T08:30:00+05:30');
+
+    function updateCountdown() {
+      const now  = new Date();
+      const diff = TARGET_IST - now;
+      if (diff <= 0) {
+        document.getElementById('countdown').innerHTML = '<div class="wn-cd-expired">Results are being announced…</div>';
+        return;
+      }
+      const d  = Math.floor(diff / 86400000);
+      const h  = Math.floor((diff % 86400000) / 3600000);
+      const m  = Math.floor((diff % 3600000)  / 60000);
+      const s  = Math.floor((diff % 60000)    / 1000);
+      const p = n => String(n).padStart(2, '0');
+      document.getElementById('cdDays').textContent  = p(d);
+      document.getElementById('cdHours').textContent = p(h);
+      document.getElementById('cdMins').textContent  = p(m);
+      document.getElementById('cdSecs').textContent  = p(s);
+    }
+    updateCountdown();
+    setInterval(updateCountdown, 1000);
+
+    /* ══════════════════════════════════════════════════════════════
+       WINNER CARDS BUILDER
+       ══════════════════════════════════════════════════════════════ */
+    // SVG medal icons for 1st / 2nd / 3rd
+    const MEDALS = [
+      /* 1st — gold trophy */ `<svg viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`,
+      /* 2nd — silver medal */ `<svg viewBox="0 0 24 24" fill="none" stroke="#C0C0C0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>`,
+      /* 3rd — bronze star */  `<svg viewBox="0 0 24 24" fill="none" stroke="#CD7F32" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+    ];
+    const PLACES   = ['1st Place','2nd Place','3rd Place'];
+    const CLASSES  = ['wn-pub-card--1st','wn-pub-card--2nd','wn-pub-card--3rd'];
+    const STRIPES  = ['','',''];
+
+    function buildWinnerCards(winners) {
+      const podium = document.getElementById('pubPodium');
+      if (!podium) return;
+      podium.innerHTML = '';
+      // Sort by place
+      const sorted = [...winners].sort((a,b) => a.place - b.place);
+      // Reorder for visual podium: 2nd, 1st, 3rd
+      const order  = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
+
+      order.forEach(w => {
+        if (!w) return;
+        const idx = w.place - 1; // 0-indexed
+        const membersList = Array.isArray(w.members) ? w.members.join(' · ') : (w.members || '');
+        const card = document.createElement('div');
+        card.className = `wn-pub-card ${CLASSES[idx]}`;
+        card.innerHTML = `
+          <div class="wn-pub-card__glow"></div>
+          <div class="wn-pub-card__stripe"></div>
+          <div class="wn-pub-card__inner">
+            <div class="wn-pub-card__place-row">
+              <span class="wn-pub-card__medal">${MEDALS[idx]}</span>
+              <span class="wn-pub-card__place-label">${PLACES[idx]}</span>
+            </div>
+            <div class="wn-pub-card__divider"></div>
+            <div class="wn-pub-card__team">${w.team || 'Team Name'}</div>
+            <div class="wn-pub-card__project">${w.project || ''}</div>
+            ${w.tagline ? `<div class="wn-pub-card__tagline">${w.tagline}</div>` : ''}
+            ${w.domain  ? `<div class="wn-pub-card__domain">${w.domain}</div>` : ''}
+            ${membersList ? `<div class="wn-pub-card__members"><strong>Team Members</strong>${membersList}</div>` : ''}
+          </div>`;
+        podium.appendChild(card);
+      });
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       CINEMATIC REVEAL SEQUENCE
+       ══════════════════════════════════════════════════════════════ */
+    function triggerReveal(winners) {
+      const defEl  = document.getElementById('stateDefault');
+      const pubEl  = document.getElementById('statePublished');
+      const burst  = document.getElementById('burstOverlay');
+      const hero   = document.getElementById('pubHero');
+      const podium = document.getElementById('pubPodium');
+      const share  = document.getElementById('shareRow');
+
+      buildWinnerCards(winners || []);
+
+      if (typeof gsap === 'undefined') {
+        // Fallback no GSAP
+        defEl.style.display = 'none';
+        pubEl.style.display = 'block';
+        document.querySelectorAll('.wn-pub-card').forEach(c => { c.style.opacity = '1'; c.style.transform = 'none'; });
+        hero.style.opacity = '1'; hero.style.transform = 'none';
+        share.style.opacity = '1';
+        return;
+      }
+
+      gsap.registerPlugin(ScrollTrigger);
+
+      const tl = gsap.timeline();
+
+      // 0.0s — hide default, show published (invisible)
+      tl.set(defEl,  { display: 'none' })
+        .set(pubEl,  { display: 'block' })
+        .set(burst,  { opacity: 0 })
+        .set(hero,   { opacity: 0, y: -60 })
+        .set(share,  { opacity: 0 })
+        .set(document.querySelectorAll('.wn-pub-card'), { opacity: 0, y: 80, scale: 0.88 });
+
+      // 0.3s — purple light burst
+      tl.to(burst, { opacity: 1, duration: 0.25, ease: 'power2.out' }, 0.3)
+        .to(burst, { opacity: 0, duration: 0.55, ease: 'power2.in' }, 0.55);
+
+      // 0.6s — confetti cannon
+      tl.add(() => {
+        const canvas = document.getElementById('confettiCanvas');
+        const myConfetti = confetti.create(canvas, { resize: true, useWorker: true });
+        myConfetti({ particleCount: 180, spread: 120, origin: { y: 0.45 }, colors: ['#653AC9', '#FFFFFF', '#FFD700', '#c084fc', '#a855f7'], scalar: 1.1 });
+        setTimeout(() => {
+          myConfetti({ particleCount: 100, spread: 90, origin: { y: 0.35, x: 0.2 }, colors: ['#653AC9', '#FFFFFF', '#FFD700'] });
+          myConfetti({ particleCount: 100, spread: 90, origin: { y: 0.35, x: 0.8 }, colors: ['#653AC9', '#FFFFFF', '#FFD700'] });
+        }, 300);
+        setTimeout(() => myConfetti.reset(), 5000);
+      }, 0.6);
+
+      // 1.0s — title slides in
+      tl.to(hero, { opacity: 1, y: 0, duration: 0.75, ease: 'power3.out' }, 1.0);
+
+      // Cards staggered
+      const cards = document.querySelectorAll('.wn-pub-card');
+      const delays = [1.8, 1.5, 2.1]; // 2nd=1.5, 1st=1.8, 3rd=2.1
+      cards.forEach((card, i) => {
+        const isFirst = card.classList.contains('wn-pub-card--1st');
+        const isSec   = card.classList.contains('wn-pub-card--2nd');
+        const delay   = isFirst ? 1.8 : (isSec ? 1.5 : 2.1);
+        tl.to(card, { opacity: 1, y: 0, scale: 1, duration: 0.85, ease: 'power3.out' }, delay);
+        // Glow burst for 1st
+        if (isFirst) {
+          tl.fromTo(card, { boxShadow: '0 0 0px rgba(255,215,0,0)' }, { boxShadow: '0 0 80px rgba(255,215,0,0.3)', duration: 0.5, ease: 'power2.out', yoyo: true, repeat: 1 }, delay + 0.3);
+        }
+      });
+
+      // Share row
+      tl.to(share, { opacity: 1, duration: 0.6, ease: 'power2.out' }, 2.5);
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       API — Check & Poll
+       ══════════════════════════════════════════════════════════════ */
+    let revealed = false;
+
+    async function checkWinners() {
+      try {
+        const res = await fetch('/api/winners/status');
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.published && !revealed) {
+          revealed = true;
+          triggerReveal(data.winners || []);
+        }
+      } catch (e) {
+        // API not ready yet — stay in default state
+      }
+    }
+
+    checkWinners();
+    setInterval(checkWinners, 30000);
+
+    /* ══════════════════════════════════════════════════════════════
+       SHARE BUTTON
+       ══════════════════════════════════════════════════════════════ */
+    function showToast(msg, dur = 2500) {
+      const toast = document.getElementById('wnToast');
+      toast.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), dur);
+    }
+
+    document.getElementById('shareLinkBtn')?.addEventListener('click', () => {
+      const url = window.location.href;
+      if (navigator.share) {
+        navigator.share({ title: "UDBHAV'26 Winners", text: 'Check out who won UDBHAV\'26!', url }).catch(() => {});
+      } else {
+        navigator.clipboard.writeText(url).then(() => showToast('✓ Link copied to clipboard!'));
+      }
+    });
+
+    document.getElementById('replayBtn')?.addEventListener('click', () => {
+      if (!revealed) return;
+      revealed = false;
+      const defEl = document.getElementById('stateDefault');
+      const pubEl = document.getElementById('statePublished');
+      defEl.style.display = 'flex';
+      pubEl.style.display = 'none';
+      setTimeout(() => { revealed = false; checkWinners(); }, 500);
+    });
+
+    /* ══════════════════════════════════════════════════════════════
+       FOOTER + NAVBAR GSAP
+       ══════════════════════════════════════════════════════════════ */
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+
+      const wrapper  = document.getElementById('cinematicFooterWrapper');
+      const giantTxt = document.getElementById('cfGiantText');
+      const center   = document.getElementById('cfCenter');
+      if (wrapper && giantTxt && center) {
+        gsap.fromTo(giantTxt, { y: '15vh', scale: 0.85, opacity: 0 }, { y: '0vh', scale: 1, opacity: 1, ease: 'power1.out', scrollTrigger: { trigger: wrapper, start: 'top bottom', end: 'top 0%', scrub: 1.5 } });
+        gsap.fromTo(center,  { y: 70, opacity: 0 }, { y: 0, opacity: 1, ease: 'power3.out', scrollTrigger: { trigger: wrapper, start: 'top 60%', end: 'top -20%', scrub: 1 } });
+      }
+
+      document.getElementById('cfBackToTop')?.addEventListener('click', () => lenis.scrollTo(0, { duration: 1.2 }));
+
+      document.querySelectorAll('#cinematicFooter .js-magnetic').forEach(el => {
+        el.addEventListener('mousemove', e => {
+          const r = el.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+          gsap.to(el, { x: x * 0.38, y: y * 0.38, rotationX: -y * 0.14, rotationY: x * 0.14, scale: 1.06, ease: 'power2.out', duration: 0.4, overwrite: 'auto' });
+        });
+        el.addEventListener('mouseleave', () => gsap.to(el, { x: 0, y: 0, rotationX: 0, rotationY: 0, scale: 1, ease: 'elastic.out(1,0.3)', duration: 1.2, overwrite: 'auto' }));
+      });
+
+      // Navbar center-on-scroll
+      const navPill = document.getElementById('navPill'), navbar = document.getElementById('navbar');
+      const navDivider = document.querySelector('.logo-divider'), taglineDot = document.querySelector('.tagline-dot'), logoTagline = document.querySelector('.logo-tagline');
+      if (navbar && navPill && window.innerWidth > 768) {
+        const wipeEls = [logoTagline, taglineDot, navDivider].filter(Boolean);
+        gsap.set(wipeEls, { clipPath: 'inset(0 0% 0 0 round 2px)' });
+        let transformed = false;
+        ScrollTrigger.create({ trigger: document.body, start: 'top top-=80',
+          onEnter: () => {
+            if (transformed) return; transformed = true;
+            gsap.to(wipeEls, { clipPath: 'inset(0 100% 0 0 round 2px)', duration: 0.22, ease: 'power3.in', stagger: { each: 0.06, from: 'start' } });
+            const navRect = navbar.getBoundingClientRect(), pillRect = navPill.getBoundingClientRect();
+            gsap.to(navPill, { x: (navRect.left + navRect.width / 2) - (pillRect.left + pillRect.width / 2), duration: 0.7, ease: 'power3.out', delay: 0.1 });
+          },
+          onLeaveBack: () => {
+            if (!transformed) return; transformed = false;
+            gsap.to(navPill, { x: 0, duration: 0.6, ease: 'power3.inOut' });
+            gsap.to(wipeEls, { clipPath: 'inset(0 0% 0 0 round 2px)', duration: 0.3, ease: 'power2.out', stagger: { each: 0.07, from: 'end' }, delay: 0.25 });
+          }
+        });
+      }
+    }
+
+    /* ── More dropdown ──────────────────────────────────────────── */
+    (function() {
+      const trigger = document.getElementById('nav-more'), dropdown = document.getElementById('moreDropdown'), wrap = document.getElementById('navMoreWrap');
+      if (!trigger || !dropdown) return;
+      let ct = null;
+      const o = () => { clearTimeout(ct); dropdown.classList.remove('closing'); dropdown.classList.add('open'); trigger.setAttribute('aria-expanded','true'); };
+      const c = () => { if (!dropdown.classList.contains('open')) return; dropdown.classList.add('closing'); trigger.setAttribute('aria-expanded','false'); ct = setTimeout(() => dropdown.classList.remove('open','closing'), 160); };
+      trigger.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); dropdown.classList.contains('open') ? c() : o(); });
+      document.addEventListener('click', e => { if (wrap && !wrap.contains(e.target)) c(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && dropdown.classList.contains('open')) { c(); trigger.focus(); } });
+    })();
+
+    /* ── Menu overlay ───────────────────────────────────────────── */
+    (function() {
+      const btn = document.getElementById('menuBtn'), overlay = document.getElementById('menuOverlay');
+      const input = document.getElementById('actionSearchInput'), results = document.getElementById('actionSearchResults');
+      const iconEl = document.getElementById('actionSearchIcon'), svg = btn?.querySelector('.menu-toggle-icon');
+      if (!btn || !overlay) return;
+      const ACTIONS = [
+        { id:'1', label:'Home',              icon:'home',      description:'Back to start',       href:'/',              color:'#60a5fa', external:false },
+        { id:'2', label:'About',             icon:'user',      description:'About UDBHAV\'26',    href:'/about.html',    color:'#fb923c', external:false },
+        { id:'3', label:'Schedule',          icon:'calendar',  description:'Event timeline',      href:'/schedule.html',     color:'#a78bfa', external:false },
+        { id:'4', label:'Problem Statement', icon:'file',      description:'Domain challenges',   href:'/blog.html',     color:'#34d399', external:false },
+        { id:'5', label:'Winners',           icon:'trophy',    description:'Hackathon results',   href:'/winners.html',color:'#fbbf24', external:false },
+        { id:'6', label:'Sponsors',          icon:'star',      description:'Our partners',        href:'/sponsors.html',   color:'#a855f7', external:false },
+        { id:'7', label:'Register',          icon:'briefcase', description:'Join UDBHAV\'26',     href:'/register.html', color:'#c084fc', external:false },
+      ];
+      const SVGS = {
+        home:      c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        user:      c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+        calendar:  c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+        file:      c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+        trophy:    c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`,
+        star:      c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+        briefcase: c => `<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+      };
+      const ICON_SEARCH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+      const render = (list, q) => {
+        if (!results) return;
+        if (!list.length) { results.innerHTML = `<div class="action-search__empty">No results for "<em>${q}</em>"</div>`; return; }
+        results.innerHTML = `<ul class="action-search__list">${list.map(a=>`<li class="action-item" data-href="${a.href}" data-ext="${a.external}"><div class="action-item__left"><div class="action-item__icon">${SVGS[a.icon]?.(a.color)??''}</div><div><div class="action-item__name">${a.label}</div><div class="action-item__desc">${a.description}</div></div></div><div class="action-item__right"><span class="action-item__end">Page</span></div></li>`).join('')}</ul><div class="action-search__footer"><span>Press ⌘K</span><span>ESC to close</span></div>`;
+        results.querySelectorAll('.action-item').forEach(item => item.addEventListener('click', () => { closeO(); window.location.href = item.dataset.href; }));
+      };
+      const filterRender = q => { const s = q.toLowerCase().trim(); render(s ? ACTIONS.filter(a=>a.label.toLowerCase().includes(s)||a.description.toLowerCase().includes(s)) : ACTIONS, q); };
+      const openO = () => { overlay.classList.add('open'); overlay.removeAttribute('aria-hidden'); btn.setAttribute('aria-expanded','true'); svg?.classList.add('open'); if(iconEl) iconEl.innerHTML=ICON_SEARCH; filterRender(''); setTimeout(()=>input?.focus(),250); };
+      const closeO = () => { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); btn.setAttribute('aria-expanded','false'); svg?.classList.remove('open'); if(input)input.value=''; if(results)results.innerHTML=''; };
+      btn.addEventListener('click', () => overlay.classList.contains('open') ? closeO() : openO());
+      document.getElementById('menuBtnMobile')?.addEventListener('click', () => overlay.classList.contains('open') ? closeO() : openO());
+      input?.addEventListener('input', () => filterRender(input.value));
+      document.addEventListener('click', e => { if(overlay.classList.contains('open')&&!overlay.contains(e.target)&&!btn.contains(e.target)) closeO(); });
+      document.addEventListener('keydown', e => { if(e.key==='Escape'&&overlay.classList.contains('open')){closeO();return;} if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();overlay.classList.contains('open')?closeO():openO();} });
+    })();
+
+  })();
+  </script>
+
+</body>
+</html>

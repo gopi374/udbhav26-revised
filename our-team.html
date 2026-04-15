@@ -1,0 +1,689 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Meet the team behind UDBHAV'26 — the Enclope community driving India's premier 24-hour student hackathon." />
+  <title>Our Team — UDBHAV'26</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,900;1,300;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/src/style.css">
+  <link rel="stylesheet" href="/mobile-perf.css" />
+
+  <style>
+    /* ══════════════════════════════════════════════════════
+       OUR TEAM PAGE
+       ══════════════════════════════════════════════════════ */
+
+    /* ── HERO ────────────────────────────────────────────── */
+    .tm-hero {
+      position: relative; z-index: 10;
+      min-height: 68vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 140px 2rem 72px;
+      overflow: hidden;
+    }
+    .tm-hero__glow {
+      position: absolute; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 55% at 50% 65%, rgba(168,85,247,0.13) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 35% at 70% 25%, rgba(192,132,252,0.06) 0%, transparent 70%);
+      animation: tm-glow 8s ease-in-out infinite alternate;
+    }
+    @keyframes tm-glow {
+      from { opacity: 0.7; transform: scale(1); }
+      to   { opacity: 1;   transform: scale(1.07); }
+    }
+
+    .tm-hero__icon {
+      position: relative; z-index: 1;
+      width: 52px; height: 52px; border-radius: 16px;
+      background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.8rem;
+      box-shadow: 0 0 0 8px rgba(168,85,247,0.12), 0 16px 40px rgba(168,85,247,0.3);
+      opacity: 0; transform: translateY(20px);
+      animation: tmFadeUp 0.7s 0.05s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    .tm-hero__eyebrow {
+      position: relative; z-index: 1;
+      display: inline-flex; align-items: center; gap: 0.6rem;
+      font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 600;
+      letter-spacing: 0.28em; text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.04);
+      padding: 0.38rem 1rem; border-radius: 999px; margin-bottom: 1.8rem;
+      opacity: 0; transform: translateY(20px);
+      animation: tmFadeUp 0.7s 0.15s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .tm-hero__eyebrow svg { color: #a855f7; }
+
+    .tm-hero__title {
+      position: relative; z-index: 1;
+      font-family: 'Inter', sans-serif; font-weight: 900;
+      font-size: clamp(2.8rem, 8vw, 7.5rem);
+      line-height: 0.92; letter-spacing: -0.05em; text-transform: uppercase;
+      color: #fff; margin-bottom: 1.4rem;
+      opacity: 0; transform: translateY(40px);
+      animation: tmFadeUp 0.9s 0.22s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+    .tm-hero__title em {
+      font-style: italic; font-family: 'Fraunces', serif;
+      color: rgba(255,255,255,0.35); font-size: 0.88em; display: block;
+    }
+    /* Decorative squiggle behind title */
+    .tm-hero__deco {
+      position: absolute; right: -2rem; top: -1rem; opacity: 0.07; pointer-events: none; z-index: 0;
+      color: #a855f7;
+    }
+
+    .tm-hero__sub {
+      position: relative; z-index: 1;
+      font-family: 'Inter', sans-serif; font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      font-weight: 300; color: rgba(255,255,255,0.42); max-width: 520px; line-height: 1.75;
+      opacity: 0; transform: translateY(28px);
+      animation: tmFadeUp 0.85s 0.32s cubic-bezier(0.16,1,0.3,1) forwards;
+    }
+
+    /* ── MARQUEE STRIP ───────────────────────────────────── */
+    .tm-marquee-section {
+      position: relative; z-index: 10;
+      padding: 4rem 0 5rem; overflow: hidden;
+    }
+
+    /* Fade edges */
+    .tm-marquee-section::before,
+    .tm-marquee-section::after {
+      content: ''; position: absolute; top: 0; bottom: 0; z-index: 20;
+      width: 200px; pointer-events: none;
+    }
+    .tm-marquee-section::before {
+      left: 0;
+      background: linear-gradient(to right, var(--color-bg, #0b0b0f) 0%, transparent 100%);
+    }
+    .tm-marquee-section::after {
+      right: 0;
+      background: linear-gradient(to left, var(--color-bg, #0b0b0f) 0%, transparent 100%);
+    }
+
+    /* Track */
+    .tm-marquee-track {
+      display: flex; gap: 1.5rem;
+      width: max-content;
+      animation: tm-scroll 40s linear infinite;
+    }
+    .tm-marquee-track:hover { animation-play-state: paused; }
+
+    @keyframes tm-scroll {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(calc(-50% - 0.75rem)); }
+    }
+
+    /* Member card */
+    .tm-card {
+      flex-shrink: 0; width: 240px;
+      display: flex; flex-direction: column;
+    }
+    .tm-card__img-wrap {
+      position: relative; width: 100%; height: 320px;
+      border-radius: 20px; overflow: hidden;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .tm-card__img {
+      width: 100%; height: 100%; object-fit: cover;
+      filter: grayscale(100%);
+      transition: filter 0.4s cubic-bezier(0.16,1,0.3,1), transform 0.5s cubic-bezier(0.16,1,0.3,1);
+    }
+    .tm-card__img-wrap:hover .tm-card__img {
+      filter: grayscale(0%);
+      transform: scale(1.04);
+    }
+    /* Name overlay */
+    .tm-card__overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 0.8rem 1rem;
+      background: rgba(10,10,15,0.82);
+      backdrop-filter: blur(12px);
+      border-top: 1px solid rgba(255,255,255,0.07);
+      border-radius: 0 0 20px 20px;
+    }
+    .tm-card__name {
+      font-family: 'Inter', sans-serif; font-weight: 700;
+      font-size: 0.9rem; color: #fff; line-height: 1.2; margin-bottom: 0.18rem;
+    }
+    .tm-card__role {
+      font-family: 'Inter', sans-serif; font-size: 0.72rem;
+      font-weight: 400; color: rgba(255,255,255,0.45);
+    }
+    /* Purple accent on role hover */
+    .tm-card__img-wrap:hover .tm-card__role { color: #c084fc; }
+
+    /* ── STATS ROW ───────────────────────────────────────── */
+    .tm-stats {
+      position: relative; z-index: 10;
+      max-width: 900px; margin: 0 auto;
+      padding: 0 2rem 5rem;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem;
+    }
+    .tm-stat {
+      text-align: center; padding: 2rem 1.5rem;
+      border-radius: 20px; border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.025);
+      opacity: 0; transform: translateY(24px);
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .tm-stat.revealed { animation: tmFadeUp 0.7s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .tm-stat:hover { border-color: rgba(168,85,247,0.2); background: rgba(168,85,247,0.04); }
+    .tm-stat__num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.8rem, 5vw, 4rem); line-height: 1;
+      background: linear-gradient(135deg, #fff 40%, rgba(255,255,255,0.5));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+      margin-bottom: 0.4rem;
+    }
+    .tm-stat__label {
+      font-family: 'Inter', sans-serif; font-size: 0.75rem;
+      font-weight: 500; letter-spacing: 0.15em; text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+    }
+
+    /* ── DIVIDER ─────────────────────────────────────────── */
+    .tm-divider {
+      position: relative; z-index: 10; height: 1px;
+      max-width: 1100px; margin: 0 auto;
+      background: linear-gradient(to right, transparent, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.06) 70%, transparent);
+    }
+
+    /* ── QUOTE / TESTIMONIAL ─────────────────────────────── */
+    .tm-quote {
+      position: relative; z-index: 10;
+      max-width: 720px; margin: 0 auto;
+      padding: 6rem 2rem 7rem;
+      text-align: center;
+      opacity: 0; transform: translateY(30px);
+    }
+    .tm-quote.revealed { animation: tmFadeUp 0.8s cubic-bezier(0.16,1,0.3,1) forwards; }
+
+    .tm-quote__mark {
+      display: block; margin: 0 auto 1.5rem;
+      color: rgba(168,85,247,0.35);
+    }
+    .tm-quote__text {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-size: clamp(1.1rem, 2.2vw, 1.45rem);
+      font-weight: 500; line-height: 1.72;
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2.5rem;
+    }
+    .tm-quote__text em {
+      font-style: italic; font-family: 'Fraunces', serif; color: #c084fc;
+    }
+
+    .tm-quote__avatar-wrap {
+      width: 56px; height: 56px; border-radius: 50%; overflow: hidden;
+      border: 2px solid rgba(168,85,247,0.3);
+      margin: 0 auto 0.9rem;
+      box-shadow: 0 0 0 4px rgba(168,85,247,0.08);
+    }
+    .tm-quote__avatar { width: 100%; height: 100%; object-fit: cover; }
+    .tm-quote__name {
+      font-family: 'Inter', sans-serif; font-weight: 700;
+      font-size: 0.92rem; color: #fff; margin-bottom: 0.2rem;
+    }
+    .tm-quote__title {
+      font-family: 'Inter', sans-serif; font-size: 0.75rem;
+      font-weight: 400; color: rgba(255,255,255,0.35);
+    }
+
+    @media (max-width: 700px) {
+      .tm-stats { grid-template-columns: 1fr; max-width: 340px; }
+      .tm-card { width: 200px; }
+      .tm-card__img-wrap { height: 270px; }
+      .tm-marquee-section::before, .tm-marquee-section::after { width: 80px; }
+    }
+
+    @keyframes tmFadeUp { to { opacity: 1; transform: translateY(0); } }
+  </style>
+</head>
+
+<body>
+
+  <div class="cursor-arrow" id="cursorArrow" aria-hidden="true"></div>
+  <div class="canvas1" id="canvas1"></div>
+  <div class="grain-overlay" aria-hidden="true"></div>
+  <div class="mouse-glow" id="mouseGlow" aria-hidden="true"></div>
+
+  <!-- ── Navbar ─────────────────────────────────────────────────── -->
+  <nav class="navbar" id="navbar">
+    <div class="nav-logo">
+      <img src="/logo.png" alt="Vedansh logo" class="nav-logo-img" id="logoImg" />
+      <div class="logo-divider" aria-hidden="true"></div>
+      <span class="tagline-dot" aria-hidden="true"></span>
+      <div class="logo-tagline">
+        <span class="tagline-role">Creative engineer</span>
+        <span class="tagline-motto">building the future</span>
+      </div>
+    </div>
+    <div class="nav-right">
+      <div class="nav-pill" id="navPill">
+        <ul class="nav-links" role="navigation" aria-label="Main navigation">
+          <li><a href="/" class="nav-link"><span class="link-text">Home</span></a></li>
+          <li><a href="/about.html" class="nav-link"><span class="link-text">About</span></a></li>
+          <li><a href="/schedule.html" class="nav-link"><span class="link-text">Schedule</span></a></li>
+          <li><a href="/blog.html" class="nav-link"><span class="link-text">Problem Statement</span></a></li>
+          <li class="nav-more-wrap" id="navMoreWrap">
+            <a href="#" class="nav-link nav-more" id="nav-more" role="button" aria-haspopup="menu" aria-expanded="false">
+              <span class="link-text">More</span>
+              <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true"><path d="M2 3.5L5 6.5L8 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </a>
+            <div class="more-dropdown" id="moreDropdown" role="menu">
+              <div class="md-grid">
+                <a href="/winners.html" class="md-feature" role="menuitem" tabindex="-1">
+                  <div class="md-feature__bg-icon" aria-hidden="true">
+                    <svg width="90" height="90" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>
+                  </div>
+                  <span class="md-feature__title">Winner</span>
+                  <span class="md-feature__desc">Hackathon winners &amp; achievements</span>
+                </a>
+                <div class="md-items">
+                  <a href="/code-of-conduct.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Code of Conduct</span><span class="md-item__desc">Rules &amp; Guidelines</span></div>
+                  </a>
+                  <a href="/our-team.html" class="md-item active" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Our Team</span><span class="md-item__desc">Meet the builders</span></div>
+                  </a>
+                  <a href="/sponsors.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Sponsors</span><span class="md-item__desc">Our partners &amp; supporters</span></div>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="nav-pill-sep" aria-hidden="true"></div>
+        <a href="/register.html" class="btn-cta" id="bookCallBtn">Register</a>
+      </div>
+      <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
+        <svg class="menu-toggle-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="18" height="18" aria-hidden="true">
+          <path class="mti-path1" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"/>
+          <path d="M7 16 27 16"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-nav-pill" id="mobileNavPill">
+      <img src="/logo.png" alt="Logo" class="mobile-logo-img" />
+      <div class="mobile-nav-sep" aria-hidden="true"></div>
+      <span class="mobile-nav-name">VEDANSH DANOT</span>
+      <div class="mobile-nav-sep" aria-hidden="true"></div>
+      <button class="nav-menu-btn" id="menuBtnMobile" aria-label="Open menu" style="padding:0;background:transparent;border:none;box-shadow:none;backdrop-filter:none;">
+        <svg class="menu-toggle-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+          <path class="mti-path1" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"/>
+          <path d="M7 16 27 16"/>
+        </svg>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Command palette -->
+  <div id="menuOverlay" class="menu-overlay" aria-hidden="true" role="dialog" aria-modal="true" aria-label="Command palette">
+    <div class="menu-overlay__panel">
+      <p class="action-search__label">Search Commands</p>
+      <div class="action-search__input-wrap">
+        <input type="text" id="actionSearchInput" class="action-search__input" placeholder="What's up?" autocomplete="off" spellcheck="false" aria-label="Search commands" />
+        <div class="action-search__icon" id="actionSearchIcon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="action-search__results" id="actionSearchResults" role="listbox"></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════
+       MAIN
+       ══════════════════════════════════════════════════════ -->
+  <main>
+
+    <!-- ── HERO ────────────────────────────────────────── -->
+    <section class="tm-hero" aria-labelledby="tmHeroTitle">
+      <div class="tm-hero__glow" aria-hidden="true"></div>
+
+      <div class="tm-hero__icon" aria-hidden="true">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16.051 12.616a1 1 0 0 1 1.909.024l.737 1.452a1 1 0 0 0 .737.535l1.634.256a1 1 0 0 1 .588 1.806l-1.172 1.168a1 1 0 0 0-.282.866l.259 1.613a1 1 0 0 1-1.541 1.134l-1.465-.75a1 1 0 0 0-.912 0l-1.465.75a1 1 0 0 1-1.539-1.133l.258-1.613a1 1 0 0 0-.282-.866l-1.156-1.153a1 1 0 0 1 .572-1.822l1.633-.256a1 1 0 0 0 .737-.535z"/>
+          <path d="M8 15H7a4 4 0 0 0-4 4v2"/>
+          <circle cx="10" cy="7" r="4"/>
+        </svg>
+      </div>
+
+      <p class="tm-hero__eyebrow">
+        <svg width="7" height="7" viewBox="0 0 8 8" fill="currentColor" aria-hidden="true"><circle cx="4" cy="4" r="4"/></svg>
+        UDBHAV'26 &nbsp;·&nbsp; ENCLOPE COMMUNITY
+      </p>
+
+      <h1 class="tm-hero__title" id="tmHeroTitle" style="position:relative;">
+        Meet the<br><em>Team</em>
+        <!-- Decorative SVG squiggle -->
+        <svg class="tm-hero__deco" style="position:absolute;right:-1rem;top:-0.5rem;width:90px;opacity:0.08;color:#a855f7;" fill="currentColor" height="86" viewBox="0 0 108 86" width="108" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <path d="M38.8484 16.236L15 43.5793L78.2688 15L18.1218 71L93 34.1172L70.2047 65.2739" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="28"/>
+        </svg>
+      </h1>
+      <p class="tm-hero__sub">
+        UDBHAV'26 is powered by a passionate community of students and professionals from Enclope — Alta School of Technology's tech society. We build experiences that matter.
+      </p>
+    </section>
+
+    <!-- ── TEAM MARQUEE ─────────────────────────────────── -->
+    <section class="tm-marquee-section" aria-label="Team members">
+      <div class="tm-marquee-track" id="teamMarquee" aria-label="Scrolling team member cards">
+        <!-- Set A -->
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face" alt="Vedansh Danot" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Vedansh Danot</div>
+              <div class="tm-card__role">Lead Organiser &amp; Tech Head</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face" alt="Priya Sharma" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Priya Sharma</div>
+              <div class="tm-card__role">Operations Director</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=face" alt="Arjun Mehta" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Arjun Mehta</div>
+              <div class="tm-card__role">Sponsorship Lead</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face" alt="Sanya Kapoor" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Sanya Kapoor</div>
+              <div class="tm-card__role">Design &amp; Branding</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop&crop=face" alt="Rohan Singh" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Rohan Singh</div>
+              <div class="tm-card__role">Infrastructure Lead</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop&crop=face" alt="Meera Joshi" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Meera Joshi</div>
+              <div class="tm-card__role">Participant Relations</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=500&fit=crop&crop=face" alt="Karan Verma" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Karan Verma</div>
+              <div class="tm-card__role">Judging Coordinator</div>
+            </div>
+          </div>
+        </div>
+        <div class="tm-card">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=500&fit=crop&crop=face" alt="Anika Patel" loading="lazy" />
+            <div class="tm-card__overlay">
+              <div class="tm-card__name">Anika Patel</div>
+              <div class="tm-card__role">Marketing &amp; Social</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Set B (duplicate for seamless loop) -->
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Vedansh Danot</div><div class="tm-card__role">Lead Organiser &amp; Tech Head</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Priya Sharma</div><div class="tm-card__role">Operations Director</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Arjun Mehta</div><div class="tm-card__role">Sponsorship Lead</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Sanya Kapoor</div><div class="tm-card__role">Design &amp; Branding</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Rohan Singh</div><div class="tm-card__role">Infrastructure Lead</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Meera Joshi</div><div class="tm-card__role">Participant Relations</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1463453091185-61582044d556?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Karan Verma</div><div class="tm-card__role">Judging Coordinator</div></div>
+          </div>
+        </div>
+        <div class="tm-card" aria-hidden="true">
+          <div class="tm-card__img-wrap">
+            <img class="tm-card__img" src="https://images.unsplash.com/photo-1488426862026-3ee34a7d66df?w=400&h=500&fit=crop&crop=face" alt="" loading="lazy" />
+            <div class="tm-card__overlay"><div class="tm-card__name">Anika Patel</div><div class="tm-card__role">Marketing &amp; Social</div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── STATS ──────────────────────────────────────────── -->
+    <div class="tm-stats">
+      <div class="tm-stat js-scroll-reveal">
+        <div class="tm-stat__num">8+</div>
+        <div class="tm-stat__label">Core Team Members</div>
+      </div>
+      <div class="tm-stat js-scroll-reveal" style="animation-delay:0.1s">
+        <div class="tm-stat__num">200+</div>
+        <div class="tm-stat__label">Volunteers &amp; Staff</div>
+      </div>
+      <div class="tm-stat js-scroll-reveal" style="animation-delay:0.2s">
+        <div class="tm-stat__num">3</div>
+        <div class="tm-stat__label">Organising Orgs</div>
+      </div>
+    </div>
+
+
+
+    <!-- ── CINEMATIC FOOTER ────────────────────────────────── -->
+    <div class="cf-wrapper" id="cinematicFooterWrapper">
+      <footer class="cf-footer" id="cinematicFooter" aria-label="Site footer">
+        <div class="cf-aurora" aria-hidden="true"></div>
+        <div class="cf-grid-bg" aria-hidden="true"></div>
+        <div class="cf-giant-text" id="cfGiantText" aria-hidden="true">UDBHAV'26</div>
+        <div class="cf-marquee-wrap" aria-hidden="true">
+          <div class="cf-marquee-track">
+            <div class="cf-marquee-item"><span>Creative Engineer</span> <span class="cf-star">✦</span><span>Full Stack Dev</span> <span class="cf-star cf-star--sec">✦</span><span>UI / UX Design</span> <span class="cf-star">✦</span><span>Open to Work</span> <span class="cf-star cf-star--sec">✦</span><span>Based in India</span> <span class="cf-star">✦</span></div>
+            <div class="cf-marquee-item" aria-hidden="true"><span>Creative Engineer</span> <span class="cf-star">✦</span><span>Full Stack Dev</span> <span class="cf-star cf-star--sec">✦</span><span>UI / UX Design</span> <span class="cf-star">✦</span><span>Open to Work</span> <span class="cf-star cf-star--sec">✦</span><span>Based in India</span> <span class="cf-star">✦</span></div>
+          </div>
+        </div>
+        <div class="cf-center" id="cfCenter">
+          <h2 class="cf-heading">Ready to begin?</h2>
+          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div></div>
+        </div>
+        <div class="cf-bottom-bar">
+          <p class="cf-copyright">© 2026 UDBHAV'26. All rights reserved.</p>
+          <div class="cf-badge"><span class="cf-badge-text">Crafted with</span><span class="cf-heart" aria-hidden="true">❤</span><span class="cf-badge-text">by</span><span class="cf-badge-name">UDBHAV'26</span></div>
+          <button class="cf-pill cf-pill--icon js-magnetic" id="cfBackToTop" aria-label="Back to top">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 10l7-7m0 0l7 7m-7-7v18"/></svg>
+          </button>
+        </div>
+      </footer>
+    </div>
+
+  </main>
+
+  <script type="module" src="/src/main.js"></script>
+  <script src="/mobile-perf.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+
+  <script>
+  (function () {
+    'use strict';
+
+    const lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)), smooth: true, smoothTouch: false });
+    function raf(time) { lenis.raf(time); requestAnimationFrame(raf); }
+    requestAnimationFrame(raf);
+
+    const cursor = document.getElementById('cursorArrow');
+    if (cursor) {
+      document.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+      document.querySelectorAll('a, button, [role="button"]').forEach(el => {
+        el.addEventListener('mouseenter', () => cursor.classList.add('is-hovering'));
+        el.addEventListener('mouseleave', () => cursor.classList.remove('is-hovering'));
+      });
+      document.addEventListener('mouseleave', () => cursor.style.opacity = '0');
+      document.addEventListener('mouseenter', () => cursor.style.opacity = '1');
+    }
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+      gsap.registerPlugin(ScrollTrigger);
+
+      document.querySelectorAll('.js-scroll-reveal').forEach(el => {
+        ScrollTrigger.create({ trigger: el, start: 'top 88%', onEnter: () => el.classList.add('revealed'), once: true });
+      });
+
+      const wrapper = document.getElementById('cinematicFooterWrapper'), giantTxt = document.getElementById('cfGiantText'), center = document.getElementById('cfCenter');
+      if (wrapper && giantTxt && center) {
+        gsap.fromTo(giantTxt, { y: '15vh', scale: 0.85, opacity: 0 }, { y: '0vh', scale: 1, opacity: 1, ease: 'power1.out', scrollTrigger: { trigger: wrapper, start: 'top bottom', end: 'top 0%', scrub: 1.5 } });
+        gsap.fromTo(center, { y: 70, opacity: 0 }, { y: 0, opacity: 1, ease: 'power3.out', scrollTrigger: { trigger: wrapper, start: 'top 60%', end: 'top -20%', scrub: 1 } });
+      }
+      document.getElementById('cfBackToTop')?.addEventListener('click', () => lenis.scrollTo(0, { duration: 1.2 }));
+      document.querySelectorAll('#cinematicFooter .js-magnetic').forEach(el => {
+        el.addEventListener('mousemove', e => {
+          const r = el.getBoundingClientRect(), x = e.clientX - r.left - r.width / 2, y = e.clientY - r.top - r.height / 2;
+          gsap.to(el, { x: x * 0.38, y: y * 0.38, rotationX: -y * 0.14, rotationY: x * 0.14, scale: 1.06, ease: 'power2.out', duration: 0.4, overwrite: 'auto' });
+        });
+        el.addEventListener('mouseleave', () => gsap.to(el, { x: 0, y: 0, rotationX: 0, rotationY: 0, scale: 1, ease: 'elastic.out(1,0.3)', duration: 1.2, overwrite: 'auto' }));
+      });
+
+      const navPill = document.getElementById('navPill'), navbar = document.getElementById('navbar');
+      const navDivider = document.querySelector('.logo-divider'), taglineDot = document.querySelector('.tagline-dot'), logoTagline = document.querySelector('.logo-tagline');
+      if (navbar && navPill && window.innerWidth > 768) {
+        const wipeEls = [logoTagline, taglineDot, navDivider].filter(Boolean);
+        gsap.set(wipeEls, { clipPath: 'inset(0 0% 0 0 round 2px)' });
+        let transformed = false;
+        ScrollTrigger.create({ trigger: document.body, start: 'top top-=80',
+          onEnter: () => {
+            if (transformed) return; transformed = true;
+            gsap.to(wipeEls, { clipPath: 'inset(0 100% 0 0 round 2px)', duration: 0.22, ease: 'power3.in', stagger: { each: 0.06, from: 'start' } });
+            const navRect = navbar.getBoundingClientRect(), pillRect = navPill.getBoundingClientRect();
+            gsap.to(navPill, { x: (navRect.left + navRect.width / 2) - (pillRect.left + pillRect.width / 2), duration: 0.7, ease: 'power3.out', delay: 0.1 });
+          },
+          onLeaveBack: () => {
+            if (!transformed) return; transformed = false;
+            gsap.to(navPill, { x: 0, duration: 0.6, ease: 'power3.inOut' });
+            gsap.to(wipeEls, { clipPath: 'inset(0 0% 0 0 round 2px)', duration: 0.3, ease: 'power2.out', stagger: { each: 0.07, from: 'end' }, delay: 0.25 });
+          }
+        });
+      }
+    }
+
+    // More dropdown
+    (function() {
+      const trigger = document.getElementById('nav-more'), dropdown = document.getElementById('moreDropdown'), wrap = document.getElementById('navMoreWrap');
+      if (!trigger || !dropdown) return;
+      let ct = null;
+      const o = () => { clearTimeout(ct); dropdown.classList.remove('closing'); dropdown.classList.add('open'); trigger.setAttribute('aria-expanded','true'); };
+      const c = () => { if (!dropdown.classList.contains('open')) return; dropdown.classList.add('closing'); trigger.setAttribute('aria-expanded','false'); ct = setTimeout(() => dropdown.classList.remove('open','closing'), 160); };
+      trigger.addEventListener('click', e => { e.preventDefault(); e.stopPropagation(); dropdown.classList.contains('open') ? c() : o(); });
+      document.addEventListener('click', e => { if (wrap && !wrap.contains(e.target)) c(); });
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && dropdown.classList.contains('open')) { c(); trigger.focus(); } });
+    })();
+
+    // Menu overlay / command palette
+    (function() {
+      const btn = document.getElementById('menuBtn'), overlay = document.getElementById('menuOverlay');
+      const input = document.getElementById('actionSearchInput'), results = document.getElementById('actionSearchResults');
+      const iconEl = document.getElementById('actionSearchIcon'), svg = btn?.querySelector('.menu-toggle-icon');
+      if (!btn || !overlay) return;
+      const ACTIONS = [
+        { id:'1', label:'Home',              icon:'home',      description:'Back to start',          href:'/',                color:'#60a5fa' },
+        { id:'2', label:'About',             icon:'user',      description:'About UDBHAV\'26',       href:'/about.html',      color:'#fb923c' },
+        { id:'3', label:'Schedule',          icon:'calendar',  description:'Event timeline',         href:'/schedule.html',       color:'#a78bfa' },
+        { id:'4', label:'Problem Statement', icon:'file',      description:'Domain challenges',      href:'/blog.html',       color:'#34d399' },
+        { id:'5', label:'Winners',           icon:'trophy',    description:'Hackathon results',      href:'/winners.html', color:'#fbbf24' },
+        { id:'6', label:'Sponsors',          icon:'star',      description:'Our partners',           href:'/sponsors.html',     color:'#a855f7' },
+        { id:'7', label:'Code of Conduct',   icon:'shield',    description:'Rules & guidelines',    href:'/code-of-conduct.html',      color:'#c084fc' },
+        { id:'8', label:'Our Team',          icon:'users',     description:'Meet the team',          href:'/our-team.html',       color:'#38bdf8' },
+        { id:'9', label:'Register',          icon:'briefcase', description:'Join UDBHAV\'26',        href:'/register.html',   color:'#e879f9' },
+      ];
+      const SVGS = {
+        home:      c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>`,
+        user:      c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+        calendar:  c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>`,
+        file:      c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>`,
+        trophy:    c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"/></svg>`,
+        star:      c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`,
+        shield:    c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
+        users:     c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>`,
+        briefcase: c=>`<svg viewBox="0 0 24 24" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>`,
+      };
+      const ICON_SEARCH = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>`;
+      const render = (list, q) => {
+        if (!results) return;
+        if (!list.length) { results.innerHTML = `<div class="action-search__empty">No results for "<em>${q}</em>"</div>`; return; }
+        results.innerHTML = `<ul class="action-search__list">${list.map(a=>`<li class="action-item" data-href="${a.href}"><div class="action-item__left"><div class="action-item__icon">${SVGS[a.icon]?.(a.color)??''}</div><div><div class="action-item__name">${a.label}</div><div class="action-item__desc">${a.description}</div></div></div><div class="action-item__right"><span class="action-item__end">Page</span></div></li>`).join('')}</ul><div class="action-search__footer"><span>Press ⌘K</span><span>ESC to close</span></div>`;
+        results.querySelectorAll('.action-item').forEach(item => item.addEventListener('click', () => { closeO(); window.location.href = item.dataset.href; }));
+      };
+      const fr = q => { const s = q.toLowerCase().trim(); render(s ? ACTIONS.filter(a=>a.label.toLowerCase().includes(s)||a.description.toLowerCase().includes(s)) : ACTIONS, q); };
+      const openO = () => { overlay.classList.add('open'); overlay.removeAttribute('aria-hidden'); btn.setAttribute('aria-expanded','true'); svg?.classList.add('open'); if(iconEl) iconEl.innerHTML=ICON_SEARCH; fr(''); setTimeout(()=>input?.focus(),250); };
+      const closeO = () => { overlay.classList.remove('open'); overlay.setAttribute('aria-hidden','true'); btn.setAttribute('aria-expanded','false'); svg?.classList.remove('open'); if(input)input.value=''; if(results)results.innerHTML=''; };
+      btn.addEventListener('click', () => overlay.classList.contains('open') ? closeO() : openO());
+      document.getElementById('menuBtnMobile')?.addEventListener('click', () => overlay.classList.contains('open') ? closeO() : openO());
+      input?.addEventListener('input', () => fr(input.value));
+      document.addEventListener('click', e => { if(overlay.classList.contains('open')&&!overlay.contains(e.target)&&!btn.contains(e.target)) closeO(); });
+      document.addEventListener('keydown', e => { if(e.key==='Escape'&&overlay.classList.contains('open')){closeO();return;} if((e.metaKey||e.ctrlKey)&&e.key==='k'){e.preventDefault();overlay.classList.contains('open')?closeO():openO();} });
+    })();
+
+  })();
+  </script>
+
+</body>
+</html>
