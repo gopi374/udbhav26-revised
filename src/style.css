@@ -12,69 +12,10 @@
   box-sizing: border-box;
 }
 
-/* ── Custom cursor \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500 */
-/*
-  Arrow-shaped cursor with rounded edges.
-  mix-blend-mode: difference = white on dark bg, black on light bg. Auto.
-*/
-
-/* Kill native OS cursor */
-html,
-body,
-* {
-  cursor: none !important;
-}
-
+/* ── Custom cursor removed — default browser cursor restored ───── */
 .cursor-arrow {
-  position: fixed;
-  width: 10px;
-  height: 10px;
-  border-radius: 50%;
-  background: #ffffff;
-  pointer-events: none;
-  z-index: 99999;
-  left: 0;
-  top: 0;
-  /* JS sets translate3d for positioning; margin offsets center the dot */
-  margin-left: -5px;
-  margin-top: -5px;
-  mix-blend-mode: difference;
-  will-change: transform;
-  transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              height 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              margin 0.35s cubic-bezier(0.16, 1, 0.3, 1),
-              opacity 0.2s;
+  display: none !important;
 }
-
-/* Grow + keep centered when hovering clickable elements */
-.cursor-arrow.is-hovering {
-  width: 20px;
-  height: 20px;
-  margin-left: -10px;
-  margin-top: -10px;
-}
-
-/* Large invert circle over the hero name */
-.cursor-arrow.is-name-hover {
-  width: 80px;
-  height: 80px;
-  margin-left: -40px;
-  margin-top: -40px;
-}
-
-/* Mobile / touch — no mouse needed, restore normal cursor */
-@media (hover: none) {
-  .cursor-arrow {
-    display: none;
-  }
-
-  html,
-  body,
-  * {
-    cursor: auto !important;
-  }
-}
-
 
 
 :root {

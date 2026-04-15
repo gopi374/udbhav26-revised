@@ -43,53 +43,9 @@ initHeroBgShader(document.getElementById('heroShaderBg'));
 })();
 
 // ─────────────────────────────────────────────────────────────────
-// Custom cursor — arrow-shaped, auto black/white via mix-blend-mode
+// Custom cursor — DISABLED (using default browser cursor for better UX)
 // ─────────────────────────────────────────────────────────────────
-(function initCursor() {
-  const arrow = document.getElementById('cursorArrow');
-  if (!arrow) return;
-
-  // Use transform instead of left/top — avoids layout thrashing
-  arrow.style.willChange = 'transform';
-  let cursorRaf = false;
-  let cx = 0, cy = 0;
-  document.addEventListener('mousemove', (e) => {
-    cx = e.clientX;
-    cy = e.clientY;
-    if (!cursorRaf) {
-      cursorRaf = true;
-      requestAnimationFrame(() => {
-        arrow.style.transform = `translate3d(${cx}px, ${cy}px, 0)`;
-        cursorRaf = false;
-      });
-    }
-  });
-
-  // Grow on hover over interactive elements
-  const targets = 'a, button, [role="button"], .nav-link, .btn-cta, .nav-menu-btn, .icon-btn, .dropdown-item';
-  document.querySelectorAll(targets).forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      if (!arrow.classList.contains('is-name-hover')) arrow.classList.add('is-hovering');
-    });
-    el.addEventListener('mouseleave', () => arrow.classList.remove('is-hovering'));
-  });
-
-  // Large invert circle when hovering hero name
-  const heroHeading = document.getElementById('heroHeading');
-  if (heroHeading) {
-    heroHeading.addEventListener('mouseenter', () => {
-      arrow.classList.remove('is-hovering');
-      arrow.classList.add('is-name-hover');
-    });
-    heroHeading.addEventListener('mouseleave', () => {
-      arrow.classList.remove('is-name-hover');
-    });
-  }
-
-  // Fade out when cursor leaves the window
-  document.addEventListener('mouseleave', () => { arrow.style.opacity = '0'; });
-  document.addEventListener('mouseenter', () => { arrow.style.opacity = '1'; });
-})();
+// initCursor removed — no custom cursor JS needed
 
 
 
