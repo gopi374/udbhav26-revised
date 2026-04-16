@@ -208,17 +208,8 @@
     }
     .back-link:hover { color: var(--clr-muted); }
 
-    /* ── Cursor ──────────────────────────────────────────────────────── */
-    @media (hover: hover) { html, body, * { cursor: none !important; } }
-    .cursor {
-      position: fixed; width: 32px; height: 32px;
-      pointer-events: none; z-index: 99999;
-      left: -100px; top: -100px;
-      background-image: url('/cursor.svg');
-      background-size: contain; background-repeat: no-repeat;
-      will-change: left, top;
-    }
-    @media (hover: none) { .cursor { display: none; } }
+    /* ── Cursor removed — use default browser cursor ─────────────── */
+    .cursor { display: none !important; }
 
     /* ── Entrance ────────────────────────────────────────────────────── */
     @keyframes fadeUp {
@@ -279,15 +270,7 @@
 
   </main>
 
-  <script>
-    const cur = document.getElementById('cursor404');
-    if (cur && window.matchMedia('(hover: hover)').matches) {
-      document.addEventListener('mousemove', e => {
-        cur.style.left = e.clientX + 'px';
-        cur.style.top  = e.clientY + 'px';
-      });
-    }
-  </script>
+
 
 </body>
 </html>

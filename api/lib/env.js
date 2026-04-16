@@ -19,7 +19,10 @@ const CRITICAL = [
   // Payments
   'RAZORPAY_KEY_ID',
   'RAZORPAY_KEY_SECRET',
-  // Real-time
+];
+
+const RECOMMENDED = [
+  // Real-time (PS Drop feature)
   'PUSHER_APP_ID',
   'PUSHER_KEY',
   'PUSHER_SECRET',
@@ -34,26 +37,33 @@ const CRITICAL = [
 
 /**
  * Validate that all critical environment variables are present.
- * @throws {Error} in development if any are missing
- * Calls process.exit(1) in production if any are missing
+ * @throws {Error} in development if any critical vars are missing
+ * Calls process.exit(1) in production if any critical vars are missing
+ * Warns (but doesn't crash) for recommended vars
  */
 export function validateEnv() {
-  const missing = CRITICAL.filter((key) => !process.env[key]);
+  const missingCritical    = CRITICAL.filter((key) => !process.env[key]);
+  const missingRecommended = RECOMMENDED.filter((key) => !process.env[key]);
 
-  if (missing.length === 0) {
-    console.log(`[env] ✓ All ${CRITICAL.length} required env vars present.`);
+  // Warn about recommended vars (non-fatal)
+  if (missingRecommended.length > 0) {
+    const lines = missingRecommended.map((k) => `  ⚠ ${k}`).join('\n');
+    console.warn(`[env] ⚠ Missing optional env vars (some features may be disabled):\n${lines}`);
+  }
+
+  if (missingCritical.length === 0) {
+    console.log(`[env] ✓ All ${CRITICAL.length} critical env vars present.`);
     return;
   }
 
-  const lines = missing.map((k) => `  ✗ ${k}`).join('\n');
-  const msg   = `Missing required environment variables:\n${lines}`;
+  const lines = missingCritical.map((k) => `  ✗ ${k}`).join('\n');
+  const msg   = `Missing CRITICAL environment variables:\n${lines}`;
 
   if (process.env.NODE_ENV === 'production') {
     console.error(`\n[env] FATAL — server cannot start safely.\n${msg}\n`);
     console.error('[env] Set these in your Cloud Run / Vercel environment settings.');
     process.exit(1);
   } else {
-    // Development: throw so nodemon / the developer sees it immediately
     throw new Error(
       `\n\n[env] Missing env vars — add these to your .env file:\n${lines}\n\n` +
       `Copy .env.example to .env and fill in the values.\n`

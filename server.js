@@ -57,6 +57,10 @@ import {
   publicWinnersHandler,
 } from './api/admin/winners.js';
 
+// ── Import Submissions handlers ────────────────────────────────────────────────
+import submitHandler from './api/submissions/submit.js';
+import listHandler   from './api/submissions/list.js';
+
 // ── App setup ────────────────────────────────────────────────────────────────
 const app  = express();
 const PORT = process.env.PORT || 8080;
@@ -65,20 +69,36 @@ const DIST = path.join(__dirname, 'dist');
 // Parse JSON bodies
 app.use(express.json());
 
-// ── Clean-URL mapping ─────────────────────────────────────────────────────────
+// ── Clean-URL mapping (Combined Portfolio + Udbhav Hackathon) ────────────────
 const cleanRoutes = {
+  // Public Pages
   '/about':             'about.html',
   '/schedule':          'schedule.html',
   '/problem-statement': 'problem-statement.html',
-  '/ps':                'problem-statement.html',
+  '/ps':                'problem-statement.html', // Alias
   '/winners':           'winners.html',
   '/sponsors':          'sponsors.html',
   '/code-of-conduct':   'code-of-conduct.html',
   '/our-team':          'our-team.html',
   '/register':          'register.html',
-  '/admin/login':       'admin/login.html',
-  '/admin/dashboard':   'admin/dashboard.html',
-  '/admin/registrations':      'admin/registrations.html',
+  '/dashboard':         'user-dashboard.html',
+  
+  // Portfolio/Personal Pages
+  '/work':              'work.html',
+  '/blog':              'blog.html',
+  '/blog-post':         'blog-post.html',
+  '/links':             'links.html',
+  '/uses':              'uses.html',
+  '/playground':        'playground.html',
+  '/jamify':            'jamify.html',
+  '/book-a-call':       'book-a-call.html',
+  '/legal':             'legal.html',
+
+  // Admin Pages
+  '/admin/login':        'admin/login.html',
+  '/admin/dashboard':    'admin/dashboard.html',
+  '/admin/registrations':'admin/registrations.html',
+  '/admin/submissions':  'admin/submissions.html',
   '/admin/problem-statements': 'admin/problem-statements.html',
   '/admin/payments':           'admin/payments.html',
   '/admin/ps-stats':           'admin/ps-stats.html',
@@ -114,8 +134,8 @@ app.post('/api/ps/select',      mountHandler(psSelectHandler));
 
 // ── PS Drop Admin API ─────────────────────────────────────────────────────────
 app.post('/api/admin/login',      mountHandler(adminLoginHandler));
-app.post  ('/api/admin/ps/config',     mountHandler(configHandler));
-app.post  ('/api/admin/ps/add-ps',     mountHandler(addPsHandler));
+app.post  ('/api/admin/ps/config',      mountHandler(configHandler));
+app.post  ('/api/admin/ps/add-ps',      mountHandler(addPsHandler));
 app.patch ('/api/admin/ps/update-ps',  mountHandler(updatePsHandler));
 app.delete('/api/admin/ps/delete-ps',  mountHandler(deletePsHandler));
 app.post  ('/api/admin/ps/start-drop', mountHandler(startDropHandler));
@@ -132,6 +152,10 @@ app.post('/api/admin/winners/unpublish',  mountHandler(unpublishWinnersHandler))
 
 // ── Winners Public API ────────────────────────────────────────────────────────
 app.get('/api/winners', mountHandler(publicWinnersHandler));
+
+// ── Submissions API ───────────────────────────────────────────────────────────
+app.post('/api/submissions/submit', mountHandler(submitHandler));
+app.get ('/api/submissions/list',   mountHandler(listHandler));
 
 // ── Clean URL Routes ──────────────────────────────────────────────────────────
 for (const [route, file] of Object.entries(cleanRoutes)) {

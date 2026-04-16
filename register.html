@@ -58,11 +58,8 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    html, body, * { cursor: none !important; }
-    @media (hover: none) {
-      html, body, * { cursor: auto !important; }
-      .cursor-arrow { display: none; }
-    }
+
+    .cursor-arrow { display: none !important; }
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: #000; }
     ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 3px; }
@@ -1256,121 +1253,51 @@
       <!-- ── LEFT COLUMN ──────────────────────────────────────────────── -->
       <aside class="reg-left" id="regLeft" aria-label="Registration flow information">
 
-        <!-- Round 1 / Unstop button — TOP -->
-        <div class="unstop-btn-wrap">
-          <a href="https://unstop.com/hackathons/udbhav26-the-ultimate-24-hour-hackathon-sage-university-sageu-indore-madhya-pradesh-1667459?lb=f7dBdupu" target="_blank" rel="noopener noreferrer" class="unstop-btn" id="unstopBtn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Register on Unstop (Round 1)
-          </a>
-          <p class="unstop-note">
-            <strong>Round 1 deadline: 10 April 2026.</strong><br>
-            Only shortlisted teams can proceed to Round 2.
-          </p>
-        </div>
-
         <!-- Header -->
         <div>
-          <p class="reg-section-label">ROUND 2 REGISTRATION</p>
+          <p class="reg-section-label">REGISTRATION</p>
           <h1 class="reg-hero-heading">
-            You Made It.<br>
-            <span class="purple">Now Register.</span>
+            Secure Your<br>
+            <span class="purple">Spot Now.</span>
           </h1>
           <p class="reg-subtext">
-            This form is for shortlisted teams only. Complete payment to confirm your spot at UDBHAV'26.
+            Fill in your team details and complete payment to confirm your participation at UDBHAV'26.
           </p>
         </div>
 
-        <!-- Visual Stepper -->
-        <div class="stepper" aria-label="Registration steps">
-
-          <!-- Step 1 -->
-          <div class="step-item step-completed">
-            <div class="step-left">
-              <div class="step-circle completed">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        <!-- Payment Info -->
+        <div class="payment-box">
+          <div class="payment-box-label">Registration Fee</div>
+          <div class="payment-amount-row">
+            <span class="payment-amount">₹800</span>
+            <span class="payment-per-team">per team</span>
+          </div>
+          <p class="payment-addon">+ ₹300 for <span>Mentor Session</span> (optional)</p>
+          <div class="payment-razorpay">
+            <div class="razorpay-logo">
+              <div class="razorpay-logo-icon">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
               </div>
-              <div class="step-connector done"></div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Register on Unstop</div>
-              <div class="step-detail">Round 1 application submitted via Unstop platform.</div>
-              <span class="step-badge done-badge">✓ Completed</span>
+              Secured by Razorpay
             </div>
           </div>
+        </div>
 
-          <!-- Step 2 -->
-          <div class="step-item step-completed">
-            <div class="step-left">
-              <div class="step-circle completed">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="step-connector done"></div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Submit PPT</div>
-              <div class="step-detail">Initial presentation deck submitted for evaluation.</div>
-              <span class="step-badge done-badge">✓ Completed</span>
-            </div>
+        <!-- Key Details -->
+        <div style="display:flex;flex-direction:column;gap:0.75rem;">
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.7)" stroke-width="2" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">25–26 April 2026</span>
           </div>
-
-          <!-- Step 3 -->
-          <div class="step-item step-completed">
-            <div class="step-left">
-              <div class="step-circle completed">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="step-connector done"></div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Shortlisting</div>
-              <div class="step-detail">Your team was selected from hundreds of applicants.</div>
-              <span class="step-badge done-badge">✓ Shortlisted</span>
-            </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.7)" stroke-width="2" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">Sage University, Indore</span>
           </div>
-
-          <!-- Step 4 -->
-          <div class="step-item step-completed">
-            <div class="step-left">
-              <div class="step-circle completed">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
-              </div>
-              <div class="step-connector done"></div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Q&amp;A &amp; Guidance Sessions</div>
-              <div class="step-detail">Attended pre-hackathon orientation and Q&amp;A rounds.</div>
-              <span class="step-badge done-badge">✓ Completed</span>
-            </div>
+          <div style="display:flex;align-items:center;gap:0.75rem;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(139,92,246,0.7)" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span style="font-size:0.82rem;color:rgba(255,255,255,0.5);">24-hour hackathon</span>
           </div>
-
-          <!-- Step 5 — ACTIVE -->
-          <div class="step-item step-active">
-            <div class="step-left">
-              <div class="step-circle active">5</div>
-              <div class="step-connector upcoming"></div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Register for Grand Hackathon</div>
-              <div class="step-detail">Complete payment below to confirm your Round 2 spot.</div>
-              <span class="step-badge active-badge">● You are here</span>
-            </div>
-          </div>
-
-          <!-- Step 6 -->
-          <div class="step-item step-upcoming">
-            <div class="step-left">
-              <div class="step-circle upcoming">6</div>
-            </div>
-            <div class="step-content">
-              <div class="step-title">Attend UDBHAV'26</div>
-              <div class="step-detail">25–26 April 2026 · Sage University, Indore · 24 hours.</div>
-              <span class="step-badge upcoming-badge">○ Upcoming</span>
-            </div>
-          </div>
-
-        </div><!-- /.stepper -->
-
-
+        </div>
 
       </aside><!-- /.reg-left -->
 
@@ -1862,6 +1789,12 @@
               <a href="/" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnHome">Home</a>
               <a href="/schedule.html" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnSchedule">Schedule</a>
               <a href="/problem-statement.html" class="cf-pill cf-pill--ghost js-magnetic" id="cfBtnPS">Problem Statements</a>
+            </div>
+            <div class="cf-secondary-pills" style="margin-top:0.5rem;">
+              <a href="/legal.html#terms" class="cf-pill cf-pill--ghost js-magnetic">Terms</a>
+              <a href="/legal.html#privacy" class="cf-pill cf-pill--ghost js-magnetic">Privacy</a>
+              <a href="/legal.html#refund" class="cf-pill cf-pill--ghost js-magnetic">Refund Policy</a>
+              <a href="/legal.html#contact" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
             </div>
           </div>
         </div>
@@ -2504,7 +2437,7 @@
       const ACTIONS = [
         { id:'1', label:'Home',             icon:'home',      description:'Back to start',           short:'', end:'Page', href:'/',               color:'#60a5fa', external:false },
         { id:'2', label:'About',            icon:'user',      description:'About UDBHAV\'26',        short:'', end:'Page', href:'/about.html',     color:'#fb923c', external:false },
-        { id:'3', label:'Schedule',         icon:'calendar',  description:'Event schedule',           short:'', end:'Page', href:'/schedule.html',      color:'#a78bfa', external:false },
+        { id:'3', label:'Schedule',         icon:'calendar',  description:'Hackathon schedule',           short:'', end:'Page', href:'/schedule.html',      color:'#a78bfa', external:false },
         { id:'4', label:'Problem Statement',icon:'pencil',    description:'Hackathon problems',       short:'', end:'Page', href:'/problem-statement.html',      color:'#34d399', external:false },
         { id:'5', label:'Winner',           icon:'grid',      description:'Hackathon winners',        short:'', end:'Page', href:'/winners.html',color:'#f59e0b', external:false },
         { id:'6', label:'Code of Conduct',  icon:'link',      description:'Rules & Guidelines',       short:'', end:'Page', href:'/code-of-conduct.html',     color:'#22d3ee', external:false },

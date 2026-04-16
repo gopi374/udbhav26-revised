@@ -198,6 +198,35 @@ export const RegistrationStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
+// SUBMISSION STORE
+// ═══════════════════════════════════════════════════════════════════
+export const SubmissionStore = {
+  async getAll() {
+    try {
+      const token = AdminAuth.getToken();
+      const res = await fetch('/api/submissions/list', {
+        headers: { 'X-Admin-Secret': token }
+      });
+      const data = await res.json();
+      return data.success ? data.submissions : [];
+    } catch (err) {
+      console.error('[SubmissionStore] Error:', err);
+      return [];
+    }
+  },
+
+  getTypeBadge(type) {
+    const map = {
+      'ppt-submission':     { label: 'PPT Submit', cls: 'badge--ppt' },
+      'project-submission': { label: 'Project Link', cls: 'badge--project' },
+      'other':              { label: 'Other', cls: 'badge--other' },
+    };
+    const s = map[type] || map.other;
+    return `<span class="status-badge ${s.cls}">${s.label}</span>`;
+  }
+};
+
+// ═══════════════════════════════════════════════════════════════════
 // SEED DATA
 // ═══════════════════════════════════════════════════════════════════
 const FIRST_NAMES = ['Aarav', 'Vivaan', 'Aditya', 'Vihaan', 'Arjun', 'Reyansh', 'Sai', 'Arnav', 'Dhruv', 'Kabir', 'Ananya', 'Isha', 'Saanvi', 'Aanya', 'Kiara', 'Mira', 'Priya', 'Riya', 'Diya', 'Nisha', 'Rohan', 'Karthik', 'Rahul', 'Varun', 'Nikhil', 'Sneha', 'Tanvi', 'Pooja', 'Neha', 'Shruti'];

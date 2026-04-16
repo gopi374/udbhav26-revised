@@ -140,6 +140,7 @@ export default async function handler(req, res) {
       mentorSession:     Boolean(formData.mentorSession),
       totalAmount,
       paymentStatus:     'paid',
+      registrationCompleted: true,
       razorpayOrderId:   razorpay_order_id,
       razorpayPaymentId: razorpay_payment_id,
       teamCode,

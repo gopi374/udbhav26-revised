@@ -1,0 +1,530 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Legal policies for UDBHAV'26 — Terms & Conditions, Privacy Policy, Refund & Cancellation Policy, and Contact Information." />
+  <title>Legal — UDBHAV'26</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Sora:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --clr-bg:         #060608;
+      --clr-white:      #ffffff;
+      --clr-white-muted: rgba(255,255,255,0.5);
+      --clr-white-dim:  rgba(255,255,255,0.25);
+      --clr-purple:     #8b5cf6;
+      --clr-purple-dim: rgba(139,92,246,0.18);
+      --clr-border:     rgba(255,255,255,0.08);
+      --font-display:   'Bebas Neue', sans-serif;
+      --font-ui:        'Sora', sans-serif;
+      --font-mono:      'JetBrains Mono', monospace;
+      --nav-h:          72px;
+    }
+
+    html { background: #000; scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-ui);
+      background: var(--clr-bg);
+      color: var(--clr-white);
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::-webkit-scrollbar { width: 3px; }
+    ::-webkit-scrollbar-track { background: #000; }
+    ::-webkit-scrollbar-thumb { background: rgba(139,92,246,0.25); border-radius: 3px; }
+
+    /* Ambient background */
+    .legal-ambient {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background:
+        radial-gradient(ellipse 60% 50% at 15% 50%, rgba(139,92,246,0.07) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 40% at 85% 20%, rgba(139,92,246,0.05) 0%, transparent 60%),
+        var(--clr-bg);
+    }
+
+    /* ── Main Layout ────────────────────────────────────────────────── */
+    .legal-root {
+      position: relative; z-index: 10;
+      min-height: 100vh;
+      padding-top: calc(var(--nav-h) + 2.5rem);
+    }
+
+    .legal-container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 2rem 6rem;
+    }
+
+    /* ── Back link ──────────────────────────────────────────────────── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-family: var(--font-ui);
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--clr-purple);
+      text-decoration: none;
+      margin-bottom: 2rem;
+      transition: opacity 0.2s;
+    }
+    .back-link:hover { opacity: 0.7; }
+
+    /* ── Page Header ───────────────────────────────────────────────── */
+    .legal-header {
+      margin-bottom: 3rem;
+      padding-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .legal-section-label {
+      font-family: var(--font-ui);
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--clr-purple);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    .legal-section-label::before {
+      content: '';
+      display: inline-block;
+      width: 24px;
+      height: 1.5px;
+      background: var(--clr-purple);
+    }
+
+    .legal-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      line-height: 0.95;
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin-bottom: 1rem;
+    }
+    .legal-title .purple { color: var(--clr-purple); }
+
+    .legal-updated {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: var(--clr-white-dim);
+    }
+
+    /* ── Quick Links ───────────────────────────────────────────────── */
+    .quick-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-bottom: 3rem;
+    }
+    .quick-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      border: 1px solid rgba(139,92,246,0.25);
+      background: rgba(139,92,246,0.08);
+      color: rgba(167,139,250,0.9);
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all 0.2s;
+    }
+    .quick-link:hover {
+      background: rgba(139,92,246,0.15);
+      border-color: rgba(139,92,246,0.45);
+    }
+
+    /* ── Policy Section ────────────────────────────────────────────── */
+    .policy-section {
+      margin-bottom: 3.5rem;
+      scroll-margin-top: calc(var(--nav-h) + 2rem);
+    }
+
+    .policy-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.5rem);
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid rgba(139,92,246,0.2);
+    }
+
+    .policy-text {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      font-weight: 400;
+      color: rgba(255,255,255,0.7);
+      line-height: 1.75;
+      margin-bottom: 1rem;
+    }
+
+    .policy-text strong {
+      color: rgba(255,255,255,0.9);
+      font-weight: 600;
+    }
+
+    .policy-text a {
+      color: var(--clr-purple);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .policy-text a:hover { text-decoration: underline; }
+
+    .policy-list {
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0 1.5rem;
+    }
+    .policy-list li {
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.65);
+      line-height: 1.7;
+      padding-left: 1.5rem;
+      position: relative;
+      margin-bottom: 0.4rem;
+    }
+    .policy-list li::before {
+      content: '›';
+      position: absolute;
+      left: 0;
+      color: var(--clr-purple);
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .policy-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      padding: 1.5rem 1.75rem;
+      margin: 1.5rem 0;
+    }
+    .policy-card-title {
+      font-family: var(--font-ui);
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fff;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── Contact Card ──────────────────────────────────────────────── */
+    .contact-card {
+      background: rgba(139,92,246,0.06);
+      border: 1px solid rgba(139,92,246,0.2);
+      border-radius: 20px;
+      padding: 2rem 2.25rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .contact-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 20%; right: 20%;
+      height: 1px;
+      background: linear-gradient(to right, transparent, rgba(139,92,246,0.6), transparent);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      margin-top: 1.25rem;
+    }
+
+    .contact-item {
+      display: flex;
+      flex-direction: column;
+      gap: 0.3rem;
+    }
+    .contact-item-label {
+      font-family: var(--font-ui);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--clr-purple);
+    }
+    .contact-item-value {
+      font-family: var(--font-ui);
+      font-size: 0.88rem;
+      color: rgba(255,255,255,0.8);
+      line-height: 1.5;
+    }
+    .contact-item-value a {
+      color: var(--clr-purple);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .contact-item-value a:hover { text-decoration: underline; }
+
+    /* ── Footer ─────────────────────────────────────────────────────── */
+    .legal-footer {
+      text-align: center;
+      padding: 2rem 0;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      margin-top: 2rem;
+    }
+    .legal-footer p {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: var(--clr-white-dim);
+    }
+    .legal-footer a {
+      color: var(--clr-purple);
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    @media (max-width: 640px) {
+      .legal-container { padding: 0 1.25rem 4rem; }
+      .contact-grid { grid-template-columns: 1fr; }
+      .quick-links { flex-direction: column; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="legal-ambient" aria-hidden="true"></div>
+
+  <main class="legal-root">
+    <div class="legal-container">
+
+      <a href="/" class="back-link">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
+        Back to Home
+      </a>
+
+      <!-- ── Header ──────────────────────────────────────────────── -->
+      <div class="legal-header">
+        <p class="legal-section-label">Legal</p>
+        <h1 class="legal-title">Policies & <span class="purple">Terms</span></h1>
+        <p class="legal-updated">Last updated: 15 April 2026</p>
+      </div>
+
+      <!-- ── Quick Links ─────────────────────────────────────────── -->
+      <div class="quick-links">
+        <a href="#terms" class="quick-link">Terms & Conditions</a>
+        <a href="#privacy" class="quick-link">Privacy Policy</a>
+        <a href="#refund" class="quick-link">Refund & Cancellation</a>
+        <a href="#contact" class="quick-link">Contact Us</a>
+      </div>
+
+      <!-- ════════════════════════════════════════════════════════════
+           TERMS & CONDITIONS
+           ════════════════════════════════════════════════════════════ -->
+      <section class="policy-section" id="terms">
+        <h2 class="policy-heading">Terms & Conditions</h2>
+
+        <p class="policy-text">
+          Welcome to <strong>UDBHAV'26</strong>, the 24-hour Grand Hackathon organized by
+          <strong>Alta School of Technology, Sage University, Indore</strong>. By registering for
+          and participating in this hackathon, you agree to the following terms and conditions.
+        </p>
+
+        <div class="policy-card">
+          <div class="policy-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            Eligibility & Participation
+          </div>
+          <ul class="policy-list">
+            <li>Only shortlisted teams from Round 1 (via Unstop) are eligible to register for Round 2.</li>
+            <li>Each team must consist of 2 to 4 members, including a designated team leader.</li>
+            <li>All team members must be currently enrolled students at a recognized college or university in India.</li>
+            <li>A valid team code (sent via email after shortlisting) is required to complete registration.</li>
+            <li>Each participant can only be part of one team.</li>
+          </ul>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Registration & Payment
+          </div>
+          <ul class="policy-list">
+            <li>Registration fee is <strong>₹800 per team</strong> (non-refundable unless hackathon is cancelled by the organizers).</li>
+            <li>Optional mentor session add-on is available for an additional <strong>₹300</strong>.</li>
+            <li>All payments are processed securely through <strong>Razorpay</strong>.</li>
+            <li>Registration is confirmed only after successful payment. Pending payments will not be considered.</li>
+            <li>Teams must provide accurate and truthful information during registration.</li>
+          </ul>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Code of Conduct
+          </div>
+          <ul class="policy-list">
+            <li>All participants must adhere to the UDBHAV'26 Code of Conduct at all times.</li>
+            <li>Harassment, discrimination, or any form of misconduct will result in immediate disqualification.</li>
+            <li>All project submissions must be original work created during the hackathon.</li>
+            <li>Organizers reserve the right to disqualify any team that violates these terms.</li>
+          </ul>
+        </div>
+
+        <div class="policy-card">
+          <div class="policy-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Intellectual Property
+          </div>
+          <ul class="policy-list">
+            <li>Participants retain full ownership of the projects they build during the hackathon.</li>
+            <li>Organizers may use project names, descriptions, and screenshots for promotional purposes.</li>
+            <li>By participating, teams grant UDBHAV'26 a non-exclusive license to showcase their project.</li>
+          </ul>
+        </div>
+
+        <p class="policy-text">
+          The organizers reserve the right to modify these terms at any time. Participants will be
+          notified of any material changes via email. Continued participation constitutes acceptance
+          of modified terms.
+        </p>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════
+           PRIVACY POLICY
+           ════════════════════════════════════════════════════════════ -->
+      <section class="policy-section" id="privacy">
+        <h2 class="policy-heading">Privacy Policy</h2>
+
+        <p class="policy-text">
+          We are committed to protecting the privacy of all UDBHAV'26 participants. This policy
+          explains how we collect, use, and safeguard your personal information.
+        </p>
+
+        <p class="policy-text"><strong>Information We Collect:</strong></p>
+        <ul class="policy-list">
+          <li><strong>Registration data:</strong> Team name, college name, branch, year of study.</li>
+          <li><strong>Personal details:</strong> Full name, email address, and phone number of each team member.</li>
+          <li><strong>Payment information:</strong> Payment transaction ID, order ID (processed via Razorpay — we do not store card/bank details).</li>
+          <li><strong>Technical data:</strong> IP address and browser user-agent for fraud prevention.</li>
+        </ul>
+
+        <p class="policy-text"><strong>How We Use Your Information:</strong></p>
+        <ul class="policy-list">
+          <li>To process and confirm your hackathon registration and payment.</li>
+          <li>To communicate hackathon updates, schedules, and important announcements.</li>
+          <li>To verify identity and eligibility at the hackathon venue.</li>
+          <li>To resolve payment disputes or provide customer support.</li>
+        </ul>
+
+        <p class="policy-text"><strong>Data Sharing:</strong></p>
+        <ul class="policy-list">
+          <li>We share payment data with <strong>Razorpay</strong> solely for payment processing.</li>
+          <li>We do not sell, rent, or share your personal information with third parties for marketing.</li>
+          <li>Data may be shared with hackathon sponsors only in aggregated, anonymized form (e.g., total registrations).</li>
+        </ul>
+
+        <p class="policy-text"><strong>Data Retention & Security:</strong></p>
+        <ul class="policy-list">
+          <li>Registration data is stored securely on MongoDB Atlas with encryption at rest.</li>
+          <li>Data is retained for up to 12 months after the hackathon for administrative purposes, then deleted.</li>
+          <li>You may request deletion of your data by contacting us at <a href="mailto:udbhav@sage.edu.in">udbhav@sage.edu.in</a>.</li>
+        </ul>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════
+           REFUND & CANCELLATION POLICY
+           ════════════════════════════════════════════════════════════ -->
+      <section class="policy-section" id="refund">
+        <h2 class="policy-heading">Refund & Cancellation Policy</h2>
+
+        <div class="policy-card">
+          <div class="policy-card-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8b5cf6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+            Refund Conditions
+          </div>
+          <ul class="policy-list">
+            <li><strong>Hackathon cancellation by organizers:</strong> Full refund will be issued within 7–10 business days to the original payment method.</li>
+            <li><strong>Hackathon postponement:</strong> Registration remains valid for the rescheduled date. If unable to attend, a full refund will be offered.</li>
+            <li><strong>Participant cancellation:</strong> Registration fee is <strong>non-refundable</strong> once payment is confirmed, as hackathon resources are allocated immediately.</li>
+            <li><strong>Duplicate payments:</strong> If charged twice due to a technical error, the duplicate amount will be refunded within 5–7 business days.</li>
+            <li><strong>Payment failure:</strong> If payment was deducted but registration was not confirmed, contact us within 48 hours for resolution.</li>
+          </ul>
+        </div>
+
+        <p class="policy-text"><strong>How to Request a Refund:</strong></p>
+        <ul class="policy-list">
+          <li>Email <a href="mailto:udbhav@sage.edu.in">udbhav@sage.edu.in</a> with your team name, registration ID, and Razorpay payment ID.</li>
+          <li>Refund requests for eligible cases will be processed within 7–10 business days.</li>
+          <li>Refunds will be credited to the original payment method used during registration.</li>
+        </ul>
+
+        <p class="policy-text"><strong>Cancellation by Organizers:</strong></p>
+        <p class="policy-text">
+          The organizers reserve the right to cancel or modify the hackathon due to unforeseen circumstances
+          (force majeure, insufficient registrations, venue issues, etc.). In such cases, all registered
+          participants will be notified via email and eligible for a full refund.
+        </p>
+      </section>
+
+      <!-- ════════════════════════════════════════════════════════════
+           CONTACT US
+           ════════════════════════════════════════════════════════════ -->
+      <section class="policy-section" id="contact">
+        <h2 class="policy-heading">Contact Us</h2>
+
+        <p class="policy-text">
+          Have questions about registration, payments, or the hackathon? We're here to help.
+          Reach out to us through any of the following channels:
+        </p>
+
+        <div class="contact-card">
+          <div class="contact-grid">
+            <div class="contact-item">
+              <span class="contact-item-label">Organization</span>
+              <span class="contact-item-value">UDBHAV'26 — Grand Hackathon<br>Alta School of Technology</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-item-label">Address</span>
+              <span class="contact-item-value">Sage University<br>Kailod Kartal, Indore<br>Madhya Pradesh 452020, India</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-item-label">Email</span>
+              <span class="contact-item-value"><a href="mailto:udbhav@sage.edu.in">udbhav@sage.edu.in</a></span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-item-label">Phone</span>
+              <span class="contact-item-value"><a href="tel:+917314009000">+91 731 400 9000</a></span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-item-label">Support Hours</span>
+              <span class="contact-item-value">Mon – Sat, 10:00 AM – 6:00 PM IST</span>
+            </div>
+            <div class="contact-item">
+              <span class="contact-item-label">Response Time</span>
+              <span class="contact-item-value">Within 24 hours</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── Footer ──────────────────────────────────────────────── -->
+      <div class="legal-footer">
+        <p>© 2026 UDBHAV'26. All rights reserved. · <a href="/">Back to Home</a> · <a href="/register.html">Register</a></p>
+      </div>
+
+    </div>
+  </main>
+
+</body>
+</html>

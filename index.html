@@ -24,7 +24,7 @@
   <meta name="twitter:description" content="24 hours. One campus. Infinite possibilities. Join India's most intense hackathon at Sage University, Indore." />
   <meta name="twitter:image"       content="https://udbhav26.in/og-image.png" />
 
-  <!-- JSON-LD: Event structured data -->
+  <!-- JSON-LD: Hackathon structured data -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -549,7 +549,7 @@
   <!-- ══════════════════════════════════════════════════════════════════
        SCHEDULE SECTION — Full Open Timeline with GSAP Scroll Animations
        ══════════════════════════════════════════════════════════════════ -->
-  <section class="sch-section" id="scheduleSection" aria-label="Event Schedule">
+  <section class="sch-section" id="scheduleSection" aria-label="Hackathon Schedule">
 
     <div class="sch-container">
 
@@ -563,12 +563,17 @@
       <!-- Full Open Timeline -->
       <div class="sch-timeline-full" id="schTimelineFull">
 
+        <!-- Scroll-driven glowing progress line -->
+        <div class="sch-progress-track" aria-hidden="true">
+          <div class="sch-progress-line" id="schProgressLine"></div>
+          <div class="sch-progress-glow" id="schProgressGlow"></div>
+        </div>
+
         <!-- ─── Phase 1 ─── -->
         <div class="sch-phase-block" data-phase="01">
           <div class="sch-phase-label">
             <span class="sch-phase-num">01</span>
             <div class="sch-phase-meta">
-              <span class="sch-phase-timerange">8:00 AM – 11:00 AM</span>
               <h3 class="sch-phase-name">Arrival &amp; Kickoff</h3>
             </div>
           </div>
@@ -577,7 +582,7 @@
               <span class="sch-item-time">8:00 – 9:30 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Doors Open</span><span class="sch-badge sch-badge--main">Main Event</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Doors Open</span><span class="sch-badge sch-badge--main">Keynote</span></div>
                 <p class="sch-item-desc">Registration, check-in &amp; participant on-boarding.</p>
               </div>
             </div>
@@ -585,7 +590,7 @@
               <span class="sch-item-time">10:00 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Kickoff</span><span class="sch-badge sch-badge--main">Main Event</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Kickoff</span><span class="sch-badge sch-badge--main">Keynote</span></div>
                 <p class="sch-item-desc">Official orientation session &amp; welcome ceremony.</p>
               </div>
             </div>
@@ -605,21 +610,20 @@
           <div class="sch-phase-label">
             <span class="sch-phase-num">02</span>
             <div class="sch-phase-meta">
-              <span class="sch-phase-timerange">11:00 AM – 8:00 PM</span>
               <h3 class="sch-phase-name">The Build</h3>
             </div>
           </div>
           <div class="sch-events-column">
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">11:00 AM – 1:00 PM</span>
+              <span class="sch-item-time">11:00 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 1</span><span class="sch-badge sch-badge--build">Build · 2H</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 1</span></div>
                 <p class="sch-item-desc">Hacking begins — thinking &amp; planning phase. Lay your foundation.</p>
               </div>
             </div>
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">1:00 – 2:00 PM</span>
+              <span class="sch-item-time">1:00 PM</span>
               <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--break"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
                 <div class="sch-item-top"><span class="sch-item-name">Lunch Break</span><span class="sch-badge sch-badge--break">Break</span></div>
@@ -627,15 +631,15 @@
               </div>
             </div>
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">2:00 – 5:00 PM</span>
+              <span class="sch-item-time">2:00 PM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 2</span><span class="sch-badge sch-badge--build">Build · 3H</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 2</span></div>
                 <p class="sch-item-desc">Deep work mode. No distractions — pure execution.</p>
               </div>
             </div>
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">5:00 – 6:00 PM</span>
+              <span class="sch-item-time">5:00 PM</span>
               <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--fun"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
                 <div class="sch-item-top"><span class="sch-item-name">Strategy Pivot</span><span class="sch-badge sch-badge--fun">Mentor + Fun</span></div>
@@ -643,10 +647,10 @@
               </div>
             </div>
             <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">6:00 – 8:00 PM</span>
+              <span class="sch-item-time">6:00 PM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 3</span><span class="sch-badge sch-badge--build">Build · 2H</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 3</span></div>
                 <p class="sch-item-desc">Grind mode. Push hard before the dinner break.</p>
               </div>
             </div>
@@ -658,7 +662,6 @@
           <div class="sch-phase-label">
             <span class="sch-phase-num">03</span>
             <div class="sch-phase-meta">
-              <span class="sch-phase-timerange">8:00 PM – 7:00 AM</span>
               <h3 class="sch-phase-name">Midnight Push</h3>
             </div>
           </div>
@@ -672,11 +675,11 @@
               </div>
             </div>
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">9:00 PM – 2:00 AM</span>
+              <span class="sch-item-time">9:00 PM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 4</span><span class="sch-badge sch-badge--build">Build · 5H</span></div>
-                <p class="sch-item-desc">Midnight push — longest sprint of the event. Optional midnight snack provided.</p>
+                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 4</span></div>
+                <p class="sch-item-desc">Midnight push — longest sprint of the hackathon. Optional midnight snack provided.</p>
               </div>
             </div>
             <div class="sch-item" data-sch-item>
@@ -688,10 +691,10 @@
               </div>
             </div>
             <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">3:00 – 7:00 AM</span>
+              <span class="sch-item-time">3:00 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Final Sprint</span><span class="sch-badge sch-badge--build">Build · 4H</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Final Sprint</span></div>
                 <p class="sch-item-desc">Last stand — final build phase before submissions open at dawn.</p>
               </div>
             </div>
@@ -703,13 +706,12 @@
           <div class="sch-phase-label">
             <span class="sch-phase-num">04</span>
             <div class="sch-phase-meta">
-              <span class="sch-phase-timerange">7:00 AM – 11:00 AM</span>
               <h3 class="sch-phase-name">The Finale</h3>
             </div>
           </div>
           <div class="sch-events-column">
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">7:00 – 8:00 AM</span>
+              <span class="sch-item-time">7:00 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--submit"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
                 <div class="sch-item-top"><span class="sch-item-name">Final Pitch</span><span class="sch-badge sch-badge--submit">Submission</span></div>
@@ -733,15 +735,15 @@
               </div>
             </div>
             <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">9:00 – 10:00 AM</span>
+              <span class="sch-item-time">9:00 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
               <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Grand Presentation</span><span class="sch-badge sch-badge--main">Main Event</span></div>
+                <div class="sch-item-top"><span class="sch-item-name">Grand Presentation</span><span class="sch-badge sch-badge--main">Keynote</span></div>
                 <p class="sch-item-desc">Final PPT presentation round before the judges.</p>
               </div>
             </div>
             <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">10:30 – 11:00 AM</span>
+              <span class="sch-item-time">10:30 AM</span>
               <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--finale"></div></div>
               <div class="sch-item-content">
                 <div class="sch-item-top"><span class="sch-item-name">Closing Ceremony</span><span class="sch-badge sch-badge--finale">Finale</span></div>
@@ -835,7 +837,7 @@
           </button>
           <div class="faq-answer" id="faq-ans-4" role="region" aria-labelledby="faq-btn-4">
             <div class="faq-answer-inner">
-              <p>A nominal per-team registration fee applies to ensure committed participation and cover operational costs across the 24-hour event. Check the registration portal for the exact fee breakdown.</p>
+              <p>A nominal per-team registration fee applies to ensure committed participation and cover operational costs across the 24-hour hackathon. Check the registration portal for the exact fee breakdown.</p>
             </div>
           </div>
         </div>
@@ -1171,7 +1173,12 @@
                id="cfBtnRegister">Register</a>
           </div>
 
-        </div>
+          <div class="cf-secondary-pills" style="margin-top:0.75rem;">
+            <a href="/legal.html#terms" class="cf-pill cf-pill--ghost js-magnetic">Terms</a>
+            <a href="/legal.html#privacy" class="cf-pill cf-pill--ghost js-magnetic">Privacy</a>
+            <a href="/legal.html#refund" class="cf-pill cf-pill--ghost js-magnetic">Refund Policy</a>
+            <a href="/legal.html#contact" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
+          </div>
       </div>
 
       <!-- ── 3. Bottom Bar ── -->

@@ -59,6 +59,9 @@ const RegistrationSchema = new mongoose.Schema(
     // ── Meta ────────────────────────────────────────────────────────────
     ipAddress:   { type: String, default: null },
     userAgent:   { type: String, default: null },
+
+    // ── Registration Status ─────────────────────────────────────────────
+    registrationCompleted: { type: Boolean, default: false },
   },
   {
     timestamps: true,   // adds createdAt + updatedAt automatically

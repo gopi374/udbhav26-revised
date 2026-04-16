@@ -89,13 +89,14 @@ export function initHeroBgShader(mountEl) {
 
   // ── RAF loop (paused when hero off-screen via IntersectionObserver) ───────
   let rafId = null;
-  let frameCount = 0;
   let isVisible = true;
 
   function animate() {
-    if (!isVisible) { rafId = null; return; }
+    if (!isVisible) { 
+      rafId = null; 
+      return; 
+    }
     rafId = requestAnimationFrame(animate);
-    frameCount++;
     uniforms.time.value += 0.05;
     renderer.render(scene, camera);
   }
