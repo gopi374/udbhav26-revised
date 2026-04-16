@@ -2224,10 +2224,10 @@
 
         // STEP 2 — Load Cashfree JS SDK v3 (once)
         await new Promise((resolve, reject) => {
-          if (window.Cashfree) { resolve(); return; }
+          if (typeof Cashfree === 'function') { resolve(); return; }  // already loaded
           const s   = document.createElement('script');
           s.src     = 'https://sdk.cashfree.com/js/v3/cashfree.js';
-          s.onload  = resolve;
+          s.onload  = () => { if (typeof Cashfree === 'function') resolve(); else reject(new Error('Cashfree SDK loaded but Cashfree is not defined.')); };
           s.onerror = () => reject(new Error('Failed to load payment gateway. Check your internet connection.'));
           document.head.appendChild(s);
         });
@@ -2238,8 +2238,8 @@
         payBtn.disabled = false;
         if (payLabel) payLabel.textContent = mentorSelected ? 'Pay ₹1,100 Securely' : 'Pay ₹800 Securely';
 
-        // STEP 3 — Open Cashfree Checkout popup
-        const cashfree = window.Cashfree({ mode: orderData.cfEnv === 'production' ? 'production' : 'sandbox' });
+        // STEP 3 — Initialise Cashfree SDK instance (must be awaited)
+        const cashfree = await Cashfree({ mode: orderData.cfEnv === 'production' ? 'production' : 'sandbox' });
 
         // Store formData for use after redirect-back / payment success
         try { sessionStorage.setItem('udbhav_formData', JSON.stringify(formData)); } catch (_) {}
