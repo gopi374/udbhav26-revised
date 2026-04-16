@@ -110,7 +110,7 @@ export async function paymentsHandler(req, res) {
       cashfreePaymentId:  t.cashfreePaymentId || null,
       teamCode:           t.code || null,
       mentorSession:      t.mentorSession || false,
-      memberCount:        (t.members?.length || 0) + 1,
+      memberCount:        t.memberCount || (t.members?.length || 0) + 1,
       paymentDate:        t.paymentDate || null,
       createdAt:          t.createdAt,
       updatedAt:          t.updatedAt,
