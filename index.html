@@ -483,152 +483,68 @@
     </div>
 
     <!-- 3D Scene -->
-    <div class="pd-scene" id="pdScene" aria-hidden="true">
-      <div class="pd-carousel" id="pdCarousel">
+    <!-- ── Drag-to-scroll card slider ── -->
+    <!-- ── Drag-to-scroll Domain Card Slider ── -->
+    <div class="pds-wrapper" id="pdsWrapper">
 
-        <div class="pd-card" style="--clr:#f43f5e;--clr-rgb:244,63,94;"
-             data-id="01" data-icon="healthtech"
-             data-name="HealthTech &amp; MedTech"
-             data-desc="Tackle real challenges in healthcare delivery, remote diagnostics, patient monitoring, and medical data management."
-             data-tags="Remote Health,Diagnostics,Patient Data,Wearables">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">01</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=140&h=140&fit=crop&auto=format" alt="HealthTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">HealthTech &amp;<br>MedTech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+      <button class="pds-arrow pds-arrow--left" id="pdsLeft" aria-label="Scroll left">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="pds-arrow pds-arrow--right" id="pdsRight" aria-label="Scroll right">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+
+      <div class="pds-track-outer" id="pdsTrackOuter">
+        <div class="pds-track" id="pdsTrack">
+
+          <div class="pds-card" style="--card-clr:#f43f5e">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=640&h=360&fit=crop&auto=format" alt="HealthTech" loading="lazy"/><span class="pds-badge">HealthTech</span></div>
+            <div class="pds-card-body"><div class="pds-num">01</div><h3 class="pds-name">HealthTech &amp; MedTech</h3><p class="pds-desc">Tackle real challenges in healthcare delivery, remote diagnostics, patient monitoring, and medical data management.</p><div class="pds-tags"><span>Remote Health</span><span>Diagnostics</span><span>Wearables</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#a855f7;--clr-rgb:168,85,247;"
-             data-id="02" data-icon="aiml"
-             data-name="AI/ML &amp; Data Science"
-             data-desc="Build intelligent systems that learn, predict, and automate — from NLP to computer vision and predictive analytics."
-             data-tags="NLP,Computer Vision,Predictive AI,Neural Nets">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">02</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=140&h=140&fit=crop&auto=format" alt="AI/ML" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">AI/ML &amp;<br>Data Science</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#a855f7">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=640&h=360&fit=crop&auto=format" alt="AI/ML" loading="lazy"/><span class="pds-badge">AI / ML</span></div>
+            <div class="pds-card-body"><div class="pds-num">02</div><h3 class="pds-name">AI/ML &amp; Data Science</h3><p class="pds-desc">Build intelligent systems that learn, predict and automate — from NLP to computer vision and predictive analytics.</p><div class="pds-tags"><span>NLP</span><span>Computer Vision</span><span>Neural Nets</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#22d3ee;--clr-rgb:34,211,238;"
-             data-id="03" data-icon="smartcity"
-             data-name="Smart Cities &amp; IoT"
-             data-desc="Design connected solutions for urban infrastructure — smart traffic, waste management, energy grids, and public safety systems."
-             data-tags="IoT Sensors,Traffic AI,Energy Grid,Urban Infra">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">03</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=140&h=140&fit=crop&auto=format" alt="Smart Cities" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Smart Cities<br>&amp; IoT</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#22d3ee">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=640&h=360&fit=crop&auto=format" alt="Smart Cities" loading="lazy"/><span class="pds-badge">Smart Cities</span></div>
+            <div class="pds-card-body"><div class="pds-num">03</div><h3 class="pds-name">Smart Cities &amp; IoT</h3><p class="pds-desc">Design connected solutions for urban infrastructure — smart traffic, energy grids, and public safety systems.</p><div class="pds-tags"><span>IoT Sensors</span><span>Traffic AI</span><span>Energy Grid</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#22c55e;--clr-rgb:34,197,94;"
-             data-id="04" data-icon="greentech"
-             data-name="Sustainability &amp; GreenTech"
-             data-desc="Engineer eco-friendly solutions targeting climate change, carbon tracking, clean energy, and sustainable agriculture."
-             data-tags="Carbon Track,Clean Energy,AgriTech,Climate AI">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">04</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=140&h=140&fit=crop&auto=format" alt="GreenTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Sustainability<br>&amp; GreenTech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#22c55e">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=640&h=360&fit=crop&auto=format" alt="GreenTech" loading="lazy"/><span class="pds-badge">GreenTech</span></div>
+            <div class="pds-card-body"><div class="pds-num">04</div><h3 class="pds-name">Sustainability &amp; GreenTech</h3><p class="pds-desc">Engineer eco-friendly solutions targeting climate change, carbon tracking, clean energy, and sustainable agriculture.</p><div class="pds-tags"><span>Carbon Track</span><span>Clean Energy</span><span>AgriTech</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#f59e0b;--clr-rgb:245,158,11;"
-             data-id="05" data-icon="edtech"
-             data-name="EdTech &amp; Skilling"
-             data-desc="Reimagine how people learn — adaptive platforms, vernacular language tools, and AI-powered career guidance for the next billion."
-             data-tags="Adaptive Learn,Vernacular AI,Career Path,AR / VR">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">05</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=140&h=140&fit=crop&auto=format" alt="EdTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">EdTech &amp;<br>Skilling</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#f59e0b">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=640&h=360&fit=crop&auto=format" alt="EdTech" loading="lazy"/><span class="pds-badge">EdTech</span></div>
+            <div class="pds-card-body"><div class="pds-num">05</div><h3 class="pds-name">EdTech &amp; Skilling</h3><p class="pds-desc">Reimagine how people learn — adaptive platforms, vernacular tools, and AI-powered career guidance for the next billion.</p><div class="pds-tags"><span>Adaptive Learn</span><span>Vernacular AI</span><span>AR / VR</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#3b82f6;--clr-rgb:59,130,246;"
-             data-id="06" data-icon="fintech"
-             data-name="FinTech &amp; Web3"
-             data-desc="Build the future of finance — DeFi apps, smart contracts, digital wallets, fraud detection, and financial inclusion tools."
-             data-tags="DeFi,Smart Contracts,Digital Wallet,Fraud AI">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">06</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=140&h=140&fit=crop&auto=format" alt="FinTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">FinTech &amp;<br>Web3</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#3b82f6">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=640&h=360&fit=crop&auto=format" alt="FinTech" loading="lazy"/><span class="pds-badge">FinTech</span></div>
+            <div class="pds-card-body"><div class="pds-num">06</div><h3 class="pds-name">FinTech &amp; Web3</h3><p class="pds-desc">Build the future of finance — DeFi apps, smart contracts, digital wallets, fraud detection, and financial inclusion.</p><div class="pds-tags"><span>DeFi</span><span>Smart Contracts</span><span>Fraud AI</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#f97316;--clr-rgb:249,115,22;"
-             data-id="07" data-icon="cybersec"
-             data-name="CyberSecurity &amp; Privacy"
-             data-desc="Defend digital systems against evolving threats — zero-trust architectures, threat intelligence, and privacy-first solutions."
-             data-tags="Zero Trust,Threat Intel,Privacy Tools,Secure Comms">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">07</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=140&h=140&fit=crop&auto=format" alt="CyberSecurity" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">CyberSecurity<br>&amp; Privacy</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#f97316">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=640&h=360&fit=crop&auto=format" alt="CyberSecurity" loading="lazy"/><span class="pds-badge">CyberSec</span></div>
+            <div class="pds-card-body"><div class="pds-num">07</div><h3 class="pds-name">CyberSecurity &amp; Privacy</h3><p class="pds-desc">Defend digital systems against evolving threats — zero-trust architectures, threat intelligence, and privacy-first tools.</p><div class="pds-tags"><span>Zero Trust</span><span>Threat Intel</span><span>Privacy Tools</span></div></div>
           </div>
-        </div>
 
-        <div class="pd-card" style="--clr:#ec4899;--clr-rgb:236,72,153;"
-             data-id="08" data-icon="socialimpact"
-             data-name="Social Impact &amp; Rural Tech"
-             data-desc="Bridge the urban-rural divide — digital governance, farmer tech, women safety systems, and accessibility solutions for all."
-             data-tags="Digital Gov,AgriTech,Women Safety,Accessibility">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">08</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=140&h=140&fit=crop&auto=format" alt="Social Impact" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Social Impact<br>&amp; Rural Tech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
+          <div class="pds-card" style="--card-clr:#ec4899">
+            <div class="pds-card-img"><img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=640&h=360&fit=crop&auto=format" alt="Social Impact" loading="lazy"/><span class="pds-badge">Social</span></div>
+            <div class="pds-card-body"><div class="pds-num">08</div><h3 class="pds-name">Social Impact &amp; Rural Tech</h3><p class="pds-desc">Bridge the urban-rural divide — digital governance, farmer tech, women safety systems, and accessibility solutions.</p><div class="pds-tags"><span>Digital Gov</span><span>AgriTech</span><span>Accessibility</span></div></div>
           </div>
+
         </div>
-
-      </div><!-- /.pd-carousel -->
-    </div><!-- /.pd-scene -->
-
-    <!-- Floating popup — lives outside 3D context to avoid z-index issues -->
-    <div class="pd-popup-float" id="pdPopupFloat" aria-live="polite" aria-hidden="true">
-      <div class="pd-popup-top">
-        <span class="pd-popup-icon" id="pdPopupIcon"></span>
-        <span class="pd-popup-badge" id="pdPopupBadge"></span>
       </div>
-      <h4 class="pd-popup-title" id="pdPopupTitle"></h4>
-      <p  class="pd-popup-desc"  id="pdPopupDesc"></p>
-      <div class="pd-popup-tags" id="pdPopupTags"></div>
+
+      <div class="pds-dots" id="pdsDots" aria-hidden="true"></div>
     </div>
 
   </section>
+
 
   <!-- ══════════════════════════════════════════════════════════════════
        SCHEDULE SECTION — Full Open Timeline with GSAP Scroll Animations

@@ -5159,7 +5159,7 @@ img, video, iframe { max-width: 100%; height: auto; }
 }
 
 /* ----------------------------------------------------------
-   ABOUT SECTION — BENTO GRID REDESIGN (uab-* classes)
+   ABOUT SECTION ï¿½ BENTO GRID REDESIGN (uab-* classes)
    ---------------------------------------------------------- */
 .uab-header {
   max-width: 1200px; margin: 0 auto 44px; padding: 0 48px;
@@ -5385,12 +5385,12 @@ img, video, iframe { max-width: 100%; height: auto; }
   transition: color 0.2s;
 }
 
-/* PS Drop — amber highlight */
+/* PS Drop ï¿½ amber highlight */
 .uab-tl-item--hot .uab-tl-time { color: rgba(251,191,36,0.7); }
 .uab-tl-item--hot .uab-tl-dot  { background: rgba(251,191,36,0.55); border-color: rgba(251,191,36,0.7); box-shadow: 0 0 8px rgba(251,191,36,0.35); }
 .uab-tl-item--hot .uab-tl-text { color: rgba(251,191,36,0.9); font-weight: 600; }
 
-/* Hacking Begins — green highlight */
+/* Hacking Begins ï¿½ green highlight */
 .uab-tl-item--go .uab-tl-time { color: rgba(34,197,94,0.7); }
 .uab-tl-item--go .uab-tl-dot  { background: rgba(34,197,94,0.55); border-color: rgba(34,197,94,0.7); box-shadow: 0 0 8px rgba(34,197,94,0.35); }
 .uab-tl-item--go .uab-tl-text { color: rgba(34,197,94,0.9); font-weight: 700; }
@@ -5398,24 +5398,24 @@ img, video, iframe { max-width: 100%; height: auto; }
 .uab-tl-item:hover .uab-tl-text { color: rgba(255,255,255,0.8); }
 .uab-tl-item:hover .uab-tl-dot  { background: rgba(255,255,255,0.3); }
 
-/* Results Dropped — gold/confetti highlight */
+/* Results Dropped ï¿½ gold/confetti highlight */
 .uab-tl-item--win .uab-tl-time { color: rgba(250,204,21,0.75); }
 .uab-tl-item--win .uab-tl-dot  { background: rgba(250,204,21,0.6); border-color: rgba(250,204,21,0.8); box-shadow: 0 0 10px rgba(250,204,21,0.4); }
 .uab-tl-item--win .uab-tl-text { color: rgba(250,204,21,0.95); font-weight: 700; letter-spacing: 0.01em; }
 
-/* Fix: wider time column so dates like '26 Apr · 8:30 AM' don't overflow */
+/* Fix: wider time column so dates like '26 Apr ï¿½ 8:30 AM' don't overflow */
 .uab-timeline { position: relative; }
 .uab-timeline::before { left: 100px; }
 .uab-tl-item { grid-template-columns: 100px 12px 1fr; }
 .uab-tl-time { font-size: 0.62rem; }
 
-/* About title — UDBHAV'26 em: italic only, no bold */
+/* About title ï¿½ UDBHAV'26 em: italic only, no bold */
 .uab-title em {
   font-weight: 400;
 }
 
 /* ----------------------------------------------------------
-   LOOPING WORDS — About section top-right corner
+   LOOPING WORDS ï¿½ About section top-right corner
    Ported from React/GSAP component to vanilla JS
    ---------------------------------------------------------- */
 .uab-header { position: relative; }
@@ -5431,7 +5431,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   user-select: none;
 }
 
-/* Clipping window — shows exactly ONE word at a time */
+/* Clipping window ï¿½ shows exactly ONE word at a time */
 .ulw-inner {
   position: relative;
   overflow: hidden;
@@ -5520,12 +5520,12 @@ img, video, iframe { max-width: 100%; height: auto; }
   border-right: 1.5px solid rgba(255,255,255,0.7);
 }
 
-/* Hide on mobile — too cramped */
+/* Hide on mobile ï¿½ too cramped */
 @media (max-width: 720px) {
   .ulw-block { display: none; }
 }
 
-/* -- Looping Words OVERHAUL — corrected layout -------------------- */
+/* -- Looping Words OVERHAUL ï¿½ corrected layout -------------------- */
 
 /* Block: anchored top-right in header */
 .ulw-block {
@@ -5535,7 +5535,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   user-select: none;
 }
 
-/* Outer: 3 words tall — shows prev / current / next */
+/* Outer: 3 words tall ï¿½ shows prev / current / next */
 .ulw-inner {
   position: relative;
   height: calc(3 * 3.4rem);   /* exactly 3 words */
@@ -5617,7 +5617,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   line-height: 1;
 }
 
-/* Selector: sits at center slot (33%–66% of container) */
+/* Selector: sits at center slot (33%ï¿½66% of container) */
 .ulw-sel {
   position: absolute;
   top: 33.33%;
@@ -5649,3 +5649,565 @@ img, video, iframe { max-width: 100%; height: auto; }
 .ulw-block  { width: max-content; }
 .ulw-inner  { width: 100%; min-width: max-content; }
 .ulw-list   { width: 100%; }
+
+/* ----------------------------------------------------------
+   PROBLEM DOMAINS ï¿½ Drag-to-scroll Card Slider (pds-*)
+   Ported from React/Framer-Motion to vanilla JS + CSS
+   ---------------------------------------------------------- */
+
+.pds-wrapper {
+  position: relative;
+  max-width: 100%;
+  padding: 0 0 40px;
+  z-index: 10;
+}
+
+/* -- Arrow nav --------------------------------------------- */
+.pds-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-calc(50% + 20px));
+  z-index: 20;
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,0.12);
+  background: rgba(0,0,0,0.6);
+  backdrop-filter: blur(12px);
+  color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.3s, transform 0.2s, background 0.2s;
+}
+.pds-wrapper:hover .pds-arrow { opacity: 1; }
+.pds-arrow:hover { background: rgba(255,255,255,0.12); transform: translateY(-calc(50% + 20px)) scale(1.1); }
+.pds-arrow:active { transform: translateY(-calc(50% + 20px)) scale(0.95); }
+.pds-arrow--left  { left: 12px; }
+.pds-arrow--right { right: 12px; }
+
+/* -- Track outer (viewport) ------------------------------ */
+.pds-track-outer {
+  overflow: hidden;
+  padding: 24px 0 24px 48px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.pds-track-outer.is-dragging { cursor: grabbing; }
+.pds-track-outer.is-dragging .pds-card { pointer-events: none; }
+
+/* -- Track (flex row of cards) ---------------------------- */
+.pds-track {
+  display: flex;
+  gap: 24px;
+  width: max-content;
+  transition: transform 0.05s linear;
+  will-change: transform;
+}
+
+/* -- Card ------------------------------------------------- */
+.pds-card {
+  width: 320px;
+  flex-shrink: 0;
+  border-radius: 24px;
+  border: 1px solid rgba(255,255,255,0.08);
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(16px);
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16,1,0.3,1),
+              box-shadow 0.3s ease,
+              border-color 0.3s ease;
+  position: relative;
+}
+.pds-card:hover {
+  transform: translateY(-10px);
+  border-color: rgba(var(--card-clr-rgb, 255,255,255), 0.25);
+  box-shadow: 0 24px 60px rgba(0,0,0,0.45),
+              0 0 0 1px rgba(255,255,255,0.05);
+}
+
+/* Colored top glow on hover */
+.pds-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 180px;
+  background: radial-gradient(ellipse 80% 80% at 50% -10%, color-mix(in srgb, var(--card-clr) 28%, transparent), transparent);
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  pointer-events: none;
+  z-index: 1;
+}
+.pds-card:hover::before { opacity: 1; }
+
+/* -- Card image ------------------------------------------- */
+.pds-card-img {
+  position: relative;
+  height: 180px;
+  overflow: hidden;
+}
+.pds-card-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+  display: block;
+}
+.pds-card:hover .pds-card-img img { transform: scale(1.08); }
+
+/* Gradient from image to card body */
+.pds-card-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 30%, rgba(0,0,0,0.85) 100%);
+}
+
+/* Category badge */
+.pds-badge {
+  position: absolute;
+  top: 12px; left: 12px;
+  z-index: 2;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--card-clr);
+  background: rgba(0,0,0,0.55);
+  border: 1px solid color-mix(in srgb, var(--card-clr) 40%, transparent);
+  backdrop-filter: blur(8px);
+  padding: 0.22rem 0.7rem;
+  border-radius: 999px;
+}
+
+/* -- Card body -------------------------------------------- */
+.pds-card-body {
+  padding: 20px 22px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  z-index: 2;
+}
+
+.pds-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--card-clr);
+  opacity: 0.7;
+}
+
+.pds-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 1.1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.pds-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.5);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pds-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+}
+.pds-tags span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.09);
+  color: rgba(255,255,255,0.45);
+  transition: color 0.2s, background 0.2s;
+}
+.pds-card:hover .pds-tags span {
+  color: color-mix(in srgb, var(--card-clr) 80%, white);
+  background: color-mix(in srgb, var(--card-clr) 10%, transparent);
+  border-color: color-mix(in srgb, var(--card-clr) 30%, transparent);
+}
+
+/* -- Dot indicators --------------------------------------- */
+.pds-dots {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  padding-top: 24px;
+}
+.pds-dot {
+  width: 6px; height: 6px;
+  border-radius: 3px;
+  background: rgba(255,255,255,0.15);
+  cursor: pointer;
+  transition: width 0.3s cubic-bezier(0.16,1,0.3,1), background 0.3s;
+}
+.pds-dot.is-active {
+  width: 24px;
+  background: #fff;
+}
+
+/* -- Responsive ------------------------------------------- */
+@media (max-width: 640px) {
+  .pds-track-outer { padding-left: 20px; }
+  .pds-card { width: 280px; }
+}
+
+/* ----------------------------------------------------------
+   PROBLEM DOMAINS ï¿½ 3D Auto-rotating Carousel (pd3-*)
+   Cards arranged in cylinder: rotateY(i*45deg) translateZ(430px)
+   Ring tilted -8deg on X for the "oval dish" look from the sketch.
+   ---------------------------------------------------------- */
+
+.pd3-scene {
+  width: 100%;
+  height: 520px;
+  perspective: 1100px;
+  perspective-origin: 50% 45%;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* The rotating ring */
+.pd3-ring {
+  position: relative;
+  width: 0; height: 0;
+  transform-style: preserve-3d;
+  /* JS animates: rotateX(-8deg) rotateY(Xdeg) */
+}
+
+/* Individual card */
+.pd3-card {
+  position: absolute;
+  width: 250px;
+  top: -190px;       /* half of card height */
+  left: -125px;      /* half of card width */
+  border-radius: 20px;
+  background: rgba(10,10,12,0.75);
+  border: 1px solid rgba(255,255,255,0.08);
+  backdrop-filter: blur(18px);
+  overflow: hidden;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  scale: 1;
+  filter: brightness(1);
+  transition: border-color 0.35s ease,
+              scale 0.4s cubic-bezier(0.16,1,0.3,1),
+              filter 0.4s ease;
+}
+.pd3-card:hover {
+  border-color: color-mix(in srgb, var(--card-clr) 55%, transparent);
+  scale: 1.08;
+  filter: brightness(1.15);
+}
+
+/* Colored glow halo on hover */
+.pd3-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 90% 60% at 50% 0%,
+    color-mix(in srgb, var(--card-clr) 22%, transparent), transparent 70%);
+  opacity: 0;
+  transition: opacity 0.4s;
+  pointer-events: none;
+  z-index: 0;
+}
+.pd3-card:hover::before { opacity: 1; }
+
+/* Top image */
+.pd3-img {
+  width: 100%;
+  height: 148px;
+  overflow: hidden;
+  flex-shrink: 0;
+  position: relative;
+}
+.pd3-img img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.6s cubic-bezier(0.16,1,0.3,1);
+}
+.pd3-card:hover .pd3-img img { transform: scale(1.07); }
+
+/* Gradient overlay from image to card body */
+.pd3-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 40%, rgba(10,10,12,0.9) 100%);
+}
+
+/* Body */
+.pd3-body {
+  padding: 14px 18px 14px;
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.pd3-num {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--card-clr);
+  opacity: 0.75;
+}
+
+.pd3-name {
+  font-family: 'Inter', sans-serif;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  line-height: 1.25;
+  margin: 0;
+}
+
+/* Description ï¿½ hidden by default, slides in on hover */
+.pd3-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.72rem;
+  line-height: 1.55;
+  color: rgba(255,255,255,0.48);
+  margin: 0;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s cubic-bezier(0.16,1,0.3,1),
+              opacity 0.35s ease;
+}
+.pd3-card:hover .pd3-desc {
+  max-height: 80px;
+  opacity: 1;
+}
+
+/* Tags ï¿½ hidden by default */
+.pd3-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: max-height 0.4s 0.06s cubic-bezier(0.16,1,0.3,1),
+              opacity 0.35s 0.08s ease;
+}
+.pd3-card:hover .pd3-tags {
+  max-height: 60px;
+  opacity: 1;
+}
+.pd3-tags span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--card-clr) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--card-clr) 30%, transparent);
+  color: color-mix(in srgb, var(--card-clr) 85%, white);
+}
+
+/* Hover hint at bottom */
+.pd3-hint {
+  display: block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  text-align: center;
+  padding: 10px 0 14px;
+  position: relative; z-index: 1;
+  transition: opacity 0.3s;
+}
+.pd3-card:hover .pd3-hint { opacity: 0; }
+
+/* ----------------------------------------------------------
+   PROBLEM DOMAINS — OGL WebGL Gallery (pdg-*)
+   Container must have an explicit height for OGL to render.
+   Canvas is appended programmatically by the GalleryApp class.
+   ---------------------------------------------------------- */
+
+.pdg-wrap {
+  width: 100%;
+  padding: 8px 0 48px;
+}
+
+.pdg-container {
+  width: 100%;
+  height: 520px;
+  position: relative;
+  cursor: grab;
+}
+.pdg-container:active { cursor: grabbing; }
+
+/* OGL injects a <canvas> — make it fill the container */
+.pdg-container canvas {
+  width: 100%  !important;
+  height: 100% !important;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .pdg-container { height: 360px; }
+}
+@media (max-width: 480px) {
+  .pdg-container { height: 280px; }
+}
+
+/* -- Fix: OGL canvas z-index above ethereal BG layers -------------
+   Ethereal layers: root=0, noise=1, vignette=2.
+   Gallery must be z-index >= 3 to render above them.
+   pd-section needs position:relative to create stacking context.
+   --------------------------------------------------------------- */
+.pd-section { position: relative; }
+
+.pdg-wrap {
+  position: relative;
+  z-index: 3;
+}
+
+.pdg-container {
+  position: relative;
+  z-index: 3;
+}
+
+/* Keep the section header above the gallery canvas */
+.pd-header { position: relative; z-index: 4; }
+
+/* ----------------------------------------------------------
+   PROBLEM DOMAIN GALLERY — Hover Popup (pdgp-*)
+   Positioned absolutely over the OGL canvas via JS.
+   Slides in from bottom-right corner with cubic-bezier.
+   ---------------------------------------------------------- */
+.pdg-popup {
+  position: absolute;
+  z-index: 20;
+  width: 270px;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(12px, 12px) scale(0.92);
+  transition: opacity 0.28s cubic-bezier(0.16,1,0.3,1),
+              transform 0.32s cubic-bezier(0.16,1,0.3,1);
+  background: rgba(8, 8, 10, 0.82);
+  backdrop-filter: blur(20px) saturate(140%);
+  -webkit-backdrop-filter: blur(20px) saturate(140%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 16px;
+  padding: 16px 18px 18px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.55),
+              0 0 0 1px rgba(255,255,255,0.04) inset;
+}
+.pdg-popup.is-visible {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+  pointer-events: none;
+  aria-hidden: false;
+}
+
+/* Glowing corner L-brackets */
+.pdgp-corner-tl,
+.pdgp-corner-tr,
+.pdgp-corner-bl,
+.pdgp-corner-br {
+  position: absolute;
+  width: 10px; height: 10px;
+  border-color: var(--popup-clr, #a855f7);
+  border-style: solid;
+  opacity: 0.7;
+}
+.pdgp-corner-tl { top: 6px;  left: 6px;  border-width: 1.5px 0 0 1.5px; border-radius: 2px 0 0 0; }
+.pdgp-corner-tr { top: 6px;  right: 6px; border-width: 1.5px 1.5px 0 0; border-radius: 0 2px 0 0; }
+.pdgp-corner-bl { bottom: 6px; left: 6px;  border-width: 0 0 1.5px 1.5px; border-radius: 0 0 0 2px; }
+.pdgp-corner-br { bottom: 6px; right: 6px; border-width: 0 1.5px 1.5px 0; border-radius: 0 0 2px 0; }
+
+/* Top row: number chip */
+.pdgp-header {
+  position: relative;
+  margin-bottom: 8px;
+}
+.pdgp-num {
+  display: inline-block;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--popup-clr, #a855f7);
+  background: color-mix(in srgb, var(--popup-clr, #a855f7) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--popup-clr, #a855f7) 30%, transparent);
+  padding: 0.18rem 0.65rem;
+  border-radius: 999px;
+}
+
+.pdgp-title {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #fff;
+  margin: 0 0 6px;
+  line-height: 1.2;
+}
+
+.pdgp-desc {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.73rem;
+  line-height: 1.6;
+  color: rgba(255,255,255,0.46);
+  margin: 0 0 10px;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.pdgp-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+.pdgp-tags span {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 0.18rem 0.6rem;
+  border-radius: 999px;
+  background: rgba(255,255,255,0.03);
+  border: 1px solid;
+}
+
+/* Allow cloned cards to extend track beyond original 8 */
+.pds-track { width: max-content; }

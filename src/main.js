@@ -17,6 +17,7 @@ import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
 import { initHeroBgShader }  from './shader-bg.js';
+
 import './analytics.js'; // Initialize Vercel Analytics and Speed Insights
 
 gsap.registerPlugin(ScrollTrigger);
@@ -1377,125 +1378,207 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
   });
 })();
+// -----------------------------------------------------------------
+// PROBLEM DOMAINS — Drag-to-scroll Card Slider
+// -----------------------------------------------------------------
+// PROBLEM DOMAINS — Infinite Auto-scroll + Drag Card Slider
+// Cards are cloned for seamless loop. Auto-scrolls continuously,
+// pauses on hover/drag. Spring snap on drag release.
+// -----------------------------------------------------------------
+(function initDomainSlider() {
+  const outer   = document.getElementById('pdsTrackOuter');
+  const track   = document.getElementById('pdsTrack');
+  const btnLeft = document.getElementById('pdsLeft');
+  const btnRight= document.getElementById('pdsRight');
+  const dotsEl  = document.getElementById('pdsDots');
+  if (!outer || !track) return;
 
-// ─────────────────────────────────────────────────────────────────
-// PROBLEM DOMAINS — 3D tilted carousel + hover popup
-// Carousel rotates on the Y axis while tilted on X (-20deg).
-// On hover: rotation pauses, card glows, popup appears above card.
-// Popup is fixed-position (outside 3D context) to avoid z-index issues.
-// ─────────────────────────────────────────────────────────────────
-(function initProblemDomains() {
-  const carousel  = document.getElementById('pdCarousel');
-  const scene     = document.getElementById('pdScene');
-  const popupEl   = document.getElementById('pdPopupFloat');
-  if (!carousel || !popupEl) return;
+  const CARD_W     = 320 + 24;   // card width + gap
+  const AUTO_SPEED = 0.55;       // px per frame (auto drift)
+  const SPRING_K   = 0.10;
+  const FRICTION   = 0.86;
 
-  // Popup sub-elements
-  const popupIcon  = document.getElementById('pdPopupIcon');
-  const popupBadge = document.getElementById('pdPopupBadge');
-  const popupTitle = document.getElementById('pdPopupTitle');
-  const popupDesc  = document.getElementById('pdPopupDesc');
-  const popupTags  = document.getElementById('pdPopupTags');
-
-  const cards = Array.from(carousel.querySelectorAll('.pd-card'));
-
-  let angle      = 0;
-  let paused     = false;
-  let activeCard = null;
+  let origCards = [];
+  let origCount = 0;
+  let currentX  = 0;
+  let targetX   = 0;
+  let velX      = 0;
+  let isDragging = false;
+  let isHovered  = false;
+  let lastMouseX = 0;
+  let activeIdx  = 0;
   let rafId      = null;
-  let running    = true;
 
-  const SPEED = 0.28; // degrees per frame @ ~60 fps
-  const TILT  = -10;  // rotateX degrees (tilted axis)
-
-  // ── Animation tick ─────────────────────────────────────────────
-  function tick() {
-    if (!paused) {
-      angle = (angle + SPEED) % 360;
-      carousel.style.transform = `rotateX(${TILT}deg) rotateY(${angle}deg)`;
+  // ── Clone cards for seamless infinite loop ────────────────────
+  function initLoop() {
+    origCards = Array.from(track.querySelectorAll('.pds-card'));
+    origCount = origCards.length;
+    // Append 2 full sets of clones so the loop never runs out
+    for (let r = 0; r < 2; r++) {
+      origCards.forEach(card => {
+        const clone = card.cloneNode(true);
+        clone.setAttribute('aria-hidden', 'true');
+        track.appendChild(clone);
+      });
     }
-    if (running) rafId = requestAnimationFrame(tick);
   }
 
-  // ── Popup helpers ───────────────────────────────────────────────
-  function positionPopup(card) {
-    const rect  = card.getBoundingClientRect();
-    const popW  = 285;
-    const vw    = window.innerWidth;
-
-    // Centre horizontally above the card's bounding rect
-    let left = rect.left + rect.width / 2;
-    // Clamp so popup never goes off-screen
-    left = Math.max(popW / 2 + 12, Math.min(vw - popW / 2 - 12, left));
-
-    // top: card's top edge in viewport; CSS translateY(-100%) raises popup above it
-    popupEl.style.left = `${left}px`;
-    popupEl.style.top  = `${rect.top - 14}px`;
-  }
-
-  function showPopup(card) {
-    const d = card.dataset;
-
-    // Inject per-card color tokens into popup CSS vars
-    const clrRgb  = (card.style.getPropertyValue('--clr-rgb') || '168,85,247').trim();
-    const clrSolid = (card.style.getPropertyValue('--clr') || '#a855f7').trim();
-    popupEl.style.setProperty('--pd-clr-rgb',   clrRgb);
-    popupEl.style.setProperty('--pd-clr-solid', clrSolid);
-
-    // Populate content
-    popupIcon.textContent  = d.icon  || '';
-    popupBadge.textContent = `Domain ${d.id || ''}`;
-    popupTitle.textContent = d.name  || '';
-    popupDesc.textContent  = d.desc  || '';
-    popupTags.innerHTML    = (d.tags || '').split(',')
-      .map(t => `<span>${t.trim()}</span>`).join('');
-
-    positionPopup(card);
-    popupEl.setAttribute('aria-hidden', 'false');
-    popupEl.classList.add('active');
-  }
-
-  function hidePopup() {
-    popupEl.classList.remove('active');
-    popupEl.setAttribute('aria-hidden', 'true');
-  }
-
-  // ── Card event handlers ─────────────────────────────────────────
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      paused     = true;
-      activeCard = card;
-      card.classList.add('is-active');
-      showPopup(card);
+  function buildDots() {
+    if (!dotsEl) return;
+    dotsEl.innerHTML = '';
+    origCards.forEach((_, i) => {
+      const d = document.createElement('button');
+      d.className = 'pds-dot' + (i === 0 ? ' is-active' : '');
+      d.setAttribute('aria-label', `Domain ${i + 1}`);
+      d.addEventListener('click', () => snapToCard(i));
+      dotsEl.appendChild(d);
     });
+  }
 
-    card.addEventListener('mouseleave', () => {
-      paused     = false;
-      activeCard = null;
-      card.classList.remove('is-active');
-      hidePopup();
-    });
+  function updateDots() {
+    if (!dotsEl) return;
+    const raw = Math.round(-currentX / CARD_W);
+    const idx = ((raw % origCount) + origCount) % origCount;
+    if (idx !== activeIdx) {
+      activeIdx = idx;
+      dotsEl.querySelectorAll('.pds-dot').forEach((d, i) => d.classList.toggle('is-active', i === idx));
+    }
+  }
+
+  function applyX(x) {
+    // Seamless wrap: shift by one full set width when we overflow
+    const SET = origCount * CARD_W;
+    if (x < -(SET * 2)) { x += SET; targetX += SET; }
+    if (x > 0)          { x -= SET; targetX -= SET; }
+    currentX = x;
+    track.style.transform = `translateX(${currentX}px)`;
+    updateDots();
+  }
+
+  function snapToCard(idx) {
+    // Find the nearest equivalent position for idx
+    const SET  = origCount * CARD_W;
+    const base = -(idx * CARD_W);
+    // Choose the closest equivalent target (accounts for wrap)
+    let t = base;
+    while (t > currentX + SET / 2) t -= SET;
+    while (t < currentX - SET / 2) t += SET;
+    targetX = t;
+    velX    = 0;
+    isHovered  = false;
+    isDragging = false;
+  }
+
+  // ── Main RAF tick ────────────────────────────────────────────
+  function tick() {
+    if (!isDragging) {
+      if (!isHovered) {
+        // Auto-scroll: push targetX left continuously
+        targetX -= AUTO_SPEED;
+      }
+      // Spring toward targetX
+      velX    += (targetX - currentX) * SPRING_K;
+      velX    *= FRICTION;
+      applyX(currentX + velX);
+    }
+    rafId = requestAnimationFrame(tick);
+  }
+
+  // ── Arrow buttons ────────────────────────────────────────────
+  if (btnLeft)  btnLeft.addEventListener('click',  () => snapToCard(((activeIdx - 1) + origCount) % origCount));
+  if (btnRight) btnRight.addEventListener('click', () => snapToCard((activeIdx + 1) % origCount));
+
+  // ── Two-finger trackpad / mouse-wheel scroll ─────────────────
+  let wheelSnapTimer = null;
+  outer.addEventListener('wheel', e => {
+    // Prefer deltaX (trackpad horizontal swipe); fall back to deltaY
+    const delta = Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY;
+    if (Math.abs(delta) < 2) return;       // ignore tiny jitter
+    e.preventDefault();                     // stop page scroll while swiping cards
+
+    isHovered  = true;                      // pause auto-scroll during interaction
+    applyX(currentX - delta * 0.9);
+    targetX = currentX;
+    velX    = -delta * 0.15;               // carry a bit of momentum
+
+    // After 200 ms of no wheel events, snap to nearest card and resume drift
+    clearTimeout(wheelSnapTimer);
+    wheelSnapTimer = setTimeout(() => {
+      const raw = Math.round(-currentX / CARD_W);
+      const idx = ((raw % origCount) + origCount) % origCount;
+      snapToCard(idx);
+      isHovered = false;
+    }, 220);
+  }, { passive: false });
+
+  // ── Hover pause ──────────────────────────────────────────────
+  outer.addEventListener('mouseenter', () => { isHovered = true; });
+  outer.addEventListener('mouseleave', () => {
+    if (!isDragging) isHovered = false;
   });
 
-  // ── Pause when section scrolls out of view (performance) ────────
-  if ('IntersectionObserver' in window && scene) {
-    const obs = new IntersectionObserver(([entry]) => {
-      running = entry.isIntersecting;
-      if (running && !rafId) rafId = requestAnimationFrame(tick);
-      else if (!running && rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    }, { threshold: 0.05 });
-    obs.observe(scene);
-  }
+  // ── Mouse drag ───────────────────────────────────────────────
+  outer.addEventListener('mousedown', e => {
+    isDragging = true;
+    lastMouseX = e.clientX;
+    velX = 0;
+    outer.classList.add('is-dragging');
+    e.preventDefault();
+  });
 
-  // Start
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const dx = e.clientX - lastMouseX;
+    lastMouseX = e.clientX;
+    velX = dx;
+    applyX(currentX + dx);
+    targetX = currentX;
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    outer.classList.remove('is-dragging');
+    // Snap to nearest card with momentum
+    const momentum = velX * 5;
+    const raw      = Math.round(-(currentX + momentum) / CARD_W);
+    const idx      = ((raw % origCount) + origCount) % origCount;
+    snapToCard(idx);
+  });
+
+  // ── Touch drag ───────────────────────────────────────────────
+  let lastTouchX = 0;
+  outer.addEventListener('touchstart', e => {
+    isDragging = true;
+    lastTouchX = e.touches[0].clientX;
+    velX = 0;
+  }, { passive: true });
+
+  outer.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const dx = e.touches[0].clientX - lastTouchX;
+    lastTouchX = e.touches[0].clientX;
+    velX = dx;
+    applyX(currentX + dx);
+    targetX = currentX;
+  }, { passive: true });
+
+  outer.addEventListener('touchend', () => {
+    isDragging = false;
+    const momentum = velX * 4;
+    const raw      = Math.round(-(currentX + momentum) / CARD_W);
+    const idx      = ((raw % origCount) + origCount) % origCount;
+    snapToCard(idx);
+  });
+
+  // ── Init ─────────────────────────────────────────────────────
+  initLoop();
+  buildDots();
+  window.addEventListener('resize', () => {});
   rafId = requestAnimationFrame(tick);
 })();
 
-// ─────────────────────────────────────────────────────────────────
-// SCHEDULE — GSAP ScrollTrigger scroll-in / scroll-out animations
-// Items slide IN when scrolling down to them, stay visible as you
-// continue scrolling down, but fade OUT when scrolling back UP.
-// ─────────────────────────────────────────────────────────────────
+
 (function initScheduleGSAP() {
   const section = document.getElementById('scheduleSection');
   if (!section) return;
