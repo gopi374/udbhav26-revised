@@ -2593,6 +2593,34 @@
 
 
 
+    <style>
+    /* ─ Verify toast popup ─ */
+    .vfy-toast {
+      position: fixed; top: 1.5rem; left: 50%; transform: translateX(-50%) translateY(-10px);
+      min-width: 280px; max-width: 90vw;
+      padding: 1rem 1.4rem; border-radius: 16px;
+      font-family: 'Outfit', sans-serif; font-size: 0.92rem; font-weight: 600;
+      display: flex; align-items: flex-start; gap: 0.8rem;
+      box-shadow: 0 8px 32px rgba(0,0,0,0.45);
+      z-index: 9999; opacity: 0;
+      transition: opacity 0.25s, transform 0.25s;
+      pointer-events: none;
+    }
+    .vfy-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); pointer-events: auto; }
+    .vfy-toast.error { background: #1c0a0a; border: 1.5px solid rgba(248,113,113,0.4); color: #fca5a5; }
+    .vfy-toast.warn  { background: #1a140a; border: 1.5px solid rgba(251,191,36,0.4);  color: #fde68a; }
+    .vfy-toast-icon { font-size: 1.3rem; flex-shrink: 0; margin-top: -1px; }
+    .vfy-toast-body { line-height: 1.45; }
+    .vfy-toast-title { font-size: 0.97rem; font-weight: 800; margin-bottom: 0.15rem; }
+    .vfy-toast-msg   { opacity: 0.8; font-size: 0.83rem; font-weight: 500; }
+    /* Verify btn loading spinner */
+    .verify-code-btn .vfy-spin {
+      display: inline-block; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.3); border-top-color: #fff;
+      border-radius: 50%; animation: vfySpin 0.7s linear infinite; vertical-align: middle;
+    }
+    @keyframes vfySpin { to { transform: rotate(360deg); } }
+  </style>
   <!-- ══ UDBHAV'26 Register Form — Interactive Logic ══════════════════════════
        This script is COMPLETELY STANDALONE — no 'use strict', no IIFE conflicts.
        It handles all interactive elements and is guaranteed to run.
@@ -2619,6 +2647,26 @@
       });
     }
 
+    // ── TOAST POPUP HELPER ───────────────────────────────────────────────────
+    function showToast(type, title, msg) {
+      var existing = document.getElementById('vfyToast');
+      if (existing) existing.remove();
+      var t = document.createElement('div');
+      t.id = 'vfyToast';
+      t.className = 'vfy-toast ' + type;
+      t.innerHTML = '<span class="vfy-toast-icon">' + (type === 'error' ? '🚫' : '⚠️') + '</span>' +
+        '<div class="vfy-toast-body"><div class="vfy-toast-title">' + title + '</div>' +
+        '<div class="vfy-toast-msg">' + msg + '</div></div>';
+      document.body.appendChild(t);
+      requestAnimationFrame(function() {
+        requestAnimationFrame(function() { t.classList.add('show'); });
+      });
+      setTimeout(function() {
+        t.classList.remove('show');
+        setTimeout(function() { t.remove(); }, 300);
+      }, 5000);
+    }
+
     // ── TEAM CODE VERIFY ─────────────────────────────────────────────────────
     var verifyBtn  = document.getElementById('verifyCodeBtn');
     var codeInput  = document.getElementById('teamCodeInput');
@@ -2629,15 +2677,30 @@
     if (verifyBtn && codeInput) {
       verifyBtn.addEventListener('click', async function() {
         var code = (codeInput.value || '').trim().toUpperCase();
-        if (!code) { if (codeErr) codeErr.textContent = 'Please enter your team code.'; return; }
+        if (!code) { showToast('error', 'Code Required', 'Please enter your team code before verifying.'); return; }
         if (codeErr) codeErr.textContent = '';
-        verifyBtn.disabled = true; verifyBtn.textContent = 'Checking…';
+
+        // Loading state — spinner
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = '<span class="vfy-spin"></span> Checking…';
+
         try {
           var res  = await fetch('/api/team?code=' + encodeURIComponent(code));
           var data = await res.json();
           if (!res.ok || !data.success) {
-            if (codeErr) codeErr.textContent = data.error || 'Invalid team code. Please try again.';
-            verifyBtn.disabled = false; verifyBtn.textContent = 'Verify →';
+            // Already paid / registered
+            if (data.alreadyPaid) {
+              showToast('warn', 'Already Registered',
+                'Team \'' + code + '\' has already completed payment and is registered. Contact support if this is unexpected.');
+            } else if (res.status === 404) {
+              showToast('error', 'Code Not Found',
+                '\'' + code + '\' doesn\'t match any team. Double-check your shortlisting email.');
+            } else {
+              showToast('error', 'Verification Failed', data.error || 'Invalid team code. Please try again.');
+            }
+            if (codeErr) codeErr.textContent = '';
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = 'Verify →';
             return;
           }
           var team = data.team;
@@ -2650,9 +2713,10 @@
           window.__verifiedTeamCode = team.code;
           if (detailStep) { detailStep.style.display = 'block'; detailStep.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
           codeInput.readOnly = true;
-          verifyBtn.textContent = '✓ Verified';
+          verifyBtn.innerHTML = '✓ Verified';
           verifyBtn.style.background = 'linear-gradient(135deg,#16a34a,#4ade80)';
           verifyBtn.style.opacity = '0.85';
+          verifyBtn.style.boxShadow = '0 0 18px rgba(74,222,128,0.3)';
           updatePayBtn();
         } catch(err) {
           if (codeErr) codeErr.textContent = 'Network error. Please try again.';
