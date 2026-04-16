@@ -1055,6 +1055,8 @@
     }
   </style>
   <link rel="stylesheet" href="/mobile-perf.css" />
+  <!-- Cashfree JS SDK -->
+  <script src="https://sdk.cashfree.com/js/v3/cashfree.js"></script>
 </head>
 
 <body>
@@ -2787,18 +2789,33 @@
           var data = await res.json();
           if (!res.ok || !data.orderId) throw new Error(data.error || 'Order creation failed');
 
-          // Open Cashfree checkout
-          var cfg = {
-            paymentSessionId: data.paymentSessionId,
-            redirectTarget: '_self',
-          };
-          if (window.Cashfree) {
-            var cf = window.Cashfree({ mode: data.env || 'sandbox' });
-            cf.checkout(cfg).then(function(r) {
-              if (r.error) { payBtn.disabled = false; payBtn.textContent = 'Pay & Register'; }
+          // Cashfree checkout→
+          // Cashfree JS SDK v3 checkout
+          var cfMode = data.cfEnv || 'sandbox';
+          if (typeof cashfreeSDK !== 'undefined' || typeof window.Cashfree === 'function') {
+            var initFn = window.Cashfree || cashfreeSDK;
+            var cf = initFn({ mode: cfMode });
+            cf.checkout({
+              paymentSessionId: data.paymentSessionId,
+              redirectTarget: '_self',
+            }).then(function(r) {
+              if (r && r.error) {
+                alert('Payment error: ' + (r.error.message || 'Unknown error'));
+                payBtn.disabled = false; payBtn.textContent = 'Pay & Register';
+              }
+            }).catch(function(err) {
+              alert('Checkout error: ' + err.message);
+              payBtn.disabled = false; payBtn.textContent = 'Pay & Register';
             });
           } else {
-            window.location.href = data.paymentLink || '/';
+            // Fallback: load SDK dynamically if missed
+            var s = document.createElement('script');
+            s.src = 'https://sdk.cashfree.com/js/v3/cashfree.js';
+            s.onload = function() {
+              var cf = window.Cashfree({ mode: cfMode });
+              cf.checkout({ paymentSessionId: data.paymentSessionId, redirectTarget: '_self' });
+            };
+            document.head.appendChild(s);
           }
         } catch(err) {
           alert('Payment error: ' + err.message);
