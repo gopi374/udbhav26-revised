@@ -314,7 +314,7 @@
 
       <!-- Subtitle block -->
       <div class="hero-subtitle" id="heroSubtitle">
-        <p class="subtitle-sans">50 TEAMS. 10 PROBLEMS. 15 MINUTES TO CHOOSE YOUR BATTLEFIELD.</p>
+        <p class="subtitle-sans">50 TEAMS. 10 PROBLEMS. 24 HOURS. ONE WINNER.</p>
         <p class="subtitle-serif"><em>24-HOUR HACKATHON.</em></p>
       </div>
 
@@ -330,151 +330,118 @@
        UDBHAV'26 — About Section (between hero &amp; bento)
        ══════════════════════════════════════════════════════════════════ -->
   <section class="udbhav-about" id="udbhavAbout" aria-label="About UDBHAV'26">
-
-    <!-- ── Ethereal background (same as other pages) ── -->
     <div class="ua-ethereal-root" aria-hidden="true">
-      <svg class="ua-ethereal-svg" aria-hidden="true">
-        <defs>
-          <filter id="uaEtherFilter" x="-20%" y="-20%" width="140%" height="140%">
-            <feTurbulence id="uaEtherTurb" result="undulation" numOctaves="2" baseFrequency="0.0005,0.002" seed="2" type="turbulence"/>
-            <feColorMatrix id="uaEtherHue" in="undulation" type="hueRotate" values="0"/>
-            <feColorMatrix in="dist" result="circulation" type="matrix" values="4 0 0 0 1  4 0 0 0 1  4 0 0 0 1  1 0 0 0 0"/>
-            <feDisplacementMap in="SourceGraphic" in2="circulation" scale="100" result="dist"/>
-            <feDisplacementMap in="dist" in2="undulation" scale="100" result="output"/>
-          </filter>
-        </defs>
-      </svg>
-      <div class="ua-ethereal-inner">
-        <div class="ua-ethereal-shadow"></div>
-      </div>
+      <svg class="ua-ethereal-svg" aria-hidden="true"><defs><filter id="uaEtherFilter" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence id="uaEtherTurb" result="undulation" numOctaves="2" baseFrequency="0.0005,0.002" seed="2" type="turbulence"/><feColorMatrix id="uaEtherHue" in="undulation" type="hueRotate" values="0"/><feColorMatrix in="dist" result="circulation" type="matrix" values="4 0 0 0 1  4 0 0 0 1  4 0 0 0 1  1 0 0 0 0"/><feDisplacementMap in="SourceGraphic" in2="circulation" scale="100" result="dist"/><feDisplacementMap in="dist" in2="undulation" scale="100" result="output"/></filter></defs></svg>
+      <div class="ua-ethereal-inner"><div class="ua-ethereal-shadow"></div></div>
     </div>
-    <div class="ua-ethereal-noise"  aria-hidden="true"></div>
+    <div class="ua-ethereal-noise" aria-hidden="true"></div>
     <div class="ua-ethereal-vignette" aria-hidden="true"></div>
 
-    <!-- Section header -->
-    <div class="ua-header">
-      <span class="ua-pre-label">THE EVENT</span>
-      <h2 class="ua-title">About <em>UDBHAV'26</em></h2>
-      <p class="ua-tagline">50 teams. 10 problems. 24 hours. One winner.</p>
+    <div class="uab-header">
+      <span class="uab-label">THE EVENT</span>
+      <h2 class="uab-title">About <em>UDBHAV'26</em></h2>
+      <p class="uab-tagline">50 teams. 10 problems. 24 hours. One winner.</p>
+
+      <!-- Looping words — top-right corner of about section header -->
+      <div class="ulw-block" id="ulwBlock" aria-hidden="true">
+        <div class="ulw-inner">
+          <!-- Blur depth overlays for top/bottom peek words -->
+          <div class="ulw-blur-top"></div>
+          <div class="ulw-blur-bot"></div>
+          <!-- Word list -->
+          <ul class="ulw-list" id="ulwList">
+            <li class="ulw-item"><p class="ulw-word">BUILD</p></li>
+            <li class="ulw-item"><p class="ulw-word">CREATE</p></li>
+            <li class="ulw-item"><p class="ulw-word">SOLVE</p></li>
+            <li class="ulw-item"><p class="ulw-word">COMPETE</p></li>
+            <li class="ulw-item"><p class="ulw-word">WIN</p></li>
+          </ul>
+          <!-- 4-corner selector — sits at center slot via CSS top:33.33% -->
+          <div class="ulw-sel" id="ulwSel">
+            <div class="ulw-edge ulw-edge--tl"></div>
+            <div class="ulw-edge ulw-edge--tr"></div>
+            <div class="ulw-edge ulw-edge--bl"></div>
+            <div class="ulw-edge ulw-edge--br"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <!-- 5 accordion strips -->
-    <div class="ua-strips">
 
-      <!-- Strip 1 — Overview -->
-      <div class="ua-strip" id="uaStrip1" tabindex="0" role="region" aria-label="Overview">
-        <div class="ua-strip__index">01</div>
-        <div class="ua-label-wrap">
-          <span class="ua-strip__label">Overview</span>
-          <div class="ua-emoji-card ua-e1" aria-hidden="true">🚀</div>
-          <div class="ua-emoji-card ua-e2" aria-hidden="true">⚡</div>
-        </div>
-        <div class="ua-strip__body">
-          <p>UDBHAV'26 is a high-intensity, 24-hour hackathon hosted at Sage University, Indore, bringing together top student innovators to build real-world solutions under pressure, where creativity, speed, and execution define success.</p>
-        </div>
-        <div class="ua-strip__arrow" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-
-      <!-- Strip 2 — Scale -->
-      <div class="ua-strip" id="uaStrip2" tabindex="0" role="region" aria-label="Scale and Participation">
-        <div class="ua-strip__index">02</div>
-        <div class="ua-label-wrap">
-          <span class="ua-strip__label">Scale &amp; Participation</span>
-          <div class="ua-emoji-card ua-e1" aria-hidden="true">👥</div>
-          <div class="ua-emoji-card ua-e2" aria-hidden="true">🏆</div>
-        </div>
-        <div class="ua-strip__body">
-          <p>The event features <strong>50 carefully shortlisted teams</strong> and over <strong>200 participants</strong>, all competing in a fast-paced environment designed to push technical and problem-solving limits.</p>
-        </div>
-        <div class="ua-strip__stats">
-          <div class="ua-stat"><span class="ua-stat__num">50</span><span class="ua-stat__lbl">Teams</span></div>
-          <div class="ua-stat"><span class="ua-stat__num">200+</span><span class="ua-stat__lbl">Participants</span></div>
-          <div class="ua-stat"><span class="ua-stat__num">24h</span><span class="ua-stat__lbl">Non-Stop</span></div>
-        </div>
-        <div class="ua-strip__arrow" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-
-      <!-- Strip 3 — Challenge Format -->
-      <div class="ua-strip" id="uaStrip3" tabindex="0" role="region" aria-label="Challenge Format">
-        <div class="ua-strip__index">03</div>
-        <div class="ua-label-wrap">
-          <span class="ua-strip__label">Challenge Format</span>
-          <div class="ua-emoji-card ua-e1" aria-hidden="true">💡</div>
-          <div class="ua-emoji-card ua-e2" aria-hidden="true">🎯</div>
-        </div>
-        <div class="ua-strip__body">
-          <p>Participants will face <strong>10 real-world problem statements</strong> released in a rapid <strong>15-minute PS drop window</strong>, requiring quick thinking, sharp decision-making, and efficient collaboration.</p>
-        </div>
-        <div class="ua-strip__arrow" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-
-      <!-- Strip 4 — Why Participate -->
-      <div class="ua-strip" id="uaStrip4" tabindex="0" role="region" aria-label="Why Participate">
-        <div class="ua-strip__index">04</div>
-        <div class="ua-label-wrap">
-          <span class="ua-strip__label">Why Participate</span>
-          <div class="ua-emoji-card ua-e1" aria-hidden="true">🤝</div>
-          <div class="ua-emoji-card ua-e2" aria-hidden="true">🌐</div>
-        </div>
-        <div class="ua-strip__body">
-          <p>UDBHAV'26 offers hands-on exposure to industry-level challenges, opportunities to collaborate with talented peers, connect with mentors and judges, and gain recognition while competing for exciting rewards.</p>
-        </div>
-        <div class="ua-strip__tags">
-          <span class="ua-tag">🏆 Prizes</span>
-          <span class="ua-tag">🤝 Mentors</span>
-          <span class="ua-tag">🌐 Network</span>
-          <span class="ua-tag">💡 Real Challenges</span>
-          <span class="ua-tag">🎯 Recognition</span>
-        </div>
-        <div class="ua-strip__arrow" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-
-      <!-- Strip 5 — Event Details -->
-      <div class="ua-strip" id="uaStrip5" tabindex="0" role="region" aria-label="Event Details">
-        <div class="ua-strip__index">05</div>
-        <div class="ua-label-wrap">
-          <span class="ua-strip__label">Event Details</span>
-          <div class="ua-emoji-card ua-e1" aria-hidden="true">📍</div>
-          <div class="ua-emoji-card ua-e2" aria-hidden="true">📅</div>
-        </div>
-        <div class="ua-strip__body">
-          <p>Organized by <strong>Enclope (Alta School of Technology)</strong> in collaboration with <strong>Sunstone</strong> — 25–26 April 2026 at Sage University, Indore. Prize pool: <strong>₹45,000</strong>. 24-hour non-stop format.</p>
-        </div>
-        <div class="ua-strip__meta">
-          <div class="ua-meta-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            <span>Sage University, Indore</span>
-          </div>
-          <div class="ua-meta-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            <span>25–26 April 2026</span>
-          </div>
-          <div class="ua-meta-row">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <span>Prize Pool: ₹45,000</span>
-          </div>
-        </div>
-        <div class="ua-strip__arrow" aria-hidden="true">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </div>
-      </div>
-
-    </div><!-- /.ua-strips -->
-
-    <!-- Register CTA -->
-    <div class="ua-cta-row">
-      <a href="/register.html" class="ua-cta-btn" id="uaCta">Register Now &nbsp;›</a>
-      <span class="ua-cta-note">Applications open till 18th April 2026 · Sage University, Indore</span>
+    <div class="uab-stats" aria-label="Event statistics">
+      <div class="uab-stat-card"><span class="uab-stat-num">50</span><span class="uab-stat-lbl">Teams</span></div>
+      <div class="uab-stat-card"><span class="uab-stat-num">200+</span><span class="uab-stat-lbl">Participants</span></div>
+      <div class="uab-stat-card"><span class="uab-stat-num">24H</span><span class="uab-stat-lbl">Non-Stop</span></div>
+      <div class="uab-stat-card uab-stat-card--accent"><span class="uab-stat-num">&#8377;45K</span><span class="uab-stat-lbl">Prize Pool</span></div>
     </div>
 
+    <div class="uab-grid">
+      <div class="uab-card uab-card--overview">
+        <span class="uab-card-label">01 &mdash; OVERVIEW</span>
+        <p class="uab-overview-text"><strong>UDBHAV'26</strong> is a high-intensity, <strong>24-hour hackathon</strong> hosted at <strong>Sage University, Indore</strong>, bringing together top student innovators to build real-world solutions under extreme pressure.<br><br>Organized by <strong>Enclope (Alta School of Technology)</strong> in collaboration with <strong>Sunstone</strong>, this event is designed to push technical limits, fuel creativity, and launch careers.</p>
+        <div class="uab-meta-list">
+          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Sage University, Indore</span></div>
+          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>25&ndash;26 April 2026</span></div>
+          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Prize Pool: &#8377;45,000</span></div>
+        </div>
+      </div>
+      <div class="uab-card uab-card--timeline">
+        <span class="uab-card-label">02 &mdash; EVENT TIMELINE</span>
+        <div class="uab-timeline">
+          <div class="uab-tl-item">
+            <span class="uab-tl-time">09:00 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Registration &amp; Check-in</span>
+          </div>
+          <div class="uab-tl-item">
+            <span class="uab-tl-time">10:00 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Opening Ceremony</span>
+          </div>
+          <div class="uab-tl-item uab-tl-item--hot">
+            <span class="uab-tl-time">10:45 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">PS Drop</span>
+          </div>
+          <div class="uab-tl-item uab-tl-item--go">
+            <span class="uab-tl-time">11:00 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Coding Begins &#9654;</span>
+          </div>
+          <div class="uab-tl-item">
+            <span class="uab-tl-time">25 Apr · 11 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Judging Panel</span>
+          </div>
+          <div class="uab-tl-item uab-tl-item--win">
+            <span class="uab-tl-time">26 Apr · 8:30 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Results Dropped &#127881;</span>
+          </div>
+          <div class="uab-tl-item">
+            <span class="uab-tl-time">26 Apr · 10:30 AM</span>
+            <span class="uab-tl-dot"></span>
+            <span class="uab-tl-text">Closing Ceremony</span>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="uab-card uab-card--why">
+        <span class="uab-card-label">03 &mdash; WHY PARTICIPATE</span>
+        <div class="uab-why-grid">
+          <div class="uab-why-item"><span class="uab-why-icon">&#127942;</span><span class="uab-why-text">Cash Prizes<span class="uab-why-sub">&#8377;45,000 pool</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon">&#129309;</span><span class="uab-why-text">Expert Mentors<span class="uab-why-sub">Live guidance</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon">&#127758;</span><span class="uab-why-text">Industry Network<span class="uab-why-sub">Real connections</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon">&#127919;</span><span class="uab-why-text">Recognition<span class="uab-why-sub">Certificates &amp; fame</span></span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="uab-cta">
+      <a href="/register.html" class="uab-cta-btn" id="uaCta">Register Now &nbsp;&rsaquo;</a>
+      <span class="uab-cta-note">Applications open till 18th April 2026 &middot; Sage University, Indore</span>
+    </div>
   </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
@@ -511,7 +478,7 @@
       </div>
       <div class="pd-header-right">
         <h2 class="pd-title">Choose Your <em>Battlefield</em></h2>
-        <p class="pd-subtitle">8 domains. Real-world problems. 15 minutes to lock in your challenge.</p>
+        <p class="pd-subtitle">8 domains. Real-world problems. Pick yours and build.</p>
       </div>
     </div>
 
@@ -711,7 +678,7 @@
               <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--critical"></div></div>
               <div class="sch-item-content">
                 <div class="sch-item-top"><span class="sch-item-name">PS Drop</span><span class="sch-badge sch-badge--critical">Critical</span></div>
-                <p class="sch-item-desc">Problem statement announcement &amp; team lock-in. 15 minutes to choose your battlefield.</p>
+                <p class="sch-item-desc">Problem statement announcement &amp; team lock-in. Choose your domain and commit.</p>
               </div>
             </div>
           </div>
@@ -984,7 +951,7 @@
           </button>
           <div class="faq-answer" id="faq-ans-6" role="region" aria-labelledby="faq-btn-6">
             <div class="faq-answer-inner">
-              <p><strong>10 problem statements</strong> drop simultaneously in a rapid <strong>15-minute PS window</strong> at the start. Each team picks one and locks in their challenge — no going back. This is where the real game begins.</p>
+              <p><strong>10 problem statements</strong> drop simultaneously at the start. Each team picks one and locks in their challenge — no going back. This is where the real game begins.</p>
             </div>
           </div>
         </div>

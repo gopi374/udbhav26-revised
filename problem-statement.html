@@ -48,54 +48,12 @@
       to   { opacity: 1;   transform: scale(1.05); }
     }
 
-    /* ── FIXED PS BAR ────────────────────────────────────── */
-    .ps-bar {
-      position: fixed; top: 72px; left: 0; right: 0; z-index: 900;
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 0 clamp(1rem,3vw,2.5rem); height: 40px;
-      background: rgba(6,6,10,0.92);
-      border-bottom: 1px solid rgba(168,85,247,0.18);
-      backdrop-filter: blur(24px);
-    }
-    .ps-bar__left {
-      display: flex; align-items: center; gap: 0.8rem;
-    }
-    .ps-bar__pip {
-      width: 6px; height: 6px; border-radius: 50%; background: var(--ps-purple);
-      animation: ps-pip-pulse 2s ease-in-out infinite;
-    }
-    @keyframes ps-pip-pulse { 0%,100%{opacity:1;box-shadow:0 0 0 0 var(--ps-purple-glow);} 50%{opacity:0.5;box-shadow:0 0 0 4px transparent;} }
-    .ps-bar__title {
-      font-family: 'Bebas Neue', sans-serif; font-size: 15px;
-      letter-spacing: 0.14em; color: rgba(255,255,255,0.45);
-    }
-    .ps-bar__title strong { color: rgba(255,255,255,0.75); font-weight: 400; }
-    .ps-bar__right {
-      display: flex; align-items: center; gap: 1.4rem;
-    }
-    .ps-bar__live {
-      display: none; align-items: center; gap: 0.45rem;
-      font-family: 'Sora', sans-serif; font-size: 10px; font-weight: 700;
-      letter-spacing: 0.22em; text-transform: uppercase; color: #4ade80;
-    }
-    .ps-bar__live-dot {
-      width: 6px; height: 6px; border-radius: 50%; background: #ef4444;
-      animation: ps-blink 0.9s ease-in-out infinite;
-    }
-    @keyframes ps-blink { 0%,100%{opacity:1;} 50%{opacity:0.15;} }
-    .ps-bar__close {
-      font-family: 'JetBrains Mono', monospace; font-size: 12px;
-      color: var(--ps-purple); display: none; letter-spacing: 0.06em;
-    }
-    .ps-bar__time {
-      font-family: 'JetBrains Mono', monospace; font-size: 12px;
-      color: rgba(255,255,255,0.3); letter-spacing: 0.06em;
-    }
+    /* .ps-bar removed */
 
     /* ── MAIN WRAP ───────────────────────────────────────── */
     .ps-main {
       position: relative; z-index: 10;
-      padding-top: 115px; min-height: 100vh;
+      padding-top: 88px; min-height: 100vh;
     }
 
     /* ══════════════════════════════════════════════════════
@@ -639,21 +597,7 @@
     </div>
   </div>
 
-  <!-- ── Fixed PS header bar ──────────────────────────── -->
-  <div class="ps-bar" id="psBar">
-    <div class="ps-bar__left">
-      <div class="ps-bar__pip" aria-hidden="true"></div>
-      <span class="ps-bar__title"><strong>UDBHAV'26</strong> &nbsp;·&nbsp; PS DROP</span>
-    </div>
-    <div class="ps-bar__right">
-      <div class="ps-bar__live" id="psBarLive" aria-live="polite">
-        <div class="ps-bar__live-dot" aria-hidden="true"></div>
-        <span>LIVE</span>
-      </div>
-      <span class="ps-bar__close" id="psBarClose"></span>
-      <span class="ps-bar__time" id="psBarTime" aria-live="off">--:--:--</span>
-    </div>
-  </div>
+
 
   <main class="ps-main">
 
@@ -849,9 +793,9 @@
     const elBarClose = document.getElementById('psBarClose');
     const elBarTime  = document.getElementById('psBarTime');
 
-    // ── CLOCK ────────────────────────────────────────────────────
+    // ── CLOCK (bar removed — skip) ───────────────────────────────
     function tickClock() {
-      elBarTime.textContent = new Date().toLocaleTimeString('en-IN', { hour12: false });
+      if (elBarTime) elBarTime.textContent = new Date().toLocaleTimeString('en-IN', { hour12: false });
     }
     tickClock(); setInterval(tickClock, 1000);
 
@@ -909,14 +853,14 @@
 
     // ── ACTIVE STATE ─────────────────────────────────────────────
     function initActive() {
-      elBarLive.style.display = 'flex';
-      elBarClose.style.display = 'inline';
+      if (elBarLive) elBarLive.style.display = 'flex';
+      if (elBarClose) elBarClose.style.display = 'inline';
       function tickClose() {
         const diff = DROP_CLOSE - new Date();
         if (diff <= 0) { showState('closed'); return; }
         const m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
         const p = n => String(n).padStart(2,'0');
-        elBarClose.textContent = `Closes in ${p(m)}:${p(s)}`;
+        if (elBarClose) elBarClose.textContent = `Closes in ${p(m)}:${p(s)}`;
       }
       tickClose(); setInterval(tickClose, 1000);
     }

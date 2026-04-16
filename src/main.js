@@ -1267,19 +1267,95 @@ document.querySelectorAll('.nav-link').forEach(link => {
 })();
 
 // ─────────────────────────────────────────────────────────────────
-// About section — ethereal hue-rotate animation (same as other pages)
+// LOOPING WORDS — About section top-right corner (v2)
+// Container shows 3 words: prev (blurred/faded) | CURRENT | next (blurred/faded)
+// Selector brackets resize to match current word's pixel width.
+// yPercent formula: -(wordHeight * (idx-1)) keeps idx in CENTER slot.
+// ─────────────────────────────────────────────────────────────────
+(function initLoopingWords() {
+  const wordList = document.getElementById('ulwList');
+  const sel      = document.getElementById('ulwSel');
+  if (!wordList || !sel || typeof gsap === 'undefined') return;
+
+  const totalWords = wordList.children.length;
+  const wordHeight = 100 / totalWords; // % of list height per word
+
+  // Start at index 1 so word[0] peeks above, word[1] is centered, word[2] peeks below
+  let currentIdx = 1;
+
+  // ── Resize selector brackets to match current center word ────────
+  function updateSel() {
+    const centered = wordList.children[currentIdx];
+    if (!centered) return;
+    const wordEl  = centered.querySelector('.ulw-word') || centered;
+    const wordPx  = wordEl.getBoundingClientRect().width;
+    gsap.to(sel, { width: wordPx + 'px', duration: 0.5, ease: 'expo.out' });
+  }
+
+  // ── Scroll list so currentIdx sits in center slot ────────────────
+  // yPercent = -(wordHeight * (currentIdx - 1))
+  // When idx=1: yPercent=0       → items [0,1,2] → center = item 1 ✓
+  // When idx=2: yPercent=-wh     → items [1,2,3] → center = item 2 ✓
+  // When idx=3: yPercent=-2*wh   → items [2,3,4] → center = item 3 ✓
+  function moveWords() {
+    currentIdx++;
+    gsap.to(wordList, {
+      yPercent: -(wordHeight * (currentIdx - 1)),
+      duration: 1.2,
+      ease: 'elastic.out(1, 0.85)',
+      onStart: updateSel,
+      onComplete() {
+        // Infinite loop: when near the end, append first child & snap back
+        if (currentIdx >= totalWords - 2) {
+          wordList.appendChild(wordList.children[0]);
+          currentIdx--;
+          gsap.set(wordList, { yPercent: -(wordHeight * (currentIdx - 1)) });
+        }
+      },
+    });
+  }
+
+  // Set initial selector width and kick off the loop
+  gsap.set(wordList, { yPercent: 0 }); // start showing items [0,1,2]
+  // Wait for layout to settle before measuring word width
+  requestAnimationFrame(() => {
+    updateSel();
+    gsap.timeline({ repeat: -1, delay: 1.8 })
+      .call(moveWords)
+      .to({}, { duration: 2.2 });
+  });
+})();
+
+// ─────────────────────────────────────────────────────────────────
+// About section — ethereal hue-rotate animation (paused when off-screen)
 // ─────────────────────────────────────────────────────────────────
 (function initUaEthereal() {
-  const hueEl = document.getElementById('uaEtherHue');
+  const hueEl   = document.getElementById('uaEtherHue');
+  const aboutEl = document.getElementById('udbhavAbout');
   if (!hueEl) return;
-  let hue = 0;
+
+  let hue        = 0;
+  let hueRunning = true;
+  let hueRafId   = null;
   const DEG_PER_FRAME = 360 / (5.84 * 60);
+
   function animUaEther() {
     hue = (hue + DEG_PER_FRAME) % 360;
     hueEl.setAttribute('values', hue.toFixed(2));
-    requestAnimationFrame(animUaEther);
+    if (hueRunning) hueRafId = requestAnimationFrame(animUaEther);
+    else hueRafId = null;
   }
-  animUaEther();
+
+  // Pause when About section is not visible — saves CPU/GPU
+  if ('IntersectionObserver' in window && aboutEl) {
+    const obs = new IntersectionObserver(([entry]) => {
+      hueRunning = entry.isIntersecting;
+      if (hueRunning && !hueRafId) hueRafId = requestAnimationFrame(animUaEther);
+    }, { threshold: 0.01 });
+    obs.observe(aboutEl);
+  }
+
+  hueRafId = requestAnimationFrame(animUaEther);
 })();
 
 // ─────────────────────────────────────────────────────────────────

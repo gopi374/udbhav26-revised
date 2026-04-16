@@ -162,6 +162,8 @@ body {
   height: 72px;
   background: transparent;
   transition: background 0.3s;
+  /* Allow nav-pill to be absolutely centered */
+  isolation: isolate;
 }
 
 /* Logo */
@@ -239,7 +241,7 @@ body {
   gap: 0.6rem;
 }
 
-/* Floating pill */
+/* Floating pill â€” centered absolutely within the navbar */
 .nav-pill {
   display: flex;
   align-items: center;
@@ -250,7 +252,11 @@ body {
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(22px);
   -webkit-backdrop-filter: blur(22px);
-  position: relative;
+  /* Center pill in the navbar */
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.28), 0 1px 6px rgba(0, 0, 0, 0.15);
   transition: box-shadow 0.4s ease;
 }
@@ -5151,3 +5157,495 @@ img, video, iframe { max-width: 100%; height: auto; }
     min-height: 44px;
   }
 }
+
+/* ----------------------------------------------------------
+   ABOUT SECTION — BENTO GRID REDESIGN (uab-* classes)
+   ---------------------------------------------------------- */
+.uab-header {
+  max-width: 1200px; margin: 0 auto 44px; padding: 0 48px;
+  position: relative; z-index: 10;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0.7rem;
+}
+.uab-label {
+  display: inline-block; font-family: 'Inter', sans-serif; font-size: 0.68rem;
+  font-weight: 600; letter-spacing: 0.35em; text-transform: uppercase;
+  color: rgba(255,255,255,0.3); border: 1px solid rgba(255,255,255,0.12);
+  padding: 0.28rem 0.85rem; border-radius: 999px;
+}
+.uab-title {
+  font-family: 'Inter', sans-serif; font-weight: 900;
+  font-size: clamp(2.6rem, 5.5vw, 5rem); line-height: 1.0;
+  letter-spacing: -0.04em; color: #fff; margin: 0;
+}
+.uab-title em {
+  font-family: 'Fraunces', serif; font-style: italic; font-weight: 700;
+  letter-spacing: -0.02em;
+  background: linear-gradient(135deg, #fff 0%, rgba(255,255,255,0.5) 100%);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.uab-tagline {
+  font-family: 'Inter', sans-serif; font-size: 0.95rem;
+  color: rgba(255,255,255,0.35); letter-spacing: 0.02em; margin: 0;
+}
+.uab-stats {
+  max-width: 1200px; margin: 0 auto 24px; padding: 0 48px;
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;
+  position: relative; z-index: 10;
+}
+.uab-stat-card {
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; padding: 20px 24px;
+  display: flex; flex-direction: column; gap: 4px;
+  transition: background 0.25s, border-color 0.25s;
+}
+.uab-stat-card:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.15); }
+.uab-stat-card--accent { border-color: rgba(34,197,94,0.25); background: rgba(34,197,94,0.05); }
+.uab-stat-card--accent:hover { background: rgba(34,197,94,0.09); border-color: rgba(34,197,94,0.4); }
+.uab-stat-num {
+  font-family: 'Inter', sans-serif; font-size: clamp(1.8rem, 2.8vw, 2.6rem);
+  font-weight: 800; color: #fff; letter-spacing: -0.04em; line-height: 1;
+}
+.uab-stat-card--accent .uab-stat-num { color: #22c55e; }
+.uab-stat-lbl {
+  font-family: 'Inter', sans-serif; font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.16em; text-transform: uppercase; color: rgba(255,255,255,0.3);
+}
+.uab-grid {
+  max-width: 1200px; margin: 0 auto; padding: 0 48px;
+  display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: auto auto;
+  gap: 12px; position: relative; z-index: 10;
+}
+.uab-card {
+  background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 20px; padding: 28px 30px;
+  position: relative; overflow: hidden;
+  transition: background 0.3s, border-color 0.3s;
+}
+.uab-card:hover { background: rgba(255,255,255,0.055); border-color: rgba(255,255,255,0.14); }
+.uab-card-label {
+  display: block; font-family: 'Inter', sans-serif; font-size: 0.6rem;
+  font-weight: 700; letter-spacing: 0.28em; text-transform: uppercase;
+  color: rgba(255,255,255,0.22); margin-bottom: 14px;
+}
+.uab-card--overview {
+  grid-column: 1; grid-row: 1 / 3;
+  display: flex; flex-direction: column;
+  border-color: rgba(255,255,255,0.1);
+}
+.uab-overview-text {
+  font-family: 'Inter', sans-serif; font-size: clamp(0.88rem, 1.2vw, 1rem);
+  font-weight: 400; color: rgba(255,255,255,0.58); line-height: 1.78; flex: 1; margin-bottom: 24px;
+}
+.uab-overview-text strong { color: rgba(255,255,255,0.92); font-weight: 600; }
+.uab-meta-list {
+  display: flex; flex-direction: column; gap: 10px;
+  padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.07);
+}
+.uab-meta-item {
+  display: flex; align-items: center; gap: 10px;
+  font-family: 'Inter', sans-serif; font-size: 0.82rem;
+  font-weight: 500; color: rgba(255,255,255,0.46);
+}
+.uab-meta-item svg { flex-shrink: 0; opacity: 0.5; }
+.uab-card--format { grid-column: 2; grid-row: 1; }
+.uab-ps-window { display: flex; align-items: baseline; gap: 10px; margin-bottom: 10px; }
+.uab-ps-timer {
+  font-family: 'Bebas Neue', sans-serif; font-size: clamp(2.8rem, 4vw, 4.2rem);
+  line-height: 1; color: #fff; letter-spacing: 0.04em;
+}
+.uab-ps-unit {
+  font-family: 'Inter', sans-serif; font-size: 0.7rem; font-weight: 600;
+  letter-spacing: 0.18em; text-transform: uppercase;
+  color: rgba(255,255,255,0.28); align-self: center;
+}
+.uab-format-desc {
+  font-family: 'Inter', sans-serif; font-size: 0.88rem;
+  color: rgba(255,255,255,0.48); line-height: 1.65;
+}
+.uab-format-desc strong { color: rgba(255,255,255,0.85); font-weight: 600; }
+.uab-ps-pills { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.uab-ps-pill {
+  font-family: 'Inter', sans-serif; font-size: 0.65rem; font-weight: 600;
+  letter-spacing: 0.1em; text-transform: uppercase;
+  padding: 0.22rem 0.7rem; border-radius: 999px;
+  border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
+  color: rgba(255,255,255,0.52); white-space: nowrap;
+}
+.uab-card--why { grid-column: 2; grid-row: 2; }
+.uab-why-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
+}
+.uab-why-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 12px 14px; border-radius: 12px;
+  background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07);
+  transition: background 0.2s, border-color 0.2s;
+}
+.uab-why-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); }
+.uab-why-icon { font-size: 1.05rem; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.uab-why-text {
+  font-family: 'Inter', sans-serif; font-size: 0.78rem;
+  font-weight: 600; color: rgba(255,255,255,0.68); line-height: 1.3;
+}
+.uab-why-sub {
+  display: block; font-size: 0.65rem; font-weight: 400;
+  color: rgba(255,255,255,0.28); margin-top: 2px;
+}
+.uab-cta {
+  max-width: 1200px; margin: 26px auto 0; padding: 0 48px;
+  display: flex; align-items: center; gap: 1.4rem; flex-wrap: wrap;
+  position: relative; z-index: 10;
+}
+.uab-cta-btn {
+  display: inline-flex; align-items: center;
+  font-family: 'Inter', sans-serif; font-size: 0.85rem; font-weight: 700;
+  letter-spacing: 0.06em; text-transform: uppercase;
+  color: #000; background: #fff;
+  padding: 0.75rem 2rem; border-radius: 999px; text-decoration: none;
+  transition: background 0.2s, transform 0.25s cubic-bezier(0.16,1,0.3,1), box-shadow 0.2s;
+}
+.uab-cta-btn:hover {
+  background: #e5e5e5; transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(255,255,255,0.12);
+}
+.uab-cta-note {
+  font-family: 'Inter', sans-serif; font-size: 0.78rem;
+  color: rgba(255,255,255,0.25); letter-spacing: 0.02em;
+}
+@media (max-width: 900px) {
+  .uab-stats { grid-template-columns: repeat(2, 1fr); }
+  .uab-grid  { grid-template-columns: 1fr; }
+  .uab-card--overview { grid-row: auto; }
+  .uab-card--format { grid-column: 1; grid-row: auto; }
+  .uab-card--why    { grid-column: 1; grid-row: auto; }
+}
+@media (max-width: 560px) {
+  .uab-header, .uab-stats, .uab-grid, .uab-cta { padding: 0 20px; }
+  .uab-stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .uab-why-grid { grid-template-columns: 1fr; }
+  .uab-card { padding: 20px; }
+}
+
+/* -- Event Timeline card (uab-card--timeline) ----------------------- */
+.uab-card--timeline { grid-column: 2; grid-row: 1; }
+
+.uab-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  position: relative;
+}
+
+/* Vertical connector line */
+.uab-timeline::before {
+  content: '';
+  position: absolute;
+  left: 72px;
+  top: 10px;
+  bottom: 10px;
+  width: 1px;
+  background: linear-gradient(to bottom, transparent, rgba(255,255,255,0.1) 15%, rgba(255,255,255,0.1) 85%, transparent);
+}
+
+.uab-tl-item {
+  display: grid;
+  grid-template-columns: 72px 12px 1fr;
+  align-items: center;
+  gap: 0 12px;
+  padding: 8px 0;
+  transition: opacity 0.2s;
+}
+
+.uab-tl-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.68rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.28);
+  letter-spacing: 0.04em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.uab-tl-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.2);
+  flex-shrink: 0;
+  justify-self: center;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.uab-tl-text {
+  font-family: 'Inter', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgba(255,255,255,0.5);
+  transition: color 0.2s;
+}
+
+/* PS Drop — amber highlight */
+.uab-tl-item--hot .uab-tl-time { color: rgba(251,191,36,0.7); }
+.uab-tl-item--hot .uab-tl-dot  { background: rgba(251,191,36,0.55); border-color: rgba(251,191,36,0.7); box-shadow: 0 0 8px rgba(251,191,36,0.35); }
+.uab-tl-item--hot .uab-tl-text { color: rgba(251,191,36,0.9); font-weight: 600; }
+
+/* Hacking Begins — green highlight */
+.uab-tl-item--go .uab-tl-time { color: rgba(34,197,94,0.7); }
+.uab-tl-item--go .uab-tl-dot  { background: rgba(34,197,94,0.55); border-color: rgba(34,197,94,0.7); box-shadow: 0 0 8px rgba(34,197,94,0.35); }
+.uab-tl-item--go .uab-tl-text { color: rgba(34,197,94,0.9); font-weight: 700; }
+
+.uab-tl-item:hover .uab-tl-text { color: rgba(255,255,255,0.8); }
+.uab-tl-item:hover .uab-tl-dot  { background: rgba(255,255,255,0.3); }
+
+/* Results Dropped — gold/confetti highlight */
+.uab-tl-item--win .uab-tl-time { color: rgba(250,204,21,0.75); }
+.uab-tl-item--win .uab-tl-dot  { background: rgba(250,204,21,0.6); border-color: rgba(250,204,21,0.8); box-shadow: 0 0 10px rgba(250,204,21,0.4); }
+.uab-tl-item--win .uab-tl-text { color: rgba(250,204,21,0.95); font-weight: 700; letter-spacing: 0.01em; }
+
+/* Fix: wider time column so dates like '26 Apr · 8:30 AM' don't overflow */
+.uab-timeline { position: relative; }
+.uab-timeline::before { left: 100px; }
+.uab-tl-item { grid-template-columns: 100px 12px 1fr; }
+.uab-tl-time { font-size: 0.62rem; }
+
+/* About title — UDBHAV'26 em: italic only, no bold */
+.uab-title em {
+  font-weight: 400;
+}
+
+/* ----------------------------------------------------------
+   LOOPING WORDS — About section top-right corner
+   Ported from React/GSAP component to vanilla JS
+   ---------------------------------------------------------- */
+.uab-header { position: relative; }
+
+.ulw-block {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 20;
+  user-select: none;
+}
+
+/* Clipping window — shows exactly ONE word at a time */
+.ulw-inner {
+  position: relative;
+  overflow: hidden;
+  height: 3rem; /* matches one word height */
+  display: flex;
+  align-items: center;
+}
+
+.ulw-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  will-change: transform;
+}
+
+.ulw-item {
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.ulw-word {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.5rem, 2.5vw, 2.2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Top/bottom fade mask */
+.ulw-inner::before,
+.ulw-inner::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  height: 30%;
+  z-index: 2;
+  pointer-events: none;
+}
+.ulw-inner::before {
+  top: 0;
+  background: linear-gradient(to bottom, #000, transparent);
+}
+.ulw-inner::after {
+  bottom: 0;
+  background: linear-gradient(to top, #000, transparent);
+}
+
+/* 4-corner selector box */
+.ulw-sel {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 3rem;
+  pointer-events: none;
+}
+
+/* Each edge is an L-shaped corner indicator */
+.ulw-edge {
+  position: absolute;
+  width: 10px; height: 10px;
+}
+
+.ulw-edge--tl {
+  top: 0; left: 0;
+  border-top: 1.5px solid rgba(255,255,255,0.7);
+  border-left: 1.5px solid rgba(255,255,255,0.7);
+}
+.ulw-edge--tr {
+  top: 0; right: 0;
+  border-top: 1.5px solid rgba(255,255,255,0.7);
+  border-right: 1.5px solid rgba(255,255,255,0.7);
+}
+.ulw-edge--bl {
+  bottom: 0; left: 0;
+  border-bottom: 1.5px solid rgba(255,255,255,0.7);
+  border-left: 1.5px solid rgba(255,255,255,0.7);
+}
+.ulw-edge--br {
+  bottom: 0; right: 0;
+  border-bottom: 1.5px solid rgba(255,255,255,0.7);
+  border-right: 1.5px solid rgba(255,255,255,0.7);
+}
+
+/* Hide on mobile — too cramped */
+@media (max-width: 720px) {
+  .ulw-block { display: none; }
+}
+
+/* -- Looping Words OVERHAUL — corrected layout -------------------- */
+
+/* Block: anchored top-right in header */
+.ulw-block {
+  position: absolute;
+  top: 0; right: 0;
+  z-index: 20;
+  user-select: none;
+}
+
+/* Outer: 3 words tall — shows prev / current / next */
+.ulw-inner {
+  position: relative;
+  height: calc(3 * 3.4rem);   /* exactly 3 words */
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  /* Mask: fully opaque in center third, fades to transparent at both edges */
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.2) 10%,
+    rgba(0,0,0,0.6) 24%,
+    black 33.33%,
+    black 66.66%,
+    rgba(0,0,0,0.6) 76%,
+    rgba(0,0,0,0.2) 90%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(0,0,0,0.2) 10%,
+    rgba(0,0,0,0.6) 24%,
+    black 33.33%,
+    black 66.66%,
+    rgba(0,0,0,0.6) 76%,
+    rgba(0,0,0,0.2) 90%,
+    transparent 100%
+  );
+}
+
+/* Blur overlays for top/bottom depth feel */
+.ulw-blur-top,
+.ulw-blur-bot {
+  position: absolute;
+  left: 0; right: 0;
+  height: 33.33%;
+  z-index: 5;
+  pointer-events: none;
+  backdrop-filter: blur(2.5px);
+  -webkit-backdrop-filter: blur(2.5px);
+}
+.ulw-blur-top {
+  top: 0;
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 0%, transparent 100%);
+}
+.ulw-blur-bot {
+  bottom: 0;
+  -webkit-mask-image: linear-gradient(to top, black 0%, transparent 100%);
+  mask-image: linear-gradient(to top, black 0%, transparent 100%);
+}
+
+/* List & items */
+.ulw-list {
+  list-style: none;
+  margin: 0; padding: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  will-change: transform;
+  position: relative; z-index: 2;
+}
+.ulw-item {
+  height: 3.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+.ulw-word {
+  font-family: 'Inter', sans-serif;
+  font-size: clamp(1.5rem, 2.2vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  color: #fff;
+  margin: 0;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+/* Selector: sits at center slot (33%–66% of container) */
+.ulw-sel {
+  position: absolute;
+  top: 33.33%;
+  right: 0;
+  height: 3.4rem;      /* = 1 word height */
+  width: 0;            /* GSAP animates this from the right */
+  pointer-events: none;
+  z-index: 4;
+}
+/* 4 L-shaped corner brackets */
+.ulw-edge {
+  position: absolute;
+  width: 9px; height: 9px;
+}
+.ulw-edge--tl { top:0; left:0;  border-top:  1.5px solid rgba(255,255,255,0.75); border-left:  1.5px solid rgba(255,255,255,0.75); }
+.ulw-edge--tr { top:0; right:0; border-top:  1.5px solid rgba(255,255,255,0.75); border-right: 1.5px solid rgba(255,255,255,0.75); }
+.ulw-edge--bl { bottom:0; left:0;  border-bottom:1.5px solid rgba(255,255,255,0.75); border-left: 1.5px solid rgba(255,255,255,0.75); }
+.ulw-edge--br { bottom:0; right:0; border-bottom:1.5px solid rgba(255,255,255,0.75); border-right:1.5px solid rgba(255,255,255,0.75); }
+
+@media (max-width: 720px) { .ulw-block { display: none; } }
+
+/* Fix: cancel the stale left:0 from first ulw-sel rule so selector anchors to RIGHT edge */
+.ulw-sel {
+  left: auto !important;
+  right: 0   !important;
+}
+
+/* Fix: force ulw-inner wide enough to never clip the longest word (COMPETE) */
+.ulw-block  { width: max-content; }
+.ulw-inner  { width: 100%; min-width: max-content; }
+.ulw-list   { width: 100%; }
