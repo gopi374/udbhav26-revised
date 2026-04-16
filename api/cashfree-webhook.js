@@ -1,28 +1,28 @@
-/**
+﻿/**
  * api/cashfree-webhook.js
- * ─────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * POST /api/cashfree-webhook
  *
  * Receives Cashfree payment event webhooks and saves the registration
- * when a PAYMENT_SUCCESS event arrives — this is the safety net for
+ * when a PAYMENT_SUCCESS event arrives â€” this is the safety net for
  * cases where the user closed the browser before the JS SDK resolved.
  *
  * Cashfree sends these events:
- *   PAYMENT_SUCCESS  ← we handle this
- *   PAYMENT_FAILED   ← logged only
- *   PAYMENT_PENDING  ← ignored
- *   ORDER_PAID       ← same as PAYMENT_SUCCESS, handled
+ *   PAYMENT_SUCCESS  â† we handle this
+ *   PAYMENT_FAILED   â† logged only
+ *   PAYMENT_PENDING  â† ignored
+ *   ORDER_PAID       â† same as PAYMENT_SUCCESS, handled
  *
  * Signature verification:
  *   Cashfree signs each webhook with HMAC-SHA256 using your
  *   CASHFREE_WEBHOOK_SECRET. We verify before processing.
  *
  * Setup in dashboard:
- *   https://merchant.cashfree.com → Developers → Webhooks
+ *   https://merchant.cashfree.com â†’ Developers â†’ Webhooks
  *   URL: https://yourdomain.com/api/cashfree-webhook
  *   Version: 2023-08-01
  *   Events: PAYMENT_SUCCESS, PAYMENT_FAILED, ORDER_PAID
- * ─────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  */
 
 import crypto from 'crypto';
@@ -37,7 +37,7 @@ const SECRET_KEY     = process.env.CASHFREE_SECRET_KEY;
 const CF_ENV         = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
 const CF_BASE        = CF_ENV === 'production'
   ? 'https://api.cashfree.com/pg'
-  : 'https://sandbox.cashfreepayments.com/pg';
+  : 'https://sandbox.cashfree.com/pg';
 
 const BASE_AMOUNT  = 800;
 const MENTOR_ADDON = 300;
@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // ── Collect raw body ────────────────────────────────────────────
+  // â”€â”€ Collect raw body â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let rawBody = '';
   if (typeof req.body === 'string') {
     rawBody = req.body;
@@ -77,22 +77,22 @@ export default async function handler(req, res) {
     rawBody = JSON.stringify(req.body || {});
   }
 
-  // ── Verify signature ─────────────────────────────────────────────
+  // â”€â”€ Verify signature â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   const signature = req.headers['x-webhook-signature'];
   const timestamp = req.headers['x-webhook-timestamp'];
 
   if (WEBHOOK_SECRET && signature && timestamp) {
     const valid = verifyWebhookSignature(rawBody, signature, timestamp);
     if (!valid) {
-      console.warn('[cashfree-webhook] ❌ Signature mismatch — rejected');
+      console.warn('[cashfree-webhook] âŒ Signature mismatch â€” rejected');
       return res.status(401).json({ error: 'Invalid webhook signature' });
     }
   } else if (WEBHOOK_SECRET && !signature) {
-    console.warn('[cashfree-webhook] ⚠ No signature header — rejected (WEBHOOK_SECRET is set)');
+    console.warn('[cashfree-webhook] âš  No signature header â€” rejected (WEBHOOK_SECRET is set)');
     return res.status(401).json({ error: 'Missing webhook signature' });
   }
 
-  // ── Parse Event ──────────────────────────────────────────────────
+  // â”€â”€ Parse Event â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   let event;
   try {
     event = typeof rawBody === 'string' ? JSON.parse(rawBody) : req.body;
@@ -107,7 +107,7 @@ export default async function handler(req, res) {
 
   console.log(`[cashfree-webhook] Event: ${eventType} | Order: ${order.order_id} | Status: ${payment.payment_status}`);
 
-  // ── Only process successful payments ─────────────────────────────
+  // â”€â”€ Only process successful payments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
   if (
     eventType !== 'PAYMENT_SUCCESS' &&
     eventType !== 'ORDER_PAID' &&
@@ -129,14 +129,14 @@ export default async function handler(req, res) {
   try {
     await connectDB();
 
-    // ── Idempotency guard ─────────────────────────────────────────
+    // â”€â”€ Idempotency guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const existing = await Registration.findOne({ cashfreeOrderId: orderId });
     if (existing) {
-      console.log(`[cashfree-webhook] Already registered for order ${orderId} — skipping`);
+      console.log(`[cashfree-webhook] Already registered for order ${orderId} â€” skipping`);
       return res.status(200).json({ received: true, message: 'Already processed' });
     }
 
-    // ── Fetch full order from Cashfree to get customer/amount data ─
+    // â”€â”€ Fetch full order from Cashfree to get customer/amount data â”€
     const cfRes = await fetch(`${CF_BASE}/orders/${orderId}`, {
       headers: {
         'x-api-version':   '2023-08-01',
@@ -147,11 +147,11 @@ export default async function handler(req, res) {
     const cfOrder = await cfRes.json();
 
     if (!cfRes.ok || cfOrder.order_status !== 'PAID') {
-      console.warn(`[cashfree-webhook] Order ${orderId} not PAID — status: ${cfOrder.order_status}`);
+      console.warn(`[cashfree-webhook] Order ${orderId} not PAID â€” status: ${cfOrder.order_status}`);
       return res.status(200).json({ received: true, message: 'Order not paid yet' });
     }
 
-    // ── Extract customer details from order notes ──────────────────
+    // â”€â”€ Extract customer details from order notes â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // We encode formData into order_note as JSON during create-order
     // Fallback: use customer_details from Cashfree order
     const customer = cfOrder.customer_details || {};
@@ -166,10 +166,10 @@ export default async function handler(req, res) {
     const mentorSession = cfAmount >= BASE_AMOUNT + MENTOR_ADDON;
 
     // Try to extract team name from order note
-    const teamNameMatch = note.match(/Registration\s*[—-]+\s*(.+?)(?:\s*\+|$)/);
+    const teamNameMatch = note.match(/Registration\s*[â€”-]+\s*(.+?)(?:\s*\+|$)/);
     const teamName      = teamNameMatch ? teamNameMatch[1].trim() : `Team_${orderId.slice(-6)}`;
 
-    // ── Generate team code + save ──────────────────────────────────
+    // â”€â”€ Generate team code + save â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const teamCode = await generateTeamCode();
 
     await Registration.create({
@@ -188,9 +188,9 @@ export default async function handler(req, res) {
       teamCode,
     });
 
-    console.log(`[cashfree-webhook] ✅ Saved via webhook: ${orderId} | Code: ${teamCode}`);
+    console.log(`[cashfree-webhook] âœ… Saved via webhook: ${orderId} | Code: ${teamCode}`);
 
-    // ── Send email if we have a valid address ─────────────────────
+    // â”€â”€ Send email if we have a valid address â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (leaderEmail && leaderEmail.includes('@')) {
       sendTeamCodeEmail({
         to:          leaderEmail,
@@ -206,10 +206,11 @@ export default async function handler(req, res) {
   } catch (err) {
     console.error('[cashfree-webhook] Error:', err);
     if (err.code === 11000) {
-      // Duplicate key — already registered (race condition with JS flow)
+      // Duplicate key â€” already registered (race condition with JS flow)
       return res.status(200).json({ received: true, message: 'Already registered' });
     }
-    // Return 500 → Cashfree will retry the webhook (up to 5 times)
-    return res.status(500).json({ error: 'Internal server error — will retry' });
+    // Return 500 â†’ Cashfree will retry the webhook (up to 5 times)
+    return res.status(500).json({ error: 'Internal server error â€” will retry' });
   }
 }
+

@@ -1,12 +1,12 @@
-/**
+﻿/**
  * api/verify-payment.js
- * ─────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  * POST /api/verify-payment
  *
  * Verifies a Cashfree payment by calling the Cashfree Orders API
  * (GET /orders/{order_id}) and checking order_status === 'PAID'.
  *
- * No HMAC signature needed — server-to-server API call is the
+ * No HMAC signature needed â€” server-to-server API call is the
  * authoritative source of truth.
  *
  * Request body (JSON):
@@ -20,7 +20,7 @@
  * Response:
  *   200 { success: true, teamCode, teamName, amountPaid, wantsMentor }
  *   400/500 { success: false, error }
- * ─────────────────────────────────────────────────────────────────
+ * â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
  */
 
 import { connectDB }         from './lib/mongodb.js';
@@ -33,7 +33,7 @@ const SECRET_KEY = process.env.CASHFREE_SECRET_KEY;
 const CF_ENV     = process.env.NODE_ENV === 'production' ? 'production' : 'sandbox';
 const CF_BASE    = CF_ENV === 'production'
   ? 'https://api.cashfree.com/pg'
-  : 'https://sandbox.cashfreepayments.com/pg';
+  : 'https://sandbox.cashfree.com/pg';
 
 const BASE_AMOUNT  = 800;
 const MENTOR_ADDON = 300;
@@ -64,7 +64,7 @@ export default async function handler(req, res) {
   try {
     const { orderId, formData } = req.body || {};
 
-    // ── 1. Presence checks ─────────────────────────────────────
+    // â”€â”€ 1. Presence checks â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (!orderId) {
       return res.status(400).json({ success: false, error: 'Missing Cashfree order ID.' });
     }
@@ -72,7 +72,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ success: false, error: 'Missing registration data.' });
     }
 
-    // ── 2. Fetch order status from Cashfree (authoritative) ─────
+    // â”€â”€ 2. Fetch order status from Cashfree (authoritative) â”€â”€â”€â”€â”€
     const cfRes = await fetch(`${CF_BASE}/orders/${orderId}`, {
       method: 'GET',
       headers: {
@@ -102,7 +102,7 @@ export default async function handler(req, res) {
       });
     }
 
-    // ── 3. Extract Cashfree payment ID from payments ─────────────
+    // â”€â”€ 3. Extract Cashfree payment ID from payments â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     // Fetch payment details for this order to get cf_payment_id
     let cfPaymentId = cfData.cf_order_id || orderId;
     try {
@@ -119,7 +119,7 @@ export default async function handler(req, res) {
       }
     } catch (_) { /* non-fatal */ }
 
-    // ── 4. Validate form data ────────────────────────────────────
+    // â”€â”€ 4. Validate form data â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     if (!(formData.teamName    || '').trim()) return res.status(400).json({ success: false, error: 'Team name is required.' });
     if (!(formData.collegeName || '').trim()) return res.status(400).json({ success: false, error: 'College name is required.' });
     if (!(formData.branch      || '').trim()) return res.status(400).json({ success: false, error: 'Branch is required.' });
@@ -137,7 +137,7 @@ export default async function handler(req, res) {
     // Server-authoritative amount
     const totalAmount = formData.mentorSession ? BASE_AMOUNT + MENTOR_ADDON : BASE_AMOUNT;
 
-    // ── 5. Connect DB + duplicate guard ──────────────────────────
+    // â”€â”€ 5. Connect DB + duplicate guard â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     await connectDB();
 
     const existing = await Registration.findOne({ cashfreeOrderId: orderId });
@@ -152,10 +152,10 @@ export default async function handler(req, res) {
       });
     }
 
-    // ── 6. Generate team code ────────────────────────────────────
+    // â”€â”€ 6. Generate team code â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const teamCode = await generateTeamCode();
 
-    // ── 7. Save registration ─────────────────────────────────────
+    // â”€â”€ 7. Save registration â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     const registration = await Registration.create({
       teamName:    formData.teamName.trim(),
       collegeName: formData.collegeName.trim(),
@@ -182,9 +182,9 @@ export default async function handler(req, res) {
       userAgent: req.headers['user-agent'] || null,
     });
 
-    console.log(`[verify-payment] ✅ Registered: ${registration._id} | Team: ${formData.teamName} | Code: ${teamCode}`);
+    console.log(`[verify-payment] âœ… Registered: ${registration._id} | Team: ${formData.teamName} | Code: ${teamCode}`);
 
-    // ── 8. Send confirmation email (non-blocking) ────────────────
+    // â”€â”€ 8. Send confirmation email (non-blocking) â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     sendTeamCodeEmail({
       to:          formData.leader.email.trim().toLowerCase(),
       teamName:    formData.teamName.trim(),
@@ -193,7 +193,7 @@ export default async function handler(req, res) {
       amountPaid:  totalAmount,
     }).catch(err => console.error('[verify-payment] Email error:', err));
 
-    // ── 9. Respond ───────────────────────────────────────────────
+    // â”€â”€ 9. Respond â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
     return res.status(200).json({
       success:     true,
       teamCode,
@@ -211,7 +211,8 @@ export default async function handler(req, res) {
     }
     return res.status(500).json({
       success: false,
-      error: 'Server error — please contact support with your order ID.',
+      error: 'Server error â€” please contact support with your order ID.',
     });
   }
 }
+

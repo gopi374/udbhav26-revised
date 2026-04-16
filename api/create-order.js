@@ -25,7 +25,7 @@ const CF_ENV     = process.env.CASHFREE_ENV
   || (process.env.NODE_ENV === 'production' ? 'production' : 'sandbox');
 const CF_BASE    = CF_ENV === 'production'
   ? 'https://api.cashfree.com/pg'
-  : 'https://sandbox.cashfreepayments.com/pg';
+  : 'https://sandbox.cashfree.com/pg';
 
 console.log(`[create-order] Using Cashfree ${CF_ENV.toUpperCase()} (${CF_BASE})`);
 
