@@ -16,12 +16,14 @@
 const CRITICAL = [
   // Database
   'MONGODB_URI',
-  // Payments
-  'RAZORPAY_KEY_ID',
-  'RAZORPAY_KEY_SECRET',
+  // Payments — Cashfree
+  'CASHFREE_APP_ID',
+  'CASHFREE_SECRET_KEY',
 ];
 
 const RECOMMENDED = [
+  // Cashfree webhook (optional — server starts without it, but fake webhooks won't be rejected)
+  'CASHFREE_WEBHOOK_SECRET',
   // Real-time (PS Drop feature)
   'PUSHER_APP_ID',
   'PUSHER_KEY',
