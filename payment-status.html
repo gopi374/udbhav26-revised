@@ -138,6 +138,80 @@
       margin-top: 1.5rem;
       word-break: break-all;
     }
+
+    .btn-download {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.83rem;
+      padding: 0.6rem 1.3rem;
+      margin-top: 0.8rem;
+    }
+    .btn-download:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ── PRINT RECEIPT ─────────────────────────────────── */
+    #receipt {
+      display: none;
+    }
+
+    @media print {
+      body > .card, body > *:not(#receipt) { display: none !important; }
+      #receipt {
+        display: block !important;
+        font-family: 'Outfit', sans-serif;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #111;
+        background: #fff;
+        padding: 2rem;
+      }
+      .rcpt-header {
+        text-align: center;
+        border-bottom: 2px solid #7c3aed;
+        padding-bottom: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .rcpt-logo-text {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .rcpt-sub { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
+      .rcpt-title {
+        font-size: 1.3rem; font-weight: 800;
+        text-align: center; margin: 1.2rem 0 0.3rem;
+        color: #16a34a;
+      }
+      .rcpt-badge {
+        text-align: center;
+        display: inline-block;
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #86efac;
+        border-radius: 8px;
+        padding: 0.2rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin: 0 auto 1.5rem;
+        display: block;
+        width: fit-content;
+        margin: 0 auto 1.5rem;
+      }
+      .rcpt-table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; }
+      .rcpt-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; padding: 0.4rem 0.5rem; background: #f5f3ff; }
+      .rcpt-table td { padding: 0.55rem 0.5rem; font-size: 0.88rem; border-bottom: 1px solid #f0f0f0; }
+      .rcpt-table td:first-child { color: #555; width: 40%; }
+      .rcpt-table td:last-child { font-weight: 600; color: #111; }
+      .rcpt-code { font-family: monospace; font-size: 1rem; font-weight: 800; color: #7c3aed; }
+      .rcpt-amount { font-size: 1.1rem; font-weight: 900; color: #111; }
+      .rcpt-footer { text-align: center; font-size: 0.72rem; color: #999; border-top: 1px solid #eee; padding-top: 1rem; margin-top: 1rem; }
+      .rcpt-footer strong { color: #7c3aed; }
+    }
   </style>
 </head>
 <body>
@@ -148,6 +222,24 @@
     <div class="title loading" id="statusTitle">Verifying Payment…</div>
     <div class="subtitle" id="statusSubtitle">Please wait while we confirm your payment with Cashfree.</div>
     <div class="order-id" id="orderId"></div>
+  </div>
+
+  <!-- Hidden print receipt — shown only on print -->
+  <div id="receipt">
+    <div class="rcpt-header">
+      <div class="rcpt-logo-text">UDBHAV'26</div>
+      <div class="rcpt-sub">Round 2 — Hackathon Registration</div>
+    </div>
+    <div class="rcpt-title">✓ Payment Confirmed</div>
+    <div class="rcpt-badge">REGISTRATION SUCCESSFUL</div>
+    <table class="rcpt-table">
+      <tbody id="rcptRows"></tbody>
+    </table>
+    <div class="rcpt-footer">
+      Generated on <span id="rcptDate"></span> &nbsp;|&nbsp;
+      Keep this receipt for your records.<br/>
+      Questions? Contact <strong>udbhav@your-college.edu</strong>
+    </div>
   </div>
 
   <script>
@@ -199,7 +291,39 @@
           if (data.amount)      box += row('Amount Paid', '\u20B9' + data.amount);
           if (data.leaderEmail) box += row('Email', data.leaderEmail);
           box += '</div>';
-          sub.insertAdjacentHTML('afterend', box + '<div class="btn-row"><a href="/" class="btn btn-primary">\uD83C\uDFE0 Back to UDBHAV\'26</a></div>');
+
+          var downloadBtn = '<div style="text-align:center;margin-top:0.5rem;">' +
+            '<button class="btn btn-download" onclick="downloadReceipt()">' +
+            '\uD83D\uDCE5 Download Receipt (PDF)</button></div>';
+
+          sub.insertAdjacentHTML('afterend',
+            box +
+            '<div class="btn-row"><a href="/" class="btn btn-primary">\uD83C\uDFE0 Back to UDBHAV\'26</a></div>' +
+            downloadBtn
+          );
+
+          // Populate print receipt
+          var rcptRows = document.getElementById('rcptRows');
+          var rcptDate = document.getElementById('rcptDate');
+          if (rcptDate) rcptDate.textContent = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+          if (rcptRows) {
+            var rows = [
+              ['Team Name',      data.teamName  || '—'],
+              ['Team Code',      data.teamCode  || '—'],
+              ['Leader Email',   data.leaderEmail || '—'],
+              ['Amount Paid',    '\u20B9' + (data.amount || '—')],
+              ['Mentor Session', data.wantsMentor ? 'Yes (+\u20B9300)' : 'No'],
+              ['Order ID',       orderId || '—'],
+              ['Payment Status', 'PAID \u2714'],
+            ];
+            rcptRows.innerHTML = rows.map(function(r) {
+              return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+            }).join('');
+          }
+
+          window.downloadReceipt = function() {
+            window.print();
+          };
 
         } else if (isPending) {
           icon.className  = 'icon-wrap pending';
