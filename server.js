@@ -57,6 +57,10 @@ import {
   publicWinnersHandler,
 } from './api/admin/winners.js';
 
+// ── Import Submissions handlers ────────────────────────────────────────────────
+import submitHandler from './api/submissions/submit.js';
+import listHandler   from './api/submissions/list.js';
+
 // ── App setup ────────────────────────────────────────────────────────────────
 const app  = express();
 const PORT = process.env.PORT || 8080;
@@ -77,6 +81,7 @@ const cleanRoutes = {
   '/code-of-conduct':   'code-of-conduct.html',
   '/our-team':          'our-team.html',
   '/register':          'register.html',
+  '/dashboard':         'user-dashboard.html',
   
   // Portfolio/Personal Pages
   '/work':              'work.html',
@@ -93,6 +98,7 @@ const cleanRoutes = {
   '/admin/login':        'admin/login.html',
   '/admin/dashboard':    'admin/dashboard.html',
   '/admin/registrations':'admin/registrations.html',
+  '/admin/submissions':  'admin/submissions.html',
   '/admin/problem-statements': 'admin/problem-statements.html',
   '/admin/payments':           'admin/payments.html',
   '/admin/ps-stats':           'admin/ps-stats.html',
@@ -146,6 +152,10 @@ app.post('/api/admin/winners/unpublish',  mountHandler(unpublishWinnersHandler))
 
 // ── Winners Public API ────────────────────────────────────────────────────────
 app.get('/api/winners', mountHandler(publicWinnersHandler));
+
+// ── Submissions API ───────────────────────────────────────────────────────────
+app.post('/api/submissions/submit', mountHandler(submitHandler));
+app.get ('/api/submissions/list',   mountHandler(listHandler));
 
 // ── Clean URL Routes ──────────────────────────────────────────────────────────
 for (const [route, file] of Object.entries(cleanRoutes)) {

@@ -31,6 +31,7 @@ export default defineConfig({
         ourTeam:            resolve(__dirname, 'our-team.html'),
         codeOfConduct:      resolve(__dirname, 'code-of-conduct.html'),
         problemStatement:   resolve(__dirname, 'problem-statement.html'),
+        userDashboard:      resolve(__dirname, 'user-dashboard.html'),
         
         // Legal
         legal:              resolve(__dirname, 'legal.html'),
@@ -39,6 +40,7 @@ export default defineConfig({
         adminLogin:         resolve(__dirname, 'admin/login.html'),
         adminDashboard:     resolve(__dirname, 'admin/dashboard.html'),
         adminRegistrations: resolve(__dirname, 'admin/registrations.html'),
+        adminSubmissions:   resolve(__dirname, 'admin/submissions.html'),
         adminPS:            resolve(__dirname, 'admin/problem-statements.html'),
         adminPayments:      resolve(__dirname, 'admin/payments.html'),
         adminPSStats:       resolve(__dirname, 'admin/ps-stats.html'),
