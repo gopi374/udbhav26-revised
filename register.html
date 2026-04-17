@@ -2102,25 +2102,6 @@
       }
 
       // ── Collect form data ───────────────────────────────────────────────────
-      const membersPayload = [];
-      if (m2Name) {
-        membersPayload.push({ name: m2Name, email: m2Email, phone: m2Phone });
-      }
-      if (document.getElementById('member3Wrap')?.dataset.visible === 'true' && document.getElementById('m3Name')?.value.trim()) {
-        membersPayload.push({
-          name:  document.getElementById('m3Name').value.trim(),
-          email: document.getElementById('m3Email').value.trim(),
-          phone: document.getElementById('m3Phone').value.trim(),
-        });
-      }
-      if (document.getElementById('member4Wrap')?.dataset.visible === 'true' && document.getElementById('m4Name')?.value.trim()) {
-        membersPayload.push({
-          name:  document.getElementById('m4Name').value.trim(),
-          email: document.getElementById('m4Email').value.trim(),
-          phone: document.getElementById('m4Phone').value.trim(),
-        });
-      }
-
       const formData = {
         teamName:    teamName,
         collegeName: college,
