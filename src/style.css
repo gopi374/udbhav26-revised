@@ -4499,6 +4499,291 @@ body {
   .sch-item-desc { font-size: 0.88rem; }
 }
 
+/* ============================================================================
+   SCHEDULE — Alternating Center-Line Desktop Timeline (schtl-*)
+   ============================================================================ */
+
+.schtl-wrap {
+  position: relative;
+  max-width: 960px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+/* ── Center vertical glowing line ── */
+.schtl-center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  transform: translateX(-50%);
+  pointer-events: none;
+  z-index: 1;
+}
+.schtl-line-glow {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(168,85,247,0.35) 15%, rgba(96,165,250,0.35) 50%, rgba(251,191,36,0.35) 85%, transparent);
+}
+.schtl-line-pulse {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  background: linear-gradient(to bottom, transparent, rgba(168,85,247,0.15) 15%, rgba(96,165,250,0.15) 50%, rgba(251,191,36,0.15) 85%, transparent);
+  animation: schtlPulse 4s ease-in-out infinite;
+}
+@keyframes schtlPulse {
+  0%, 100% { opacity: 0.4; }
+  50%      { opacity: 1; }
+}
+
+/* ── Row: alternating left/right ── */
+.schtl-row {
+  position: relative;
+  display: flex;
+  align-items: center;
+  z-index: 2;
+}
+.schtl-spacer {
+  flex: 0 0 50%;
+  width: 50%;
+}
+
+/* LEFT card: [spacer] [icon] [card] — card goes to the RIGHT visually, text aligned right */
+.schtl-row--left {
+  flex-direction: row;
+}
+/* RIGHT card: [card] [icon] [spacer] — card goes to the LEFT visually */
+.schtl-row--right {
+  flex-direction: row;
+}
+
+/* ── Center icon circle ── */
+.schtl-icon-wrap {
+  position: relative;
+  z-index: 10;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 0;          /* zero width so it sits on the line */
+}
+.schtl-icon-glow {
+  position: absolute;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  opacity: 0.3;
+  pointer-events: none;
+}
+.schtl-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.85);
+  border: 2px solid;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 10;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  flex-shrink: 0;
+  position: relative;
+}
+
+/* ── Card ── */
+.schtl-card {
+  position: relative;
+  overflow: hidden;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid;
+  border-radius: 20px;
+  transition: all 0.5s ease;
+  flex: 1;
+  min-width: 0;
+  cursor: default;
+}
+.schtl-card--left {
+  margin-left: 1.8rem;
+  text-align: right;
+}
+.schtl-card--right {
+  margin-right: 1.8rem;
+  text-align: left;
+}
+
+.schtl-card:hover {
+  background: rgba(255,255,255,0.04);
+}
+
+/* ── Hover glow overlay ── */
+.schtl-card-glow {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.5s;
+  pointer-events: none;
+  border-radius: 20px;
+}
+.schtl-card:hover .schtl-card-glow {
+  opacity: 1;
+}
+
+/* ── Day / Date header ── */
+.schtl-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.9rem 1.3rem 0.75rem;
+  border-bottom: 1px solid;
+}
+.schtl-day-info {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+}
+.schtl-day-info--right {
+  margin-left: auto;
+}
+.schtl-day-label {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.schtl-day-date {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.65rem;
+  color: rgba(255,255,255,0.3);
+}
+
+/* ── Phase tag pill ── */
+.schtl-phase-tag {
+  display: inline-block;
+  font-family: 'Sora', sans-serif;
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  border: 1px solid;
+  margin: 0.9rem 1.3rem 0.15rem;
+}
+
+/* ── Events list ── */
+.schtl-events {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.6rem 1rem 0.85rem;
+}
+
+.schtl-evt {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.7rem;
+  border-radius: 10px;
+  background: rgba(255,255,255,0.025);
+  border: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.15s;
+}
+/* Text alignment for left cards (right-aligned) */
+.schtl-card--left .schtl-evt {
+  flex-direction: row-reverse;
+}
+.schtl-card--left .schtl-evt-body {
+  flex-direction: row-reverse;
+}
+
+/* Variant backgrounds */
+.schtl-evt--critical { background: rgba(248,113,113,0.06); border-color: rgba(248,113,113,0.15); }
+.schtl-evt--break    { background: rgba(251,191,36,0.05);  border-color: rgba(251,191,36,0.12);  }
+.schtl-evt--fun      { background: rgba(74,222,128,0.05);  border-color: rgba(74,222,128,0.12);  }
+.schtl-evt--submit   { background: rgba(96,165,250,0.06);  border-color: rgba(96,165,250,0.15);  }
+.schtl-evt--finale   { background: rgba(251,191,36,0.08);  border-color: rgba(251,191,36,0.2);   }
+
+.schtl-evt-time {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  font-size: 0.7rem;
+  color: rgba(255,255,255,0.35);
+  min-width: 78px;
+  flex-shrink: 0;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+.schtl-card--left .schtl-evt-time {
+  text-align: left;
+}
+.schtl-card--right .schtl-evt-time {
+  text-align: right;
+}
+
+.schtl-evt-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex: 1;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.schtl-evt-name {
+  font-family: 'Sora', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(255,255,255,0.85);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Reuse the schm-badge styles from mobile which are already defined */
+
+/* ── GSAP: initial hidden state — rows slide in from left/right ── */
+.schtl-row {
+  opacity: 0;
+  will-change: opacity, transform;
+}
+.schtl-row--left  { transform: translateX(-40px); }
+.schtl-row--right { transform: translateX(40px);  }
+
+/* ── View Schedule CTA ── */
+.schtl-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 3.5rem auto 0;
+  padding: 0.9rem 2rem;
+  background: rgba(168,85,247,0.08);
+  border: 1px solid rgba(168,85,247,0.22);
+  border-radius: 14px;
+  font-family: 'Sora', 'Inter', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #a855f7;
+  text-decoration: none;
+  letter-spacing: 0.02em;
+  transition: background 0.25s, border-color 0.25s, transform 0.25s, box-shadow 0.25s;
+}
+.schtl-cta:hover {
+  background: rgba(168,85,247,0.16);
+  border-color: rgba(168,85,247,0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 24px rgba(168,85,247,0.15);
+}
+.schtl-cta svg {
+  transition: transform 0.25s;
+}
+.schtl-cta:hover svg {
+  transform: translateX(4px);
+}
 
 /* ============================================================================
    SPONSORS SECTION — Pyramid Layout

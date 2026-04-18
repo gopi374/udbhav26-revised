@@ -1574,7 +1574,30 @@ document.querySelectorAll('.nav-link').forEach(link => {
   const section = document.getElementById('scheduleSection');
   if (!section) return;
 
-  // Phase labels: slide in on scroll-down, fade on scroll-back-up
+  // Animate each timeline row — left rows from left, right rows from right
+  const rows = section.querySelectorAll('.schtl-row');
+  rows.forEach((row, i) => {
+    const isLeft = row.classList.contains('schtl-row--left');
+    const fromX = isLeft ? -50 : 50;
+
+    gsap.fromTo(row,
+      { opacity: 0, x: fromX },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.85,
+        ease: 'power3.out',
+        delay: i * 0.05,
+        scrollTrigger: {
+          trigger: row,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse',
+        }
+      }
+    );
+  });
+
+  // Fallback: also animate any old sch-phase-block elements if they exist (mobile might reuse them)
   const phaseBlocks = section.querySelectorAll('.sch-phase-block');
   phaseBlocks.forEach((block) => {
     const label = block.querySelector('.sch-phase-label');
@@ -1590,18 +1613,13 @@ document.querySelectorAll('.nav-link').forEach(link => {
         scrollTrigger: {
           trigger: block,
           start: 'top 82%',
-          // play  = fade in  (scroll down, enters from bottom)
-          // none  = stay put (scroll down past it)
-          // none  = stay put (scroll up, re-enters from top)
-          // reverse = fade out (scroll up, leaves at the bottom)
           toggleActions: 'play none none reverse',
         }
       }
     );
   });
 
-  // Schedule items: same logic — stay visible scrolling down, fade scrolling up
-  const items = section.querySelectorAll('[data-sch-item]');
+  const items = section.querySelectorAll('[data-sch-item]:not(.schtl-row)');
   items.forEach((item, i) => {
     const delay = (i % 5) * 0.05;
 
