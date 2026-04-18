@@ -91,12 +91,6 @@
     <!-- Left: Logo group only -->
     <div class="nav-logo">
       <img src="/logo.png" alt="Vedansh logo" class="nav-logo-img" id="logoImg" />
-      <div class="logo-divider" aria-hidden="true"></div>
-      <span class="tagline-dot" aria-hidden="true"></span>
-      <div class="logo-tagline">
-        <span class="tagline-role">Creative engineer</span>
-        <span class="tagline-motto">building the future</span>
-      </div>
     </div>
 
     <!-- Right: pill + standalone menu button -->
@@ -155,6 +149,15 @@
                       <span class="md-item__desc">Our partners &amp; supporters</span>
                     </div>
                   </a>
+                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    </div>
+                    <div class="md-item__body">
+                      <span class="md-item__title">Team Dashboard</span>
+                      <span class="md-item__desc">View your assigned PS</span>
+                    </div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -169,15 +172,6 @@
 
       </div>
 
-      <!-- Standalone circle menu button (outside the pill) -->
-      <button class="nav-menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false">
-        <svg class="menu-toggle-icon" viewBox="0 0 32 32" fill="none" stroke="currentColor"
-             stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"
-             width="18" height="18" aria-hidden="true">
-          <path class="mti-path1" d="M27 10 13 10C10.8 10 9 8.2 9 6 9 3.5 10.8 2 13 2 15.2 2 17 3.8 17 6L17 26C17 28.2 18.8 30 21 30 23.2 30 25 28.2 25 26 25 23.8 23.2 22 21 22L7 22"/>
-          <path d="M7 16 27 16"/>
-        </svg>
-      </button>
 
     </div>
 
@@ -258,7 +252,18 @@
           <span class="mmd-link-text">Sponsors</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-      </nav>
+        <a href="/team-dashboard.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          </span>
+          <span class="mmd-link-text">Team Dashboard</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+              <a href="/contact.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span class="mmd-link-text">Contact</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a></nav>
       <div class="mmd-footer">
         <a href="/register.html" class="mmd-cta-btn">Register Now →</a>
       </div>
@@ -284,8 +289,7 @@
   </div>
 
   <!-- ── Hero Section (sticky first screen) ────────────────────────────────── -->
-  <div class="page-scroll-container">
-    <section class="hero" id="hero" aria-labelledby="heroHeading">
+      <section class="hero" id="hero" aria-labelledby="heroHeading">
 
     <!-- Hero background shader canvas -->
     <div class="hero-shader-bg" id="heroShaderBg" aria-hidden="true"></div>
@@ -307,7 +311,14 @@
       </a>
 
       <!-- Hero eyebrow tagline -->
-      <p class="hero-eyebrow">BY ALTA SCHOOL OF TECHNOLOGY &nbsp;|&nbsp; SAGE UNIVERSITY INDORE</p>
+      <div class="hero-eyebrow">
+        <div class="hero-eyebrow-logos">
+          <img src="/Alta.png" alt="Alta School of Technology" class="hero-eyebrow-logo" />
+          <span class="hero-eyebrow-divider">|</span>
+          <img src="/sage.png" alt="Sage University Indore" class="hero-eyebrow-logo" />
+        </div>
+        <p class="hero-eyebrow-presents">Presents</p>
+      </div>
 
       <!-- Hero name — letters injected by JS -->
       <h1 class="hero-name" id="heroHeading" aria-label="UDBHAV'26"></h1>
@@ -316,6 +327,19 @@
       <div class="hero-subtitle" id="heroSubtitle">
         <p class="subtitle-sans">50 TEAMS. 10 PROBLEMS. 24 HOURS. ONE WINNER.</p>
         <p class="subtitle-serif"><em>24-HOUR HACKATHON.</em></p>
+      </div>
+      <!-- Countdown timer + register CTA -->
+      <div class="hero-countdown-wrap" id="heroCountdownWrap">
+        <div class="hcd-timer" id="hcdTimer">
+          <div class="hcd-unit"><span class="hcd-val" id="hcdDays">--</span><span class="hcd-lbl">Days</span></div>
+          <span class="hcd-sep">:</span>
+          <div class="hcd-unit"><span class="hcd-val" id="hcdHours">--</span><span class="hcd-lbl">Hours</span></div>
+          <span class="hcd-sep">:</span>
+          <div class="hcd-unit"><span class="hcd-val" id="hcdMins">--</span><span class="hcd-lbl">Mins</span></div>
+          <span class="hcd-sep">:</span>
+          <div class="hcd-unit"><span class="hcd-val" id="hcdSecs">--</span><span class="hcd-lbl">Secs</span></div>
+        </div>
+        <a href="/register.html" class="btn-cta hcd-reg-btn" id="heroRegBtn">Register &rsaquo;</a>
       </div>
 
     </section>
@@ -340,7 +364,7 @@
     <div class="uab-header">
       <span class="uab-label">THE EVENT</span>
       <h2 class="uab-title">About <em>UDBHAV'26</em></h2>
-      <p class="uab-tagline">50 teams. 10 problems. 24 hours. One winner.</p>
+
 
       <!-- Looping words — top-right corner of about section header -->
       <div class="ulw-block" id="ulwBlock" aria-hidden="true">
@@ -379,51 +403,7 @@
       <div class="uab-card uab-card--overview">
         <span class="uab-card-label">01 &mdash; OVERVIEW</span>
         <p class="uab-overview-text"><strong>UDBHAV'26</strong> is a high-intensity, <strong>24-hour hackathon</strong> hosted at <strong>Sage University, Indore</strong>, bringing together top student innovators to build real-world solutions under extreme pressure.<br><br>Organized by <strong>Enclope (Alta School of Technology)</strong> in collaboration with <strong>Sunstone</strong>, this event is designed to push technical limits, fuel creativity, and launch careers.</p>
-        <div class="uab-meta-list">
-          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg><span>Sage University, Indore</span></div>
-          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg><span>25&ndash;26 April 2026</span></div>
-          <div class="uab-meta-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span>Prize Pool: &#8377;45,000</span></div>
-        </div>
-      </div>
-      <div class="uab-card uab-card--timeline">
-        <span class="uab-card-label">02 &mdash; EVENT TIMELINE</span>
-        <div class="uab-timeline">
-          <div class="uab-tl-item">
-            <span class="uab-tl-time">09:00 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Registration &amp; Check-in</span>
-          </div>
-          <div class="uab-tl-item">
-            <span class="uab-tl-time">10:00 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Opening Ceremony</span>
-          </div>
-          <div class="uab-tl-item uab-tl-item--hot">
-            <span class="uab-tl-time">10:45 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">PS Drop</span>
-          </div>
-          <div class="uab-tl-item uab-tl-item--go">
-            <span class="uab-tl-time">11:00 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Coding Begins &#9654;</span>
-          </div>
-          <div class="uab-tl-item">
-            <span class="uab-tl-time">25 Apr · 11 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Judging Panel</span>
-          </div>
-          <div class="uab-tl-item uab-tl-item--win">
-            <span class="uab-tl-time">26 Apr · 8:30 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Results Dropped &#127881;</span>
-          </div>
-          <div class="uab-tl-item">
-            <span class="uab-tl-time">26 Apr · 10:30 AM</span>
-            <span class="uab-tl-dot"></span>
-            <span class="uab-tl-text">Closing Ceremony</span>
-          </div>
-        </div>
+
       </div>
 
 
@@ -438,11 +418,83 @@
       </div>
     </div>
 
-    <div class="uab-cta">
-      <a href="/register.html" class="uab-cta-btn" id="uaCta">Register Now &nbsp;&rsaquo;</a>
-      <span class="uab-cta-note">Applications open till 18th April 2026 &middot; Sage University, Indore</span>
-    </div>
+
   </section>
+
+  <!-- ══════════════════════════════════════════════════════════════
+       PRIZE POOL SECTION
+       ══════════════════════════════════════════════════════════════ -->
+  <section class="prz-section" id="prizeSection" aria-label="Prize Pool">
+
+    <!-- Ethereal background (reused pattern) -->
+    <div class="ua-ethereal-root" aria-hidden="true">
+      <svg class="ua-ethereal-svg" aria-hidden="true"><defs><filter id="przEtherFilter" x="-20%" y="-20%" width="140%" height="140%"><feTurbulence numOctaves="2" baseFrequency="0.0005,0.002" seed="5" type="turbulence" result="undulation"/><feColorMatrix in="undulation" type="hueRotate" values="0"/><feColorMatrix in="dist" result="circulation" type="matrix" values="4 0 0 0 1 4 0 0 0 1 4 0 0 0 1 1 0 0 0 0"/><feDisplacementMap in="SourceGraphic" in2="circulation" scale="100" result="dist"/><feDisplacementMap in="dist" in2="undulation" scale="100" result="output"/></filter></defs></svg>
+      <div class="ua-ethereal-inner"><div class="ua-ethereal-shadow"></div></div>
+    </div>
+    <div class="ua-ethereal-noise" aria-hidden="true"></div>
+    <div class="ua-ethereal-vignette" aria-hidden="true"></div>
+
+    <div class="prz-container">
+
+      <!-- Header -->
+      <div class="prz-header">
+        <span class="prz-pre">PRIZES &amp; REWARDS</span>
+        <h2 class="prz-title">Win <em>Big.</em></h2>
+        <p class="prz-sub">&#8377;45,000 prize pool up for grabs across categories.</p>
+      </div>
+
+      <!-- Main prize podium cards -->
+      <div class="prz-podium">
+
+        <!-- 2nd Place -->
+        <div class="prz-card prz-card--2nd">
+          <img src="/2nd.png" alt="2nd Place" class="prz-trophy-img" />
+          <div class="prz-card-text">
+            <div class="prz-amount">&#8377;12,000</div>
+            <div class="prz-label">Runner-Up</div>
+            <ul class="prz-perks">
+              <li>Cash Prize</li>
+              <li>Certificate of Excellence</li>
+              <li>Mentorship Session</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 1st Place — champion, elevated -->
+        <div class="prz-card prz-card--1st">
+          
+          <img src="/1st.png" alt="1st Place" class="prz-trophy-img" />
+          <div class="prz-card-text">
+            <div class="prz-amount">&#8377;25,000</div>
+            <div class="prz-label">Grand Winner</div>
+            <ul class="prz-perks">
+              <li>Cash Prize</li>
+              <li>Trophy &amp; Certificate</li>
+              <li>Industry Spotlight</li>
+              <li>Fast-track Internship Access</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- 3rd Place -->
+        <div class="prz-card prz-card--3rd">
+          <img src="/3rd.png" alt="3rd Place" class="prz-trophy-img" />
+          <div class="prz-card-text">
+            <div class="prz-amount">&#8377;8,000</div>
+            <div class="prz-label">2nd Runner-Up</div>
+            <ul class="prz-perks">
+              <li>Cash Prize</li>
+              <li>Certificate of Merit</li>
+              <li>Networking Access</li>
+            </ul>
+          </div>
+        </div>
+
+      </div><!-- /.prz-podium -->
+
+    </div><!-- /.prz-container -->
+  </section>
+
 
   <!-- ══════════════════════════════════════════════════════════════════
        PROBLEM DOMAINS — 3D Tilted Carousel
@@ -482,153 +534,82 @@
       </div>
     </div>
 
-    <!-- 3D Scene -->
-    <div class="pd-scene" id="pdScene" aria-hidden="true">
-      <div class="pd-carousel" id="pdCarousel">
+    <!-- ── Interactive Track Selector ── -->
+    <div class="pdt-layout" id="pdtLayout">
 
-        <div class="pd-card" style="--clr:#f43f5e;--clr-rgb:244,63,94;"
-             data-id="01" data-icon="healthtech"
-             data-name="HealthTech &amp; MedTech"
-             data-desc="Tackle real challenges in healthcare delivery, remote diagnostics, patient monitoring, and medical data management."
-             data-tags="Remote Health,Diagnostics,Patient Data,Wearables">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">01</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=140&h=140&fit=crop&auto=format" alt="HealthTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">HealthTech &amp;<br>MedTech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
+      <!-- LEFT: Track name buttons -->
+      <div class="pdt-sidebar" id="pdtSidebar" style="perspective: 1000px;">
+        <div class="pdt-sidebar-inner" style="transform-style: preserve-3d;">
+          <button class="pdt-track-btn is-active" data-pdt-idx="0" style="--track-clr:#f43f5e">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">HealthTech</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="1" style="--track-clr:#a855f7">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">AI / ML</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="2" style="--track-clr:#22d3ee">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">Smart Cities</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="3" style="--track-clr:#22c55e">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">GreenTech</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="4" style="--track-clr:#f59e0b">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">EdTech</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="5" style="--track-clr:#3b82f6">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">FinTech</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="6" style="--track-clr:#f97316">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">CyberSec</span>
+          </button>
+          <button class="pdt-track-btn" data-pdt-idx="7" style="--track-clr:#ec4899">
+            <div class="pdt-btn-glow"></div>
+            <div class="pdt-btn-indicator"></div>
+            <span class="pdt-btn-label">Social Impact</span>
+          </button>
         </div>
-
-        <div class="pd-card" style="--clr:#a855f7;--clr-rgb:168,85,247;"
-             data-id="02" data-icon="aiml"
-             data-name="AI/ML &amp; Data Science"
-             data-desc="Build intelligent systems that learn, predict, and automate — from NLP to computer vision and predictive analytics."
-             data-tags="NLP,Computer Vision,Predictive AI,Neural Nets">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">02</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=140&h=140&fit=crop&auto=format" alt="AI/ML" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">AI/ML &amp;<br>Data Science</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#22d3ee;--clr-rgb:34,211,238;"
-             data-id="03" data-icon="smartcity"
-             data-name="Smart Cities &amp; IoT"
-             data-desc="Design connected solutions for urban infrastructure — smart traffic, waste management, energy grids, and public safety systems."
-             data-tags="IoT Sensors,Traffic AI,Energy Grid,Urban Infra">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">03</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=140&h=140&fit=crop&auto=format" alt="Smart Cities" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Smart Cities<br>&amp; IoT</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#22c55e;--clr-rgb:34,197,94;"
-             data-id="04" data-icon="greentech"
-             data-name="Sustainability &amp; GreenTech"
-             data-desc="Engineer eco-friendly solutions targeting climate change, carbon tracking, clean energy, and sustainable agriculture."
-             data-tags="Carbon Track,Clean Energy,AgriTech,Climate AI">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">04</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=140&h=140&fit=crop&auto=format" alt="GreenTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Sustainability<br>&amp; GreenTech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#f59e0b;--clr-rgb:245,158,11;"
-             data-id="05" data-icon="edtech"
-             data-name="EdTech &amp; Skilling"
-             data-desc="Reimagine how people learn — adaptive platforms, vernacular language tools, and AI-powered career guidance for the next billion."
-             data-tags="Adaptive Learn,Vernacular AI,Career Path,AR / VR">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">05</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=140&h=140&fit=crop&auto=format" alt="EdTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">EdTech &amp;<br>Skilling</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#3b82f6;--clr-rgb:59,130,246;"
-             data-id="06" data-icon="fintech"
-             data-name="FinTech &amp; Web3"
-             data-desc="Build the future of finance — DeFi apps, smart contracts, digital wallets, fraud detection, and financial inclusion tools."
-             data-tags="DeFi,Smart Contracts,Digital Wallet,Fraud AI">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">06</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=140&h=140&fit=crop&auto=format" alt="FinTech" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">FinTech &amp;<br>Web3</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#f97316;--clr-rgb:249,115,22;"
-             data-id="07" data-icon="cybersec"
-             data-name="CyberSecurity &amp; Privacy"
-             data-desc="Defend digital systems against evolving threats — zero-trust architectures, threat intelligence, and privacy-first solutions."
-             data-tags="Zero Trust,Threat Intel,Privacy Tools,Secure Comms">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">07</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=140&h=140&fit=crop&auto=format" alt="CyberSecurity" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">CyberSecurity<br>&amp; Privacy</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-        <div class="pd-card" style="--clr:#ec4899;--clr-rgb:236,72,153;"
-             data-id="08" data-icon="socialimpact"
-             data-name="Social Impact &amp; Rural Tech"
-             data-desc="Bridge the urban-rural divide — digital governance, farmer tech, women safety systems, and accessibility solutions for all."
-             data-tags="Digital Gov,AgriTech,Women Safety,Accessibility">
-          <div class="pd-card-face">
-            <div class="pd-card-glow" aria-hidden="true"></div>
-            <span class="pd-card-num">08</span>
-            <div class="pd-card-icon" aria-hidden="true">
-              <img src="https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=140&h=140&fit=crop&auto=format" alt="Social Impact" loading="lazy" />
-            </div>
-            <h3 class="pd-card-name">Social Impact<br>&amp; Rural Tech</h3>
-            <span class="pd-card-hint">Hover to explore</span>
-          </div>
-        </div>
-
-      </div><!-- /.pd-carousel -->
-    </div><!-- /.pd-scene -->
-
-    <!-- Floating popup — lives outside 3D context to avoid z-index issues -->
-    <div class="pd-popup-float" id="pdPopupFloat" aria-live="polite" aria-hidden="true">
-      <div class="pd-popup-top">
-        <span class="pd-popup-icon" id="pdPopupIcon"></span>
-        <span class="pd-popup-badge" id="pdPopupBadge"></span>
       </div>
-      <h4 class="pd-popup-title" id="pdPopupTitle"></h4>
-      <p  class="pd-popup-desc"  id="pdPopupDesc"></p>
-      <div class="pd-popup-tags" id="pdPopupTags"></div>
+
+      <!-- CENTER + RIGHT: Content panel -->
+      <div class="pdt-content-panel" id="pdtContentPanel">
+
+        <!-- Center: Image showcase -->
+        <div class="pdt-image-wrap" id="pdtImageWrap">
+          <div class="pdt-image-frame" id="pdtImageFrame">
+            <div class="pdt-image-border"></div>
+            <img class="pdt-image" id="pdtImage" src="https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=640&h=640&fit=crop&auto=format" alt="HealthTech" />
+            <div class="pdt-image-overlay"></div>
+            <span class="pdt-image-title" id="pdtImageTitle">HEALTHTECH</span>
+          </div>
+        </div>
+
+        <!-- Right: Description -->
+        <div class="pdt-info" id="pdtInfo">
+          <p class="pdt-info-desc" id="pdtInfoDesc">Tackle real challenges in healthcare delivery, remote diagnostics, patient monitoring, and medical data management.</p>
+          <div class="pdt-info-tags" id="pdtInfoTags">
+            <span>Remote Health</span><span>Diagnostics</span><span>Wearables</span>
+          </div>
+        </div>
+
+      </div>
+
     </div>
 
   </section>
+
 
   <!-- ══════════════════════════════════════════════════════════════════
        SCHEDULE SECTION — Full Open Timeline with GSAP Scroll Animations
@@ -644,200 +625,397 @@
         <p class="sch-subtitle">24 hours. 4 phases. Every minute counts.</p>
       </div>
 
-      <!-- Full Open Timeline -->
-      <div class="sch-timeline-full" id="schTimelineFull">
+      <!-- Full Open Timeline (desktop only) — alternating center-line layout -->
+      <div class="sch-desktop-only">
+      <div class="schtl-wrap" id="schTimelineFull">
 
-        <!-- Scroll-driven glowing progress line -->
-        <div class="sch-progress-track" aria-hidden="true">
-          <div class="sch-progress-line" id="schProgressLine"></div>
-          <div class="sch-progress-glow" id="schProgressGlow"></div>
+        <!-- Center vertical glowing line -->
+        <div class="schtl-center-line" aria-hidden="true">
+          <div class="schtl-line-glow"></div>
+          <div class="schtl-line-pulse"></div>
         </div>
 
-        <!-- ─── Phase 1 ─── -->
-        <div class="sch-phase-block" data-phase="01">
-          <div class="sch-phase-label">
-            <span class="sch-phase-num">01</span>
-            <div class="sch-phase-meta">
-              <h3 class="sch-phase-name">Arrival &amp; Kickoff</h3>
+        <!-- ─── Card 1 — LEFT side ─── -->
+        <div class="schtl-row schtl-row--left" data-sch-item>
+          <!-- spacer for right half -->
+          <div class="schtl-spacer"></div>
+          <!-- Center icon -->
+          <div class="schtl-icon-wrap">
+            <div class="schtl-icon-glow" style="background:radial-gradient(circle, #a855f7 0%, transparent 70%)"></div>
+            <div class="schtl-icon" style="border-color:#a855f7">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#a855f7" aria-hidden="true"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/></svg>
             </div>
           </div>
-          <div class="sch-events-column">
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">8:00 – 9:30 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Doors Open</span><span class="sch-badge sch-badge--main">Keynote</span></div>
-                <p class="sch-item-desc">Registration, check-in &amp; participant on-boarding.</p>
+          <!-- Card content -->
+          <div class="schtl-card schtl-card--left" style="border-color: rgba(168,85,247,0.2);">
+            <!-- Day / Date header -->
+            <div class="schtl-card-header" style="border-color: rgba(168,85,247,0.12);">
+              <div class="schtl-day-info schtl-day-info--right">
+                <span class="schtl-day-label" style="color:#a855f7">Day 1</span>
+                <span class="schtl-day-date">25 April 2026</span>
               </div>
             </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">10:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Kickoff</span><span class="sch-badge sch-badge--main">Keynote</span></div>
-                <p class="sch-item-desc">Official orientation session &amp; welcome ceremony.</p>
+            <!-- Phase tag -->
+            <div class="schtl-phase-tag" style="background:rgba(168,85,247,0.1); color:#a855f7; border-color:rgba(168,85,247,0.25);">01 · Arrival &amp; Kickoff</div>
+            <!-- Events -->
+            <div class="schtl-events">
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">8:00 – 9:30 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Doors Open</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">10:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Kickoff</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--critical">
+                <span class="schtl-evt-time">10:45 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">PS Drop ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
               </div>
             </div>
-            <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">10:45 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--critical"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">PS Drop</span><span class="sch-badge sch-badge--critical">Critical</span></div>
-                <p class="sch-item-desc">Problem statement announcement &amp; team lock-in. Choose your domain and commit.</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- ─── Phase 2 ─── -->
-        <div class="sch-phase-block" data-phase="02">
-          <div class="sch-phase-label">
-            <span class="sch-phase-num">02</span>
-            <div class="sch-phase-meta">
-              <h3 class="sch-phase-name">The Build</h3>
-            </div>
-          </div>
-          <div class="sch-events-column">
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">11:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 1</span></div>
-                <p class="sch-item-desc">Hacking begins — thinking &amp; planning phase. Lay your foundation.</p>
-              </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">1:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--break"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Lunch Break</span><span class="sch-badge sch-badge--break">Break</span></div>
-                <p class="sch-item-desc">Fuel up — meal break provided on-site.</p>
-              </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">2:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 2</span></div>
-                <p class="sch-item-desc">Deep work mode. No distractions — pure execution.</p>
-              </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">5:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--fun"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Strategy Pivot</span><span class="sch-badge sch-badge--fun">Mentor + Fun</span></div>
-                <p class="sch-item-desc">Direction pitch + mentor interaction + snacks &amp; fun activity.</p>
-              </div>
-            </div>
-            <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">6:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 3</span></div>
-                <p class="sch-item-desc">Grind mode. Push hard before the dinner break.</p>
-              </div>
-            </div>
+            <!-- Hover glow -->
+            <div class="schtl-card-glow" style="background:radial-gradient(ellipse at 100% 30%, rgba(168,85,247, 0.06), transparent 70%)"></div>
           </div>
         </div>
 
-        <!-- ─── Phase 3 ─── -->
-        <div class="sch-phase-block" data-phase="03">
-          <div class="sch-phase-label">
-            <span class="sch-phase-num">03</span>
-            <div class="sch-phase-meta">
-              <h3 class="sch-phase-name">Midnight Push</h3>
+        <!-- ─── Card 2 — RIGHT side ─── -->
+        <div class="schtl-row schtl-row--right" data-sch-item>
+          <!-- Card content -->
+          <div class="schtl-card schtl-card--right" style="border-color: rgba(96,165,250,0.2);">
+            <!-- Phase tag -->
+            <div class="schtl-phase-tag" style="background:rgba(96,165,250,0.1); color:#60a5fa; border-color:rgba(96,165,250,0.25);">02 · The Build</div>
+            <!-- Events -->
+            <div class="schtl-events">
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">11:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Build Sprint 1</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--break">
+                <span class="schtl-evt-time">1:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Lunch Break</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">2:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Build Sprint 2</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--fun">
+                <span class="schtl-evt-time">5:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Strategy Pivot</span>
+                  <span class="schm-badge schm-badge--fun">Mentor + Fun</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">6:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Build Sprint 3</span>
+                </div>
+              </div>
+            </div>
+            <!-- Hover glow -->
+            <div class="schtl-card-glow" style="background:radial-gradient(ellipse at 0% 30%, rgba(96,165,250, 0.06), transparent 70%)"></div>
+          </div>
+          <!-- Center icon -->
+          <div class="schtl-icon-wrap">
+            <div class="schtl-icon-glow" style="background:radial-gradient(circle, #60a5fa 0%, transparent 70%)"></div>
+            <div class="schtl-icon" style="border-color:#60a5fa">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#60a5fa" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M8 12h8"/><path d="M12 8v8"/></svg>
             </div>
           </div>
-          <div class="sch-events-column">
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">8:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--break"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Power Dinner</span><span class="sch-badge sch-badge--break">Break</span></div>
-                <p class="sch-item-desc">Dinner break — recharge before the long night ahead.</p>
+          <!-- spacer for left half -->
+          <div class="schtl-spacer"></div>
+        </div>
+
+        <!-- ─── Card 3 — LEFT side ─── -->
+        <div class="schtl-row schtl-row--left" data-sch-item>
+          <div class="schtl-spacer"></div>
+          <div class="schtl-icon-wrap">
+            <div class="schtl-icon-glow" style="background:radial-gradient(circle, #818cf8 0%, transparent 70%)"></div>
+            <div class="schtl-icon" style="border-color:#818cf8">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#818cf8" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            </div>
+          </div>
+          <div class="schtl-card schtl-card--left" style="border-color: rgba(129,140,248,0.2);">
+            <div class="schtl-phase-tag" style="background:rgba(129,140,248,0.1); color:#818cf8; border-color:rgba(129,140,248,0.25);">03 · Midnight Push</div>
+            <div class="schtl-events">
+              <div class="schtl-evt schtl-evt--break">
+                <span class="schtl-evt-time">8:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Power Dinner</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">9:00 PM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Build Sprint 4</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--critical">
+                <span class="schtl-evt-time">2:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Demo Pitch ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">3:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Final Sprint</span>
+                </div>
               </div>
             </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">9:00 PM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Build Sprint 4</span></div>
-                <p class="sch-item-desc">Midnight push — longest sprint of the hackathon. Optional midnight snack provided.</p>
+            <div class="schtl-card-glow" style="background:radial-gradient(ellipse at 100% 30%, rgba(129,140,248, 0.06), transparent 70%)"></div>
+          </div>
+        </div>
+
+        <!-- ─── Card 4 — RIGHT side ─── -->
+        <div class="schtl-row schtl-row--right" data-sch-item>
+          <div class="schtl-card schtl-card--right" style="border-color: rgba(251,191,36,0.2);">
+            <!-- Day / Date header -->
+            <div class="schtl-card-header" style="border-color: rgba(251,191,36,0.12);">
+              <div class="schtl-day-info">
+                <span class="schtl-day-label" style="color:#fbbf24">Day 2</span>
+                <span class="schtl-day-date">26 April 2026</span>
               </div>
             </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">2:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--critical"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Demo Pitch</span><span class="sch-badge sch-badge--critical">Critical</span></div>
-                <p class="sch-item-desc">Pitch round + GitHub submission deadline. No extensions granted.</p>
+            <div class="schtl-phase-tag" style="background:rgba(251,191,36,0.1); color:#fbbf24; border-color:rgba(251,191,36,0.25);">04 · The Finale</div>
+            <div class="schtl-events">
+              <div class="schtl-evt schtl-evt--submit">
+                <span class="schtl-evt-time">7:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Final Pitch</span>
+                  <span class="schm-badge schm-badge--submit">Submission</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--break">
+                <span class="schtl-evt-time">8:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Breakfast</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--critical">
+                <span class="schtl-evt-time">8:30 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Results Drop ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
+              </div>
+              <div class="schtl-evt">
+                <span class="schtl-evt-time">9:00 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Grand Presentation</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
+              </div>
+              <div class="schtl-evt schtl-evt--finale">
+                <span class="schtl-evt-time">10:30 AM</span>
+                <div class="schtl-evt-body">
+                  <span class="schtl-evt-name">Closing Ceremony 🏆</span>
+                  <span class="schm-badge schm-badge--finale">Finale</span>
+                </div>
               </div>
             </div>
-            <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">3:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Final Sprint</span></div>
-                <p class="sch-item-desc">Last stand — final build phase before submissions open at dawn.</p>
+            <div class="schtl-card-glow" style="background:radial-gradient(ellipse at 0% 30%, rgba(251,191,36, 0.06), transparent 70%)"></div>
+          </div>
+          <div class="schtl-icon-wrap">
+            <div class="schtl-icon-glow" style="background:radial-gradient(circle, #fbbf24 0%, transparent 70%)"></div>
+            <div class="schtl-icon" style="border-color:#fbbf24">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24" aria-hidden="true"><path d="M10 14.66v1.626a2 2 0 0 1-.976 1.696A5 5 0 0 0 7 21.978"/><path d="M14 14.66v1.626a2 2 0 0 0 .976 1.696A5 5 0 0 1 17 21.978"/><path d="M18 9h1.5a1 1 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M6 9a6 6 0 0 0 12 0V3a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1z"/><path d="M6 9H4.5a1 1 0 0 1 0-5H6"/></svg>
+            </div>
+          </div>
+          <div class="schtl-spacer"></div>
+        </div>
+
+      </div><!-- /.schtl-wrap -->
+
+      <a href="/schedule.html" class="schtl-cta">
+        View Schedule
+        <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+      </a>
+
+      </div><!-- /.sch-desktop-only -->
+
+      <!-- ── MOBILE-ONLY SCHEDULE ── -->
+      <div class="sch-mobile-only">
+
+        <!-- Day 1 -->
+        <div class="schm-day">
+          <div class="schm-day-header">
+            <span class="schm-day-label">Day 1</span>
+            <span class="schm-day-date">25 April 2026</span>
+          </div>
+
+          <div class="schm-phase">
+            <div class="schm-phase-tag schm-phase-tag--arrival">01 · Arrival &amp; Kickoff</div>
+            <div class="schm-events">
+              <div class="schm-event">
+                <span class="schm-time">8:00 – 9:30 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Doors Open</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
+              </div>
+              <div class="schm-event">
+                <span class="schm-time">10:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Kickoff</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
+              </div>
+              <div class="schm-event schm-event--critical">
+                <span class="schm-time">10:45 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">PS Drop ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="schm-phase">
+            <div class="schm-phase-tag schm-phase-tag--build">02 · The Build</div>
+            <div class="schm-events">
+              <div class="schm-event">
+                <span class="schm-time">11:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Build Sprint 1</span>
+                </div>
+              </div>
+              <div class="schm-event schm-event--break">
+                <span class="schm-time">1:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Lunch Break</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
+              </div>
+              <div class="schm-event">
+                <span class="schm-time">2:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Build Sprint 2</span>
+                </div>
+              </div>
+              <div class="schm-event schm-event--fun">
+                <span class="schm-time">5:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Strategy Pivot</span>
+                  <span class="schm-badge schm-badge--fun">Mentor + Fun</span>
+                </div>
+              </div>
+              <div class="schm-event">
+                <span class="schm-time">6:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Build Sprint 3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="schm-phase">
+            <div class="schm-phase-tag schm-phase-tag--night">03 · Midnight Push</div>
+            <div class="schm-events">
+              <div class="schm-event schm-event--break">
+                <span class="schm-time">8:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Power Dinner</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
+              </div>
+              <div class="schm-event">
+                <span class="schm-time">9:00 PM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Build Sprint 4</span>
+                </div>
+              </div>
+              <div class="schm-event schm-event--critical">
+                <span class="schm-time">2:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Demo Pitch ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
+              </div>
+              <div class="schm-event">
+                <span class="schm-time">3:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Final Sprint</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- ─── Phase 4 ─── -->
-        <div class="sch-phase-block" data-phase="04">
-          <div class="sch-phase-label">
-            <span class="sch-phase-num">04</span>
-            <div class="sch-phase-meta">
-              <h3 class="sch-phase-name">The Finale</h3>
-            </div>
+        <!-- Day 2 -->
+        <div class="schm-day">
+          <div class="schm-day-header">
+            <span class="schm-day-label">Day 2</span>
+            <span class="schm-day-date">26 April 2026</span>
           </div>
-          <div class="sch-events-column">
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">7:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--submit"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Final Pitch</span><span class="sch-badge sch-badge--submit">Submission</span></div>
-                <p class="sch-item-desc">GitHub + deck + live link submission. All deliverables locked in.</p>
+
+          <div class="schm-phase">
+            <div class="schm-phase-tag schm-phase-tag--finale">04 · The Finale</div>
+            <div class="schm-events">
+              <div class="schm-event schm-event--submit">
+                <span class="schm-time">7:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Final Pitch</span>
+                  <span class="schm-badge schm-badge--submit">Submission</span>
+                </div>
               </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">8:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--break"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Breakfast</span><span class="sch-badge sch-badge--break">Break</span></div>
-                <p class="sch-item-desc">Recharge before the verdict — last meal of the hackathon.</p>
+              <div class="schm-event schm-event--break">
+                <span class="schm-time">8:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Breakfast</span>
+                  <span class="schm-badge schm-badge--break">Break</span>
+                </div>
               </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">8:30 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--critical"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Results Drop</span><span class="sch-badge sch-badge--critical">Critical</span></div>
-                <p class="sch-item-desc">Results announced — eliminated teams dismissed. Finalists proceed.</p>
+              <div class="schm-event schm-event--critical">
+                <span class="schm-time">8:30 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Results Drop ⚡</span>
+                  <span class="schm-badge schm-badge--critical">Critical</span>
+                </div>
               </div>
-            </div>
-            <div class="sch-item" data-sch-item>
-              <span class="sch-item-time">9:00 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot"></div><div class="sch-item-line"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Grand Presentation</span><span class="sch-badge sch-badge--main">Keynote</span></div>
-                <p class="sch-item-desc">Final PPT presentation round before the judges.</p>
+              <div class="schm-event">
+                <span class="schm-time">9:00 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Grand Presentation</span>
+                  <span class="schm-badge schm-badge--keynote">Keynote</span>
+                </div>
               </div>
-            </div>
-            <div class="sch-item sch-item--last" data-sch-item>
-              <span class="sch-item-time">10:30 AM</span>
-              <div class="sch-item-track"><div class="sch-item-dot sch-item-dot--finale"></div></div>
-              <div class="sch-item-content">
-                <div class="sch-item-top"><span class="sch-item-name">Closing Ceremony</span><span class="sch-badge sch-badge--finale">Finale</span></div>
-                <p class="sch-item-desc">Prize distribution &amp; grand finale. UDBHAV'26 comes to an end.</p>
+              <div class="schm-event schm-event--finale">
+                <span class="schm-time">10:30 AM</span>
+                <div class="schm-event-body">
+                  <span class="schm-name">Closing Ceremony 🏆</span>
+                  <span class="schm-badge schm-badge--finale">Finale</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-      </div><!-- /.sch-timeline-full -->
+        <a href="/schedule.html" class="schm-cta">
+          View Full Schedule
+          <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+
+      </div><!-- /.sch-mobile-only -->
+
     </div><!-- /.sch-container -->
   </section>
 
@@ -960,39 +1138,11 @@
 
       </div><!-- /.faq-list -->
 
-      <!-- Bottom CTA -->
-      <div class="faq-cta-row">
-        <p class="faq-cta-note">Still got questions? We've got answers.</p>
-        <a href="https://wa.me/918829841257" target="_blank" rel="noopener" class="faq-cta-btn" id="faqCtaBtn">
-          <svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
-          Ask on WhatsApp
-        </a>
-      </div>
+
 
     </div><!-- /.faq-container -->
   </section>
-<!-- ── Bottom Corner Labels ───────────────────────────────────────────────── -->
-  <div class="corner-labels">
-    <div class="corner-label corner-left" id="cornerLeft">
-      <svg class="corner-icon corner-icon--green" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
-      </svg>
-      <div class="corner-text">
-        <span class="corner-line-top">VENUE — SAGE UNIVERSITY</span>
-        <span class="corner-line-bottom">INDORE</span>
-      </div>
-    </div>
 
-    <div class="corner-label corner-right" id="cornerRight">
-      <svg class="corner-icon corner-icon--blue" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-        <rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/>
-      </svg>
-      <div class="corner-text">
-        <span class="corner-line-top">DATE — 25TH–26TH</span>
-        <span class="corner-line-bottom">APRIL 2026</span>
-      </div>
-    </div>
-  </div>
 
   <!-- ══════════════════════════════════════════════════════════════════
        SPONSORS SECTION — Pyramid Layout
@@ -1119,86 +1269,7 @@
     </div><!-- /.sponsors-container -->
   </section>
 
-  <!-- ══════════════════════════════════════════════════════════════════
-       GEMINI LINES EFFECT — scroll-drawn SVG paths
-       Ported from Aceternity UI Google Gemini Effect (vanilla JS / GSAP)
-       ══════════════════════════════════════════════════════════════════ -->
-  <section class="gemini-section" id="geminiSection" aria-hidden="true">
 
-    <div class="gemini-sticky" id="geminiSticky">
-
-      <!-- Centered text (sticky) -->
-      <div class="gemini-text">
-        <span class="gemini-pre-label">UDBHAV'26 &nbsp;·&nbsp; APRIL 25–26</span>
-        <p class="gemini-title">Build. <em>Ship.</em> Win.</p>
-        <p class="gemini-desc">50 teams. 10 problems. 24 hours. One winner.</p>
-      </div>
-
-      <!-- Register CTA — floats inside the SVG frame -->
-      <div class="gemini-cta-layer">
-        <a href="/register.html" class="gemini-cta-btn">Register Now</a>
-      </div>
-
-      <!-- SVG with 5 animated paths + 5 blurred ghost paths -->
-      <svg
-        class="gemini-svg"
-        width="1440" height="890"
-        viewBox="0 0 1440 890"
-        xmlns="http://www.w3.org/2000/svg"
-        preserveAspectRatio="xMidYMid meet"
-        aria-hidden="true"
-      >
-        <!-- ── Animated (sharp) paths ── -->
-        <path class="gemini-path" data-init="0.8"
-          pathLength="1" stroke="#FFB7C5" stroke-width="2" fill="none"
-          d="M0 663C145.5 663 191 666.265 269 647C326.5 630 339.5 621 397.5 566C439 531.5 455 529.5 490 523C509.664 519.348 521 503.736 538 504.236C553.591 504.236 562.429 514.739 584.66 522.749C592.042 525.408 600.2 526.237 607.356 523.019C624.755 515.195 641.446 496.324 657 496.735C673.408 496.735 693.545 519.572 712.903 526.769C718.727 528.934 725.184 528.395 730.902 525.965C751.726 517.115 764.085 497.106 782 496.735C794.831 496.47 804.103 508.859 822.469 518.515C835.13 525.171 850.214 526.815 862.827 520.069C875.952 513.049 889.748 502.706 903.5 503.736C922.677 505.171 935.293 510.562 945.817 515.673C954.234 519.76 963.095 522.792 972.199 524.954C996.012 530.611 1007.42 534.118 1034 549C1077.5 573.359 1082.5 594.5 1140 629C1206 670 1328.5 662.5 1440 662.5"/>
-
-        <path class="gemini-path" data-init="0.85"
-          pathLength="1" stroke="#FFDDB7" stroke-width="2" fill="none"
-          d="M0 587.5C147 587.5 277 587.5 310 573.5C348 563 392.5 543.5 408 535C434 523.5 426 526.235 479 515.235C494 512.729 523 510.435 534.5 512.735C554.5 516.735 555.5 523.235 576 523.735C592 523.735 616 496.735 633 497.235C648.671 497.235 661.31 515.052 684.774 524.942C692.004 527.989 700.2 528.738 707.349 525.505C724.886 517.575 741.932 498.33 757.5 498.742C773.864 498.742 791.711 520.623 810.403 527.654C816.218 529.841 822.661 529.246 828.451 526.991C849.246 518.893 861.599 502.112 879.5 501.742C886.47 501.597 896.865 506.047 907.429 510.911C930.879 521.707 957.139 519.639 982.951 520.063C1020.91 520.686 1037.5 530.797 1056.5 537C1102.24 556.627 1116.5 570.704 1180.5 579.235C1257.5 589.5 1279 587 1440 588"/>
-
-        <path class="gemini-path" data-init="0.90"
-          pathLength="1" stroke="#B1C5FF" stroke-width="2" fill="none"
-          d="M0 514C147.5 514.333 294.5 513.735 380.5 513.735C405.976 514.94 422.849 515.228 436.37 515.123C477.503 514.803 518.631 506.605 559.508 511.197C564.04 511.706 569.162 512.524 575 513.735C588 516.433 616 521.702 627.5 519.402C647.5 515.402 659 499.235 680.5 499.235C700.5 499.235 725 529.235 742 528.735C757.654 528.735 768.77 510.583 791.793 500.59C798.991 497.465 807.16 496.777 814.423 499.745C832.335 507.064 850.418 524.648 866 524.235C882.791 524.235 902.316 509.786 921.814 505.392C926.856 504.255 932.097 504.674 937.176 505.631C966.993 511.248 970.679 514.346 989.5 514.735C1006.3 515.083 1036.5 513.235 1055.5 513.235C1114.5 513.235 1090.5 513.235 1124 513.235C1177.5 513.235 1178.99 514.402 1241 514.402C1317.5 514.402 1274.5 512.568 1440 513.235"/>
-
-        <path class="gemini-path" data-init="0.95"
-          pathLength="1" stroke="#4FABFF" stroke-width="2" fill="none"
-          d="M0 438.5C150.5 438.5 261 438.318 323.5 456.5C351 464.5 387.517 484.001 423.5 494.5C447.371 501.465 472 503.735 487 507.735C503.786 512.212 504.5 516.808 523 518.735C547 521.235 564.814 501.235 584.5 501.235C604.5 501.235 626 529.069 643 528.569C658.676 528.569 672.076 511.63 695.751 501.972C703.017 499.008 711.231 498.208 718.298 501.617C735.448 509.889 751.454 529.98 767 529.569C783.364 529.569 801.211 507.687 819.903 500.657C825.718 498.469 832.141 499.104 837.992 501.194C859.178 508.764 873.089 523.365 891 523.735C907.8 524.083 923 504.235 963 506.735C1034.5 506.735 1047.5 492.68 1071 481.5C1122.5 457 1142.23 452.871 1185 446.5C1255.5 436 1294 439 1439.5 439"/>
-
-        <path class="gemini-path" data-init="1.0"
-          pathLength="1" stroke="#076EFF" stroke-width="2" fill="none"
-          d="M0.5 364C145.288 362.349 195 361.5 265.5 378C322 391.223 399.182 457.5 411 467.5C424.176 478.649 456.916 491.677 496.259 502.699C498.746 503.396 501.16 504.304 503.511 505.374C517.104 511.558 541.149 520.911 551.5 521.236C571.5 521.236 590 498.736 611.5 498.736C631.5 498.736 652.5 529.236 669.5 528.736C685.171 528.736 697.81 510.924 721.274 501.036C728.505 497.988 736.716 497.231 743.812 500.579C761.362 508.857 778.421 529.148 794 528.736C810.375 528.736 829.35 508.68 848.364 502.179C854.243 500.169 860.624 500.802 866.535 502.718C886.961 509.338 898.141 519.866 916 520.236C932.8 520.583 934.5 510.236 967.5 501.736C1011.5 491 1007.5 493.5 1029.5 480C1069.5 453.5 1072 440.442 1128.5 403.5C1180.5 369.5 1275 360.374 1439 364"/>
-
-        <!-- ── Blurred ghost paths (static, always drawn) ── -->
-        <path stroke="#FFB7C5" stroke-width="2" fill="none" pathLength="1"
-          filter="url(#geminiBlur)"
-          d="M0 663C145.5 663 191 666.265 269 647C326.5 630 339.5 621 397.5 566C439 531.5 455 529.5 490 523C509.664 519.348 521 503.736 538 504.236C553.591 504.236 562.429 514.739 584.66 522.749C592.042 525.408 600.2 526.237 607.356 523.019C624.755 515.195 641.446 496.324 657 496.735C673.408 496.735 693.545 519.572 712.903 526.769C718.727 528.934 725.184 528.395 730.902 525.965C751.726 517.115 764.085 497.106 782 496.735C794.831 496.47 804.103 508.859 822.469 518.515C835.13 525.171 850.214 526.815 862.827 520.069C875.952 513.049 889.748 502.706 903.5 503.736C922.677 505.171 935.293 510.562 945.817 515.673C954.234 519.76 963.095 522.792 972.199 524.954C996.012 530.611 1007.42 534.118 1034 549C1077.5 573.359 1082.5 594.5 1140 629C1206 670 1328.5 662.5 1440 662.5"/>
-
-        <path stroke="#FFDDB7" stroke-width="2" fill="none" pathLength="1"
-          filter="url(#geminiBlur)"
-          d="M0 587.5C147 587.5 277 587.5 310 573.5C348 563 392.5 543.5 408 535C434 523.5 426 526.235 479 515.235C494 512.729 523 510.435 534.5 512.735C554.5 516.735 555.5 523.235 576 523.735C592 523.735 616 496.735 633 497.235C648.671 497.235 661.31 515.052 684.774 524.942C692.004 527.989 700.2 528.738 707.349 525.505C724.886 517.575 741.932 498.33 757.5 498.742C773.864 498.742 791.711 520.623 810.403 527.654C816.218 529.841 822.661 529.246 828.451 526.991C849.246 518.893 861.599 502.112 879.5 501.742C886.47 501.597 896.865 506.047 907.429 510.911C930.879 521.707 957.139 519.639 982.951 520.063C1020.91 520.686 1037.5 530.797 1056.5 537C1102.24 556.627 1116.5 570.704 1180.5 579.235C1257.5 589.5 1279 587 1440 588"/>
-
-        <path stroke="#B1C5FF" stroke-width="2" fill="none" pathLength="1"
-          filter="url(#geminiBlur)"
-          d="M0 514C147.5 514.333 294.5 513.735 380.5 513.735C405.976 514.94 422.849 515.228 436.37 515.123C477.503 514.803 518.631 506.605 559.508 511.197C564.04 511.706 569.162 512.524 575 513.735C588 516.433 616 521.702 627.5 519.402C647.5 515.402 659 499.235 680.5 499.235C700.5 499.235 725 529.235 742 528.735C757.654 528.735 768.77 510.583 791.793 500.59C798.991 497.465 807.16 496.777 814.423 499.745C832.335 507.064 850.418 524.648 866 524.235C882.791 524.235 902.316 509.786 921.814 505.392C926.856 504.255 932.097 504.674 937.176 505.631C966.993 511.248 970.679 514.346 989.5 514.735C1006.3 515.083 1036.5 513.235 1055.5 513.235C1114.5 513.235 1090.5 513.235 1124 513.235C1177.5 513.235 1178.99 514.402 1241 514.402C1317.5 514.402 1274.5 512.568 1440 513.235"/>
-
-        <path stroke="#4FABFF" stroke-width="2" fill="none" pathLength="1"
-          filter="url(#geminiBlur)"
-          d="M0 438.5C150.5 438.5 261 438.318 323.5 456.5C351 464.5 387.517 484.001 423.5 494.5C447.371 501.465 472 503.735 487 507.735C503.786 512.212 504.5 516.808 523 518.735C547 521.235 564.814 501.235 584.5 501.235C604.5 501.235 626 529.069 643 528.569C658.676 528.569 672.076 511.63 695.751 501.972C703.017 499.008 711.231 498.208 718.298 501.617C735.448 509.889 751.454 529.98 767 529.569C783.364 529.569 801.211 507.687 819.903 500.657C825.718 498.469 832.141 499.104 837.992 501.194C859.178 508.764 873.089 523.365 891 523.735C907.8 524.083 923 504.235 963 506.735C1034.5 506.735 1047.5 492.68 1071 481.5C1122.5 457 1142.23 452.871 1185 446.5C1255.5 436 1294 439 1439.5 439"/>
-
-        <path stroke="#076EFF" stroke-width="2" fill="none" pathLength="1"
-          filter="url(#geminiBlur)"
-          d="M0.5 364C145.288 362.349 195 361.5 265.5 378C322 391.223 399.182 457.5 411 467.5C424.176 478.649 456.916 491.677 496.259 502.699C498.746 503.396 501.16 504.304 503.511 505.374C517.104 511.558 541.149 520.911 551.5 521.236C571.5 521.236 590 498.736 611.5 498.736C631.5 498.736 652.5 529.236 669.5 528.736C685.171 528.736 697.81 510.924 721.274 501.036C728.505 497.988 736.716 497.231 743.812 500.579C761.362 508.857 778.421 529.148 794 528.736C810.375 528.736 829.35 508.68 848.364 502.179C854.243 500.169 860.624 500.802 866.535 502.718C886.961 509.338 898.141 519.866 916 520.236C932.8 520.583 934.5 510.236 967.5 501.736C1011.5 491 1007.5 493.5 1029.5 480C1069.5 453.5 1072 440.442 1128.5 403.5C1180.5 369.5 1275 360.374 1439 364"/>
-
-        <defs>
-          <filter id="geminiBlur">
-            <feGaussianBlur in="SourceGraphic" stdDeviation="5"/>
-          </filter>
-        </defs>
-      </svg>
-
-    </div><!-- /.gemini-sticky -->
-  </section>
 
   <!-- ══════════════════════════════════════════════════════════════════
        CINEMATIC FOOTER — Curtain Reveal / Magnetic Pills / Marquee
@@ -1260,8 +1331,8 @@
           <div class="cf-secondary-pills" style="margin-top:0.75rem;">
             <a href="/legal.html#terms" class="cf-pill cf-pill--ghost js-magnetic">Terms</a>
             <a href="/legal.html#privacy" class="cf-pill cf-pill--ghost js-magnetic">Privacy</a>
-            <a href="/legal.html#refund" class="cf-pill cf-pill--ghost js-magnetic">Refund Policy</a>
-            <a href="/legal.html#contact" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
+
+            <a href="/contact.html" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
           </div>
       </div>
 
@@ -1293,7 +1364,7 @@
   </div><!-- /cf-wrapper -->
 
   <script type="module" src="/src/main.js"></script>
-  <script src="/mobile-perf.js" defer></script>
+  <script type="module" src="/mobile-perf.js" defer></script>
 
   <!-- Mobile nav hamburger controller -->
   <script>

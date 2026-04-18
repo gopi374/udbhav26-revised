@@ -1,12 +1,13 @@
 /**
  * PORTFOLIO HERO — main.js
  * ─────────────────────────────────────────────────────────────────
- * Resolved Merge:
- * • Three.js dissolve shader (desktop only)
- * • Lenis smooth scroll (desktop only)
- * • GSAP + ScrollTrigger for hero parallax & pinning
- * • Custom Cursor & Mouse-tracking radial glow (desktop only)
- * • Staggered entrance animations
+ * Merge of:
+ *   • Original: Three.js dissolve shader (black→transparent on scroll)
+ *   • Original: Lenis smooth scroll → drives uDissolve uniform
+ *   • New:      GSAP + ScrollTrigger for hero parallax
+ *   • New:      Letter-by-letter name animation on load
+ *   • New:      Mouse-tracking radial glow (lerped RAF)
+ *   • New:      Staggered entrance for badge, subtitle, corner labels
  * ─────────────────────────────────────────────────────────────────
  */
 
@@ -15,43 +16,61 @@ import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
-import { initHeroBgShader } from './shader-bg.js';
-import './analytics.js'; 
+import { initHeroBgShader }  from './shader-bg.js';
+
+import './analytics.js'; // Initialize Vercel Analytics and Speed Insights
 
 gsap.registerPlugin(ScrollTrigger);
 
-// ── Device Detection ─────────────────────────────────────────────
-const IS_TOUCH = window.matchMedia('(hover: none)').matches;
+// ─────────────────────────────────────────────────────────────────
+// Touch / mobile detection — gate heavy GPU features
+// IS_TOUCH: true on phones/tablets (no hover capability)
+// IS_MOBILE: true also on ≤768px desktop windows
+// ─────────────────────────────────────────────────────────────────
+const IS_TOUCH  = window.matchMedia('(hover: none)').matches;
 const IS_MOBILE = IS_TOUCH || window.innerWidth <= 768;
 
-// ── Hero Background Shader ───────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Hero background shader (ring-wave GLSL, behind all hero content)
+// Skip on touch devices — WebGL is expensive on mobile GPUs.
+// ─────────────────────────────────────────────────────────────────
 if (!IS_TOUCH) {
   initHeroBgShader(document.getElementById('heroShaderBg'));
 }
 
-// ── Mobile Nav Pill ──────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Mobile nav pill — tap on logo area → go home
+// Excludes: hamburger button, register CTA, any link/button inside
+// ─────────────────────────────────────────────────────────────────
 (function initMobileNavPillHome() {
-  const pill = document.getElementById('mobileNavPill');
+  const pill    = document.getElementById('mobileNavPill');
   if (!pill) return;
 
   pill.addEventListener('click', (e) => {
+    // Let any real link/button inside handle itself
     const interactive = e.target.closest('a, button');
     if (interactive) return;
+    // Clicking blank space on the pill → go home
     window.location.href = '/';
   });
 })();
 
-// ── Custom Cursor ────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Custom cursor — arrow-shaped, auto black/white via mix-blend-mode
+// Disabled on touch devices (CSS hides it; JS skips listeners too).
+// ─────────────────────────────────────────────────────────────────
 (function initCursor() {
-  if (IS_TOUCH) return; 
+  if (IS_TOUCH) return; // no mouse on touch devices
   const arrow = document.getElementById('cursorArrow');
   if (!arrow) return;
 
+  // Track mouse — center dot on pointer
   document.addEventListener('mousemove', (e) => {
     arrow.style.left = e.clientX + 'px';
     arrow.style.top  = e.clientY + 'px';
   });
 
+  // Grow on hover over interactive elements
   const targets = 'a, button, [role="button"], .nav-link, .btn-cta, .nav-menu-btn, .icon-btn, .dropdown-item';
   document.querySelectorAll(targets).forEach(el => {
     el.addEventListener('mouseenter', () => {
@@ -60,6 +79,7 @@ if (!IS_TOUCH) {
     el.addEventListener('mouseleave', () => arrow.classList.remove('is-hovering'));
   });
 
+  // Large invert circle when hovering hero name
   const heroHeading = document.getElementById('heroHeading');
   if (heroHeading) {
     heroHeading.addEventListener('mouseenter', () => {
@@ -71,19 +91,32 @@ if (!IS_TOUCH) {
     });
   }
 
+  // Fade out when cursor leaves the window
   document.addEventListener('mouseleave', () => { arrow.style.opacity = '0'; });
   document.addEventListener('mouseenter', () => { arrow.style.opacity = '1'; });
 })();
 
-// ── Lenis Smooth Scroll ──────────────────────────────────────────
+
+
+// ─────────────────────────────────────────────────────────────────
+// Lenis smooth scroll — skip on touch (native momentum scroll is better)
+// ─────────────────────────────────────────────────────────────────
 const lenis = IS_TOUCH ? null : new Lenis({ autoRaf: false });
+
+// Keep ScrollTrigger in sync with Lenis
 if (lenis) lenis.on('scroll', ScrollTrigger.update);
 
+// ─────────────────────────────────────────────────────────────────
+// Utility
+// ─────────────────────────────────────────────────────────────────
 function clamp01(v) {
   return Math.max(0, Math.min(1, v));
 }
 
-// ── Three.js Dissolve Shader ─────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Three.js — original dissolve shader
+// Skipped on touch devices — heavy GPU cost, not needed on mobile.
+// ─────────────────────────────────────────────────────────────────
 const vertexShader = `
   varying vec2 vUv;
   void main() {
@@ -94,8 +127,8 @@ const vertexShader = `
 
 const fragmentShader = `
   uniform vec2  uResolution;
-  uniform float uDissolve;
-  uniform vec2  uCenter;
+  uniform float uDissolve;   // 0 = fully black, 1 = fully gone
+  uniform vec2  uCenter;     // normalised (0.5, 0.5)
   varying vec2  vUv;
 
   float hash(vec2 p) {
@@ -118,207 +151,219 @@ const fragmentShader = `
 
   void main() {
     float aspect = uResolution.x / uResolution.y;
-    vec2  d = (vUv - uCenter) * vec2(aspect, 1.0);
-    float dist = length(d);
-    float angle = atan(d.y, d.x);
-    vec2  pixUv = floor(vUv * uResolution / 6.0) * 6.0 / uResolution;
-    float noisy = fbm(pixUv * 80.0) * 0.12 + fbm(vec2(angle * 4.0, 0.0)) * 0.12;
-    float noisyDist = dist + noisy;
-    float maxDist = length(vec2(aspect * 0.5, 0.5));
+
+    vec2  d        = (vUv - uCenter) * vec2(aspect, 1.0);
+    float dist     = length(d);
+    float angle    = atan(d.y, d.x);
+    vec2  pixUv    = floor(vUv * uResolution / 6.0) * 6.0 / uResolution;
+    float noisy    = fbm(pixUv * 80.0) * 0.12 + fbm(vec2(angle * 4.0, 0.0)) * 0.12;
+    float noisyDist= dist + noisy;
+
+    float maxDist  = length(vec2(aspect * 0.5, 0.5));
     float normDist = noisyDist / maxDist;
-    float T = uDissolve * 1.5;
+
+    float T     = uDissolve * 1.5;
     float alpha = smoothstep(T - 0.04, T + 0.04, normDist);
-    float edgeZone = smoothstep(T - 0.12, T - 0.04, normDist) * smoothstep(T + 0.04, T, normDist);
-    float sparkle = hash(floor(vUv * uResolution / 4.0)) * edgeZone;
-    float sparkDim = sparkle * 2.2 * (1.0 - uDissolve);
-    vec3  color = vec3(1.0 - sparkDim * 0.25);
+
+    float edgeZone = smoothstep(T - 0.12, T - 0.04, normDist) *
+                     smoothstep(T + 0.04, T,         normDist);
+    float sparkle  = hash(floor(vUv * uResolution / 4.0)) * edgeZone;
+
+    // Canvas is WHITE — the dissolve fills in white over the dark hero
+    // Sparkle pixels are slightly grey at the jagged dissolving edge
+    float sparkDim = sparkle * 2.2 * (1.0 - uDissolve); // dimmer near edge as dissolve closes
+    vec3  color    = vec3(1.0 - sparkDim * 0.25);        // white minus a hint of grey sparkle
+
     gl_FragColor = vec4(color, alpha);
   }
 `;
 
+// ── Three.js setup (desktop only) ──────────────────────────────────────────────
 let renderer = null, material = null, scene = null, camera = null;
 
 if (!IS_TOUCH) {
   const container = document.querySelector('.canvas1');
-  if (container) {
-    scene = new THREE.Scene();
-    camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-    camera.position.z = 1;
 
-    renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true, powerPreference: 'low-power' });
-    renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  scene    = new THREE.Scene();
+  camera   = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
+  camera.position.z = 1;
+
+  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
+  renderer.setClearColor(0x000000, 0);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  container.appendChild(renderer.domElement);
+
+  material = new THREE.ShaderMaterial({
+    uniforms: {
+      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      uDissolve:   { value: 1.0 },
+      uCenter:     { value: new THREE.Vector2(0.5, 0.5) },
+    },
+    vertexShader,
+    fragmentShader,
+    transparent: true,
+  });
+
+  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
+
+  // ── Resize handler ────────────────────────────────────────────────────────────
+  window.addEventListener('resize', () => {
     renderer.setSize(window.innerWidth, window.innerHeight);
-    container.appendChild(renderer.domElement);
-
-    material = new THREE.ShaderMaterial({
-      uniforms: {
-        uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-        uDissolve:   { value: 1.0 }, 
-        uCenter:     { value: new THREE.Vector2(0.5, 0.5) },
-      },
-      vertexShader,
-      fragmentShader,
-      transparent: true,
-    });
-
-    scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
-
-    window.addEventListener('resize', () => {
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-      ScrollTrigger.refresh();
-    });
-  }
+    material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
+    ScrollTrigger.refresh();
+  });
 } else {
+  // Mobile resize only needs to refresh ScrollTrigger
   window.addEventListener('resize', () => ScrollTrigger.refresh());
 }
 
-// ── Mouse Glow ───────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────
+// Mouse glow — lerped radial gradient (desktop only)
+// ─────────────────────────────────────────────────────────────────
 const glow = document.getElementById('mouseGlow');
 let mouseX = window.innerWidth  / 2;
 let mouseY = window.innerHeight / 2;
-let glowX = mouseX;
-let glowY = mouseY;
+let glowX  = mouseX;
+let glowY  = mouseY;
 
 if (!IS_TOUCH && glow) {
-  glow.style.willChange = 'transform';
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
   });
 }
 
+// Smooth glow follow — only runs on desktop
 function tickGlow() {
   if (IS_TOUCH || !glow) return;
   glowX += (mouseX - glowX) * 0.08;
   glowY += (mouseY - glowY) * 0.08;
-  glow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
+  glow.style.left = `${glowX}px`;
+  glow.style.top  = `${glowY}px`;
 }
 
-// ── Unified RAF ──────────────────────────────────────────────────
-let heroVisible = true;
-const heroEl = document.querySelector('.hero');
-if ('IntersectionObserver' in window && heroEl) {
-  const heroObs = new IntersectionObserver(([entry]) => {
-    heroVisible = entry.isIntersecting;
-  }, { threshold: 0.01 });
-  heroObs.observe(heroEl);
-}
-
+// ─────────────────────────────────────────────────────────────────
+// Unified RAF — Lenis + Three.js renderer + glow lerp
+// ─────────────────────────────────────────────────────────────────
 function raf(time) {
   if (lenis) lenis.raf(time);
-  if (heroVisible && renderer && scene && camera) {
-    renderer.render(scene, camera);
-  }
+  if (renderer && scene && camera) renderer.render(scene, camera);
   tickGlow();
   requestAnimationFrame(raf);
 }
 requestAnimationFrame(raf);
 
-// ── Letter-split Hero Name ───────────────────────────────────────
-const NAME = "UDBHAV'26";
+// ─────────────────────────────────────────────────────────────────
+// Letter-split hero name
+// ─────────────────────────────────────────────────────────────────
+const NAME     = "UDBHAV'26";
 const heroName = document.getElementById('heroHeading');
-if (heroName) {
-  heroName.setAttribute('aria-label', NAME);
-  NAME.split('').forEach((char) => {
-    const span = document.createElement('span');
-    span.className = 'letter';
-    span.textContent = char;
-    heroName.appendChild(span);
-  });
-}
+heroName.setAttribute('aria-label', NAME);
 
-const letters = heroName ? heroName.querySelectorAll('.letter') : [];
+NAME.split('').forEach((char) => {
+  const span = document.createElement('span');
+  span.className   = 'letter';
+  span.textContent = char;
+  heroName.appendChild(span);
+});
 
-// ── Entrance Animations ──────────────────────────────────────────
-const subtitleSans = document.querySelector('.subtitle-sans');
+const letters = heroName.querySelectorAll('.letter');
+
+// ─────────────────────────────────────────────────────────────────
+// Entrance animation timeline (CSS transitions via JS)
+// Chain: letters → subtitle → corners
+// ─────────────────────────────────────────────────────────────────
+const subtitleSans  = document.querySelector('.subtitle-sans');
 const subtitleSerif = document.querySelector('.subtitle-serif');
-const heroEyebrow = document.querySelector('.hero-eyebrow');
-const cornerLeft = document.getElementById('cornerLeft');
-const cornerRight = document.getElementById('cornerRight');
+const heroEyebrow   = document.querySelector('.hero-eyebrow');
+const cornerLeft    = document.getElementById('cornerLeft');
+const cornerRight   = document.getElementById('cornerRight');
 
+/** Fade + slide up — standard (corners/labels) */
 function revealEl(el, delay = 0, yStart = 20) {
   if (!el) return;
-  el.style.opacity = '0';
-  el.style.transform = `translateY(${yStart}px)`;
+  el.style.opacity    = '0';
+  el.style.transform  = `translateY(${yStart}px)`;
   el.style.transition = 'none';
+
   setTimeout(() => {
     el.style.transition = 'opacity 0.72s ease, transform 0.72s cubic-bezier(0.16, 1, 0.3, 1)';
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0)';
+    el.style.opacity    = '1';
+    el.style.transform  = 'translateY(0)';
   }, delay);
 }
 
+/** Fade + slide up + blur-in — used for subtitle lines */
 function revealElBlur(el, delay = 0, yStart = 32) {
   if (!el) return;
-  el.style.opacity = '0';
-  el.style.transform = `translateY(${yStart}px)`;
-  el.style.filter = 'blur(10px)';
+  el.style.opacity    = '0';
+  el.style.transform  = `translateY(${yStart}px)`;
+  el.style.filter     = 'blur(10px)';
   el.style.transition = 'none';
+
   setTimeout(() => {
-    el.style.transition = 'opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease';
-    el.style.opacity = '1';
-    el.style.transform = 'translateY(0)';
-    el.style.filter = 'blur(0px)';
+    el.style.transition =
+      'opacity 0.9s ease, transform 0.9s cubic-bezier(0.16, 1, 0.3, 1), filter 0.9s ease';
+    el.style.opacity    = '1';
+    el.style.transform  = 'translateY(0)';
+    el.style.filter     = 'blur(0px)';
   }, delay);
 }
 
-// ── Cat Animation ────────────────────────────────────────────────
+// Cat wrap — on desktop: blur-in entrance; on mobile: instant show
 const heroCatWrap = document.getElementById('heroCatWrap');
 if (heroCatWrap) {
   if (IS_MOBILE) {
-    heroCatWrap.style.opacity = '1';
+    heroCatWrap.style.opacity   = '1';
+    heroCatWrap.style.transform = '';
+    heroCatWrap.style.filter    = '';
   } else {
-    heroCatWrap.style.opacity = '0';
-    heroCatWrap.style.transform = 'translateY(40px)';
-    heroCatWrap.style.filter = 'blur(12px)';
+    heroCatWrap.style.opacity    = '0';
+    heroCatWrap.style.transform  = 'translateY(40px)';
+    heroCatWrap.style.filter     = 'blur(12px)';
+    heroCatWrap.style.transition = 'none';
+
     setTimeout(() => {
-      heroCatWrap.style.transition = 'opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 1s ease';
-      heroCatWrap.style.opacity = '1';
+      heroCatWrap.style.transition =
+        'opacity 1s ease, transform 1s cubic-bezier(0.16, 1, 0.3, 1), filter 1s ease';
+      heroCatWrap.style.opacity   = '1';
       heroCatWrap.style.transform = 'translateY(0)';
-      heroCatWrap.style.filter = 'blur(0px)';
+      heroCatWrap.style.filter    = 'blur(0px)';
     }, 100);
   }
 }
 
+// ── Cat eye tracking + blinking (desktop only — no mouse on touch) ─────────────
 (function initCatEyes() {
-  if (IS_TOUCH) return;
-  const eyeLeft = document.getElementById('eyeLeft');
-  const eyeRight = document.getElementById('eyeRight');
+  if (IS_TOUCH) return; // skip mouse-tracking on touch devices
+  const eyeLeft   = document.getElementById('eyeLeft');
+  const eyeRight  = document.getElementById('eyeRight');
   const pupilLeft = document.getElementById('pupilLeft');
-  const pupilRight = document.getElementById('pupilRight');
+  const pupilRight= document.getElementById('pupilRight');
   if (!eyeLeft || !eyeRight) return;
 
-  const eyes = [eyeLeft, eyeRight];
+  const eyes   = [eyeLeft,   eyeRight];
   const pupils = [pupilLeft, pupilRight];
-  const MAX_PX = 6;
+  const MAX_PX = 6; // max pupil travel from centre
 
-  let eyeRaf = false;
-  let lastEyeX = 0, lastEyeY = 0;
+  // Track mouse → move pupils ──────────────────────────────────────
   document.addEventListener('mousemove', (e) => {
-    lastEyeX = e.clientX;
-    lastEyeY = e.clientY;
-    if (!eyeRaf) {
-      eyeRaf = true;
-      requestAnimationFrame(() => {
-        eyes.forEach((eye, i) => {
-          const r = eye.getBoundingClientRect();
-          const cx = r.left + r.width / 2;
-          const cy = r.top + r.height / 2;
-          const dx = lastEyeX - cx;
-          const dy = lastEyeY - cy;
-          const dist = Math.sqrt(dx * dx + dy * dy);
-          const ratio = Math.min(dist, 80) / 80;
-          const px = (dx / (dist || 1)) * MAX_PX * ratio;
-          const py = (dy / (dist || 1)) * MAX_PX * ratio;
-          if (pupils[i]) pupils[i].style.transform = `translate(${px}px, ${py}px)`;
-        });
-        eyeRaf = false;
-      });
-    }
+    eyes.forEach((eye, i) => {
+      const r  = eye.getBoundingClientRect();
+      const cx = r.left + r.width  / 2;
+      const cy = r.top  + r.height / 2;
+      const dx = e.clientX - cx;
+      const dy = e.clientY - cy;
+      const dist  = Math.sqrt(dx * dx + dy * dy);
+      const ratio = Math.min(dist, 80) / 80; // normalise 0→1 within 80px
+      const px = (dx / (dist || 1)) * MAX_PX * ratio;
+      const py = (dy / (dist || 1)) * MAX_PX * ratio;
+      pupils[i].style.transform = `translate(${px}px, ${py}px)`;
+    });
   });
 
+  // Blinking — random interval between 2.5s and 5s ─────────────────
   function blink() {
     eyes.forEach(eye => {
       eye.classList.add('is-blinking');
@@ -326,90 +371,86 @@ if (heroCatWrap) {
     });
     setTimeout(blink, 2500 + Math.random() * 2500);
   }
-  setTimeout(blink, 1800 + Math.random() * 1500);
+  setTimeout(blink, 1800 + Math.random() * 1500); // first blink after ~2-3s
 })();
 
-// ── Timing Logic ─────────────────────────────────────────────────
-const LETTER_DUR = 800;
-const LETTER_STAG = 55;
-const LETTERS_START = 400;
+
+// Letters — staggered entrance on desktop, instant fade on mobile ──────────────
+const LETTER_DUR   = 800;   // ms transition per letter
+const LETTER_STAG  = 55;    // ms stagger offset
+const LETTERS_START= 400;   // ms — cat appears at 100ms, letters follow at 400ms
 
 if (IS_MOBILE) {
-  letters.forEach(l => { l.style.opacity = '1'; });
+  // Mobile: skip complex stagger — show all letters immediately
+  // CSS !important in mobile-perf.css Section F handles this via opacity:1 on .hero-name .letter
+  letters.forEach(l => {
+    l.style.opacity   = '1';
+    l.style.transform = '';
+    l.style.filter    = '';
+  });
+  // Simple fade for subtitle and eyebrow
   setTimeout(() => {
     if (heroEyebrow) { heroEyebrow.style.opacity = '1'; heroEyebrow.style.transform = ''; }
-    if (subtitleSans)  { subtitleSans.style.opacity = '1'; subtitleSans.style.transform = ''; }
+    if (subtitleSans)  { subtitleSans.style.opacity  = '1'; subtitleSans.style.transform  = ''; }
     if (subtitleSerif) { subtitleSerif.style.opacity = '1'; subtitleSerif.style.transform = ''; }
   }, 100);
 } else {
+  // Desktop: full staggered letter entrance
   letters.forEach((letter, i) => {
-    letter.style.opacity = '0';
-    letter.style.transform = 'translateY(80px) rotate(2deg)';
-    letter.style.filter = 'blur(4px)';
+    letter.style.opacity    = '0';
+    letter.style.transform  = 'translateY(80px) rotate(2deg)';
+    letter.style.filter     = 'blur(4px)';
+    letter.style.transition = 'none';
+
     const delay = LETTERS_START + i * LETTER_STAG;
     setTimeout(() => {
-      letter.style.transition = `opacity ${LETTER_DUR}ms cubic-bezier(0.16,1,0.3,1), transform ${LETTER_DUR}ms cubic-bezier(0.16,1,0.3,1), filter ${LETTER_DUR}ms ease`;
-      letter.style.opacity = '1';
-      letter.style.transform = 'translateY(0) rotate(0deg)';
-      letter.style.filter = 'blur(0px)';
+      letter.style.transition = `opacity ${LETTER_DUR}ms cubic-bezier(0.16,1,0.3,1),
+                                 transform ${LETTER_DUR}ms cubic-bezier(0.16,1,0.3,1),
+                                 filter ${LETTER_DUR}ms ease`;
+      letter.style.opacity    = '1';
+      letter.style.transform  = 'translateY(0) rotate(0deg)';
+      letter.style.filter     = 'blur(0px)';
     }, delay);
   });
 
+  // Subtitle lines (blur-in, 500ms after last letter)
   const subtitleStart = LETTERS_START + letters.length * LETTER_STAG + 500;
-  revealElBlur(heroEyebrow, subtitleStart - 200, 14);
-  revealElBlur(subtitleSans, subtitleStart, 32);
+  if (heroEyebrow) revealElBlur(heroEyebrow,   subtitleStart - 200,  14);
+  revealElBlur(subtitleSans,  subtitleStart,       32);
   revealElBlur(subtitleSerif, subtitleStart + 160, 32);
+
+  // Corner labels (last)
   const cornersStart = subtitleStart + 600;
-  revealEl(cornerLeft, cornersStart, 18);
+  revealEl(cornerLeft,  cornersStart,      18);
   revealEl(cornerRight, cornersStart + 90, 18);
 }
 
-// ── GSAP ScrollTrigger Dissolve ──────────────────────────────────
-if (!IS_MOBILE && material) {
-  gsap.fromTo(
-    material.uniforms.uDissolve,
-    { value: 1 },
-    {
-      value: 0,
-      ease: 'none',
-      scrollTrigger: {
-        trigger: '.hero',
-        start: 'top top',
-        end: '+=70%',
-        pin: true,
-        scrub: 0.6,
-        pinSpacing: true,
-        anticipatePin: 1
-      }
-    }
-  );
-}
+// ─────────────────────────────────────────────────────────────────
+// Dissolve shader DISABLED - replaced by CSS sticky slide-up reveal.
+// Canvas is hidden so it doesn't block mouse events on the hero.
+if (material) material.uniforms.uDissolve.value = 1; // keep transparent
+const _canvas1 = document.querySelector('.canvas1');
+if (_canvas1) { _canvas1.style.display = 'none'; _canvas1.style.pointerEvents = 'none'; }
+if (!IS_TOUCH) heroName.addEventListener('mousemove', (e) => {
+  const rect  = heroName.getBoundingClientRect();
+  const dx    = (e.clientX - rect.left - rect.width  / 2) / (rect.width  / 2); // -1 to +1
+  const dy    = (e.clientY - rect.top  - rect.height / 2) / (rect.height / 2);
 
-// ── Letter Parallax ──────────────────────────────────────────────
-if (!IS_TOUCH && heroName) {
-  heroName.addEventListener('mousemove', (e) => {
-    const rect = heroName.getBoundingClientRect();
-    const dx = (e.clientX - rect.left - rect.width / 2) / (rect.width / 2);
-    const dy = (e.clientY - rect.top - rect.height / 2) / (rect.height / 2);
-
-    letters.forEach((letter, i) => {
-      const depth = ((i / (letters.length - 1)) - 0.5) * 2;
-      const shiftX = dx * depth * 7;
-      const shiftY = dy * 4;
-      letter.style.transition = 'transform 0.15s ease';
-      letter.style.transform = `translate(${shiftX}px, ${shiftY}px)`;
-    });
+  letters.forEach((letter, i) => {
+    const depth  = ((i / (letters.length - 1)) - 0.5) * 2; // -1→+1
+    const shiftX = dx * depth * 7;
+    const shiftY = dy * 4;
+    letter.style.transition = 'transform 0.15s ease';
+    letter.style.transform  = `translate(${shiftX}px, ${shiftY}px)`;
   });
+});
 
-  heroName.addEventListener('mouseleave', () => {
-    letters.forEach(letter => {
-      letter.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
-      letter.style.transform = 'translate(0, 0)';
-    });
+if (!IS_TOUCH) heroName.addEventListener('mouseleave', () => {
+  letters.forEach(letter => {
+    letter.style.transition = 'transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)';
+    letter.style.transform  = 'translate(0, 0)';
   });
-}
-
-// ... [Rest of your navbar, dropdown, slider, and section logic follows here] ...
+});
 
 // ─────────────────────────────────────────────────────────────────
 // Navbar — GSAP scroll light theme (fires at 3px scroll)
@@ -1311,130 +1352,252 @@ document.querySelectorAll('.nav-link').forEach(link => {
     });
   });
 })();
+// -----------------------------------------------------------------
+// PROBLEM DOMAINS — Interactive Track Selector
+// Left sidebar track buttons → center image + right description
+// Smooth GSAP transitions on click, 3D tilt on image hover
+// -----------------------------------------------------------------
+(function initTrackSelector() {
+  const sidebar  = document.getElementById('pdtSidebar');
+  const imgEl    = document.getElementById('pdtImage');
+  const titleEl  = document.getElementById('pdtImageTitle');
+  const descEl   = document.getElementById('pdtInfoDesc');
+  const tagsEl   = document.getElementById('pdtInfoTags');
+  const frameEl  = document.getElementById('pdtImageFrame');
+  const infoEl   = document.getElementById('pdtInfo');
+  if (!sidebar || !imgEl) return;
 
-// ─────────────────────────────────────────────────────────────────
-// PROBLEM DOMAINS — 3D tilted carousel + hover popup
-// Carousel rotates on the Y axis while tilted on X (-20deg).
-// On hover: rotation pauses, card glows, popup appears above card.
-// Popup is fixed-position (outside 3D context) to avoid z-index issues.
-// ─────────────────────────────────────────────────────────────────
-(function initProblemDomains() {
-  const carousel  = document.getElementById('pdCarousel');
-  const scene     = document.getElementById('pdScene');
-  const popupEl   = document.getElementById('pdPopupFloat');
-  if (!carousel || !popupEl) return;
+  const DOMAINS = [
+    {
+      label: 'HealthTech', title: 'HEALTHTECH',
+      image: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=640&h=640&fit=crop&auto=format',
+      desc: 'Tackle real challenges in healthcare delivery, remote diagnostics, patient monitoring, and medical data management.',
+      tags: ['Remote Health', 'Diagnostics', 'Wearables'],
+      clr: '#f43f5e',
+    },
+    {
+      label: 'AI / ML', title: 'AI / ML',
+      image: 'https://images.unsplash.com/photo-1677442135703-1787eea5ce01?w=640&h=640&fit=crop&auto=format',
+      desc: 'Build intelligent systems that learn, predict and automate — from NLP to computer vision and predictive analytics.',
+      tags: ['NLP', 'Computer Vision', 'Neural Nets'],
+      clr: '#a855f7',
+    },
+    {
+      label: 'Smart Cities', title: 'SMART CITIES',
+      image: 'https://images.unsplash.com/photo-1480714378408-67cf0d13bc1b?w=640&h=640&fit=crop&auto=format',
+      desc: 'Design connected solutions for urban infrastructure — smart traffic, energy grids, and public safety systems.',
+      tags: ['IoT Sensors', 'Traffic AI', 'Energy Grid'],
+      clr: '#22d3ee',
+    },
+    {
+      label: 'GreenTech', title: 'GREENTECH',
+      image: 'https://images.unsplash.com/photo-1466611653911-95081537e5b7?w=640&h=640&fit=crop&auto=format',
+      desc: 'Engineer eco-friendly solutions targeting climate change, carbon tracking, clean energy, and sustainable agriculture.',
+      tags: ['Carbon Track', 'Clean Energy', 'AgriTech'],
+      clr: '#22c55e',
+    },
+    {
+      label: 'EdTech', title: 'EDTECH',
+      image: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=640&h=640&fit=crop&auto=format',
+      desc: 'Reimagine how people learn — adaptive platforms, vernacular tools, and AI-powered career guidance for the next billion.',
+      tags: ['Adaptive Learn', 'Vernacular AI', 'AR / VR'],
+      clr: '#f59e0b',
+    },
+    {
+      label: 'FinTech', title: 'FINTECH',
+      image: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?w=640&h=640&fit=crop&auto=format',
+      desc: 'Build the future of finance — DeFi apps, smart contracts, digital wallets, fraud detection, and financial inclusion.',
+      tags: ['DeFi', 'Smart Contracts', 'Fraud AI'],
+      clr: '#3b82f6',
+    },
+    {
+      label: 'CyberSec', title: 'CYBERSEC',
+      image: 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=640&h=640&fit=crop&auto=format',
+      desc: 'Defend digital systems against evolving threats — zero-trust architectures, threat intelligence, and privacy-first tools.',
+      tags: ['Zero Trust', 'Threat Intel', 'Privacy Tools'],
+      clr: '#f97316',
+    },
+    {
+      label: 'Social Impact', title: 'SOCIAL IMPACT',
+      image: 'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=640&h=640&fit=crop&auto=format',
+      desc: 'Bridge the urban-rural divide — digital governance, farmer tech, women safety systems, and accessibility solutions.',
+      tags: ['Digital Gov', 'AgriTech', 'Accessibility'],
+      clr: '#ec4899',
+    },
+  ];
 
-  // Popup sub-elements
-  const popupIcon  = document.getElementById('pdPopupIcon');
-  const popupBadge = document.getElementById('pdPopupBadge');
-  const popupTitle = document.getElementById('pdPopupTitle');
-  const popupDesc  = document.getElementById('pdPopupDesc');
-  const popupTags  = document.getElementById('pdPopupTags');
+  let activeIdx = 0;
+  let isAnimating = false;
+  const btns = sidebar.querySelectorAll('.pdt-track-btn');
 
-  const cards = Array.from(carousel.querySelectorAll('.pd-card'));
+  function switchTrack(newIdx) {
+    if (newIdx === activeIdx || isAnimating) return;
+    isAnimating = true;
+    const domain = DOMAINS[newIdx];
 
-  let angle      = 0;
-  let paused     = false;
-  let activeCard = null;
-  let rafId      = null;
-  let running    = true;
+    // Deactivate old button
+    btns[activeIdx].classList.remove('is-active');
+    // Activate new button
+    btns[newIdx].classList.add('is-active');
 
-  const SPEED = 0.28; // degrees per frame @ ~60 fps
-  const TILT  = -10;  // rotateX degrees (tilted axis)
-
-  // ── Animation tick ─────────────────────────────────────────────
-  function tick() {
-    if (!paused) {
-      angle = (angle + SPEED) % 360;
-      carousel.style.transform = `rotateX(${TILT}deg) rotateY(${angle}deg)`;
-    }
-    if (running) rafId = requestAnimationFrame(tick);
-  }
-
-  // ── Popup helpers ───────────────────────────────────────────────
-  function positionPopup(card) {
-    const rect  = card.getBoundingClientRect();
-    const popW  = 285;
-    const vw    = window.innerWidth;
-
-    // Centre horizontally above the card's bounding rect
-    let left = rect.left + rect.width / 2;
-    // Clamp so popup never goes off-screen
-    left = Math.max(popW / 2 + 12, Math.min(vw - popW / 2 - 12, left));
-
-    // top: card's top edge in viewport; CSS translateY(-100%) raises popup above it
-    popupEl.style.left = `${left}px`;
-    popupEl.style.top  = `${rect.top - 14}px`;
-  }
-
-  function showPopup(card) {
-    const d = card.dataset;
-
-    // Inject per-card color tokens into popup CSS vars
-    const clrRgb  = (card.style.getPropertyValue('--clr-rgb') || '168,85,247').trim();
-    const clrSolid = (card.style.getPropertyValue('--clr') || '#a855f7').trim();
-    popupEl.style.setProperty('--pd-clr-rgb',   clrRgb);
-    popupEl.style.setProperty('--pd-clr-solid', clrSolid);
-
-    // Populate content
-    popupIcon.textContent  = d.icon  || '';
-    popupBadge.textContent = `Domain ${d.id || ''}`;
-    popupTitle.textContent = d.name  || '';
-    popupDesc.textContent  = d.desc  || '';
-    popupTags.innerHTML    = (d.tags || '').split(',')
-      .map(t => `<span>${t.trim()}</span>`).join('');
-
-    positionPopup(card);
-    popupEl.setAttribute('aria-hidden', 'false');
-    popupEl.classList.add('active');
-  }
-
-  function hidePopup() {
-    popupEl.classList.remove('active');
-    popupEl.setAttribute('aria-hidden', 'true');
-  }
-
-  // ── Card event handlers ─────────────────────────────────────────
-  cards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-      paused     = true;
-      activeCard = card;
-      card.classList.add('is-active');
-      showPopup(card);
+    // Animate image & text out, swap content, animate in
+    const tl = gsap.timeline({
+      onComplete: () => {
+        activeIdx = newIdx;
+        isAnimating = false;
+      }
     });
 
-    card.addEventListener('mouseleave', () => {
-      paused     = false;
-      activeCard = null;
-      card.classList.remove('is-active');
-      hidePopup();
+    // 1. Fade out image + info
+    tl.to(imgEl, {
+      opacity: 0,
+      scale: 0.92,
+      duration: 0.3,
+      ease: 'power2.in',
+    }, 0);
+
+    tl.to(titleEl, {
+      opacity: 0,
+      y: -15,
+      duration: 0.25,
+      ease: 'power2.in',
+    }, 0);
+
+    tl.to(descEl, {
+      opacity: 0,
+      x: 20,
+      duration: 0.25,
+      ease: 'power2.in',
+    }, 0.05);
+
+    tl.to(tagsEl, {
+      opacity: 0,
+      y: 10,
+      duration: 0.2,
+      ease: 'power2.in',
+    }, 0.1);
+
+    // 2. Swap content (at midpoint)
+    tl.call(() => {
+      imgEl.src = domain.image;
+      imgEl.alt = domain.label;
+      titleEl.textContent = domain.title;
+      descEl.textContent = domain.desc;
+      tagsEl.innerHTML = domain.tags.map(t => `<span>${t}</span>`).join('');
+
+      // Update image frame border color
+      frameEl.style.borderColor = `color-mix(in srgb, ${domain.clr} 25%, transparent)`;
+    }, null, '+=0');
+
+    // 3. Fade in image + info
+    tl.fromTo(imgEl, {
+      opacity: 0,
+      scale: 1.06,
+    }, {
+      opacity: 1,
+      scale: 1,
+      duration: 0.45,
+      ease: 'power2.out',
+    });
+
+    tl.fromTo(titleEl, {
+      opacity: 0,
+      y: 15,
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.4,
+      ease: 'power3.out',
+    }, '<+=0.1');
+
+    tl.fromTo(descEl, {
+      opacity: 0,
+      x: -20,
+    }, {
+      opacity: 1,
+      x: 0,
+      duration: 0.45,
+      ease: 'power3.out',
+    }, '<+=0.05');
+
+    tl.fromTo(tagsEl, {
+      opacity: 0,
+      y: 12,
+    }, {
+      opacity: 1,
+      y: 0,
+      duration: 0.4,
+      ease: 'power3.out',
+    }, '<+=0.05');
+  }
+
+  // Bind click events
+  btns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const idx = parseInt(btn.dataset.pdtIdx, 10);
+      switchTrack(idx);
     });
   });
 
-  // ── Pause when section scrolls out of view (performance) ────────
-  if ('IntersectionObserver' in window && scene) {
-    const obs = new IntersectionObserver(([entry]) => {
-      running = entry.isIntersecting;
-      if (running && !rafId) rafId = requestAnimationFrame(tick);
-      else if (!running && rafId) { cancelAnimationFrame(rafId); rafId = null; }
-    }, { threshold: 0.05 });
-    obs.observe(scene);
-  }
+  // 3D tilt effect on image frame hover
+  if (frameEl) {
+    const wrapEl = document.getElementById('pdtImageWrap');
+    if (wrapEl) {
+      wrapEl.addEventListener('mousemove', (e) => {
+        const rect = frameEl.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width - 0.5;
+        const y = (e.clientY - rect.top) / rect.height - 0.5;
+        gsap.to(frameEl, {
+          rotationY: x * 12,
+          rotationX: -y * 8,
+          duration: 0.5,
+          ease: 'power2.out',
+          overwrite: 'auto',
+        });
+      });
 
-  // Start
-  rafId = requestAnimationFrame(tick);
+      wrapEl.addEventListener('mouseleave', () => {
+        gsap.to(frameEl, {
+          rotationY: 0,
+          rotationX: 0,
+          duration: 0.8,
+          ease: 'elastic.out(1, 0.4)',
+          overwrite: 'auto',
+        });
+      });
+    }
+  }
 })();
 
-// ─────────────────────────────────────────────────────────────────
-// SCHEDULE — GSAP ScrollTrigger scroll-in / scroll-out animations
-// Items slide IN when scrolling down to them, stay visible as you
-// continue scrolling down, but fade OUT when scrolling back UP.
-// ─────────────────────────────────────────────────────────────────
+
 (function initScheduleGSAP() {
   const section = document.getElementById('scheduleSection');
   if (!section) return;
 
-  // Phase labels: slide in on scroll-down, fade on scroll-back-up
+  // Animate each timeline row — left rows from left, right rows from right
+  const rows = section.querySelectorAll('.schtl-row');
+  rows.forEach((row, i) => {
+    const isLeft = row.classList.contains('schtl-row--left');
+    const fromX = isLeft ? -50 : 50;
+
+    gsap.fromTo(row,
+      { opacity: 0, x: fromX },
+      {
+        opacity: 1,
+        x: 0,
+        duration: 0.85,
+        ease: 'power3.out',
+        delay: i * 0.05,
+        scrollTrigger: {
+          trigger: row,
+          start: 'top 85%',
+          toggleActions: 'play none none reverse',
+        }
+      }
+    );
+  });
+
+  // Fallback: also animate any old sch-phase-block elements if they exist (mobile might reuse them)
   const phaseBlocks = section.querySelectorAll('.sch-phase-block');
   phaseBlocks.forEach((block) => {
     const label = block.querySelector('.sch-phase-label');
@@ -1450,18 +1613,13 @@ document.querySelectorAll('.nav-link').forEach(link => {
         scrollTrigger: {
           trigger: block,
           start: 'top 82%',
-          // play  = fade in  (scroll down, enters from bottom)
-          // none  = stay put (scroll down past it)
-          // none  = stay put (scroll up, re-enters from top)
-          // reverse = fade out (scroll up, leaves at the bottom)
           toggleActions: 'play none none reverse',
         }
       }
     );
   });
 
-  // Schedule items: same logic — stay visible scrolling down, fade scrolling up
-  const items = section.querySelectorAll('[data-sch-item]');
+  const items = section.querySelectorAll('[data-sch-item]:not(.schtl-row)');
   items.forEach((item, i) => {
     const delay = (i % 5) * 0.05;
 
@@ -1482,30 +1640,6 @@ document.querySelectorAll('.nav-link').forEach(link => {
       }
     );
   });
-
-  // ── Scroll-driven glowing progress line ───────────────────────────
-  const progressLine = document.getElementById('schProgressLine');
-  const progressGlow = document.getElementById('schProgressGlow');
-  const timeline     = document.getElementById('schTimelineFull');
-
-  if (progressLine && progressGlow && timeline) {
-    ScrollTrigger.create({
-      trigger: timeline,
-      start: 'top 80%',
-      end: 'bottom 20%',
-      scrub: 0,
-      onUpdate: (self) => {
-        const pct = self.progress * 100;
-        progressLine.style.height = pct + '%';
-        progressGlow.style.top = pct + '%';
-        if (pct > 0.5 && !progressGlow.classList.contains('active')) {
-          progressGlow.classList.add('active');
-        } else if (pct <= 0.5 && progressGlow.classList.contains('active')) {
-          progressGlow.classList.remove('active');
-        }
-      }
-    });
-  }
 })();
 
 // ─────────────────────────────────────────────────────────────────
@@ -1558,4 +1692,70 @@ document.querySelectorAll('.nav-link').forEach(link => {
       0  // all paths start at the same moment in the timeline
     );
   });
+})();
+
+// ─────────────────────────────────────────────────────────────────
+// HERO — Countdown Timer (counts to 25 Apr 2026 11:00 AM IST)
+// IST = UTC+5:30  →  target UTC = 2026-04-25T05:30:00Z
+// When event is live / elapsed: shows "LIVE 🚀" in all digits.
+// ─────────────────────────────────────────────────────────────────
+(function initCountdown() {
+  const TARGET   = new Date('2026-04-25T05:30:00Z'); // 11:00 AM IST
+  const daysEl   = document.getElementById('hcdDays');
+  const hoursEl  = document.getElementById('hcdHours');
+  const minsEl   = document.getElementById('hcdMins');
+  const secsEl   = document.getElementById('hcdSecs');
+  const timerEl  = document.getElementById('hcdTimer');
+  if (!daysEl) return;
+
+  function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
+
+  function tick() {
+    const diff = TARGET - Date.now();
+    if (diff <= 0) {
+      // Event is live / over
+      daysEl.textContent = hoursEl.textContent = minsEl.textContent = secsEl.textContent = '00';
+      timerEl?.classList.add('is-live');
+      return; // stop ticking
+    }
+
+    const totalSecs = Math.floor(diff / 1000);
+    const days  = Math.floor(totalSecs / 86400);
+    const hours = Math.floor((totalSecs % 86400) / 3600);
+    const mins  = Math.floor((totalSecs % 3600)  / 60);
+    const secs  = totalSecs % 60;
+
+    daysEl.textContent  = pad(days);
+    hoursEl.textContent = pad(hours);
+    minsEl.textContent  = pad(mins);
+    secsEl.textContent  = pad(secs);
+
+    setTimeout(tick, 1000);
+  }
+
+  tick();
+})();
+
+// ─────────────────────────────────────────────────────────────────
+// Prize Cards — Scroll-triggered height expand + text reveal
+// ─────────────────────────────────────────────────────────────────
+(function initPrizeReveal() {
+  const cards = document.querySelectorAll('.prz-card');
+  if (!cards.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        // All cards expand at the same time
+        cards.forEach((card) => {
+          card.classList.add('prz-revealed');
+        });
+        observer.disconnect();
+      }
+    });
+  }, { threshold: 0.6, rootMargin: '0px 0px -150px 0px' });
+
+  // Observe the podium container
+  const podium = document.querySelector('.prz-podium');
+  if (podium) observer.observe(podium);
 })();

@@ -207,7 +207,7 @@ export async function startDropHandler(req, res) {
     const now = new Date();
     await PSDropConfig.findByIdAndUpdate(
       'singleton',
-      { $set: { manualStatus: 'active', startTime: now } },
+      { $set: { manualStatus: 'active' } },
       { upsert: true }
     );
 
@@ -233,18 +233,18 @@ export async function stopDropHandler(req, res) {
   try {
     await connectDB();
 
-    const now = new Date();
+    // Clear manual override — returns to the .env schedule automatically
     await PSDropConfig.findByIdAndUpdate(
       'singleton',
-      { $set: { manualStatus: 'closed', endTime: now } },
+      { $set: { manualStatus: null } },
       { upsert: true }
     );
 
     invalidatePSCache();
-    await emitDropStatus('drop-closed', { closedAt: now.toISOString() });
+    await emitDropStatus('drop-closed', { closedAt: new Date().toISOString() });
     psLog(req, { event: 'admin_stop_drop' });
 
-    return res.status(200).json({ success: true, message: 'PS Drop is now CLOSED.', closedAt: now });
+    return res.status(200).json({ success: true, message: 'Manual override cleared. Returned to .env schedule.' });
   } catch (err) {
     console.error('[admin/ps/stop-drop] error:', err);
     return res.status(500).json({ error: 'server_error' });

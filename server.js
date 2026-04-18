@@ -26,11 +26,14 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname  = path.dirname(__filename);
 
 // ── Import existing API handlers ─────────────────────────────────────────────
-import createOrderHandler  from './api/create-order.js';
-import verifyPaymentHandler from './api/verify-payment.js';
-import registerHandler      from './api/register.js';
-import teamHandler          from './api/team.js';
-import spotifyHandler       from './api/spotify.js';
+import createOrderHandler    from './api/create-order.js';
+import verifyPaymentHandler  from './api/verify-payment.js';
+import cashfreeWebhookHandler from './api/cashfree-webhook.js';
+import paymentStatusHandler  from './api/payment-status.js';
+import registerHandler        from './api/register.js';
+import teamHandler            from './api/team.js';
+import teamDashboardHandler   from './api/team-dashboard.js';
+import spotifyHandler         from './api/spotify.js';
 
 // ── Import PS Drop handlers ──────────────────────────────────────────────────
 import psStatusHandler     from './api/ps/status.js';
@@ -50,6 +53,14 @@ import adminLoginHandler from './api/admin/login.js';
 import { paymentsHandler } from './api/admin/payments.js';
 import { psStatsHandler }  from './api/admin/ps-stats.js';
 import {
+  teamsListHandler,
+  teamsAddHandler,
+  teamsImportHandler,
+  teamsUpdateHandler,
+  teamsDeleteHandler,
+  generateCodesHandler,
+} from './api/admin/teams.js';
+import {
   getWinnersHandler,
   saveWinnersHandler,
   publishWinnersHandler,
@@ -57,17 +68,22 @@ import {
   publicWinnersHandler,
 } from './api/admin/winners.js';
 
-// ── Import Submissions handlers ────────────────────────────────────────────────
-import submitHandler from './api/submissions/submit.js';
+// ── Import Submissions handlers ───────────────────────────────────────
+import submitHandler           from './api/submissions/submit.js';
+import listSubmissionsHandler  from './api/submissions/list.js';
+import getSubmissionHandler    from './api/submissions/get.js';
 import listHandler   from './api/submissions/list.js';
 import teamAuthHandler from './api/auth/team.js';
+
 
 // ── App setup ────────────────────────────────────────────────────────────────
 const app  = express();
 const PORT = process.env.PORT || 8080;
 const DIST = path.join(__dirname, 'dist');
 
-// Parse JSON bodies
+// Parse JSON bodies — NOTE: webhook handler needs raw body for signature verification
+// We use express.raw for the webhook route and express.json for everything else
+app.use('/api/cashfree-webhook', express.raw({ type: 'application/json' }));
 app.use(express.json());
 
 // ── Clean-URL mapping (Combined Portfolio + Udbhav Hackathon) ────────────────
@@ -83,6 +99,7 @@ const cleanRoutes = {
   '/our-team':          'our-team.html',
   '/register':          'register.html',
   '/dashboard':         'user-dashboard.html',
+  '/contact':            'contact.html',
   
   // Portfolio/Personal Pages
   '/work':              'work.html',
@@ -99,11 +116,12 @@ const cleanRoutes = {
   '/admin/login':        'admin/login.html',
   '/admin/dashboard':    'admin/dashboard.html',
   '/admin/registrations':'admin/registrations.html',
-  '/admin/submissions':  'admin/submissions.html',
+    '/admin/submissions':  'admin/submissions.html',
   '/admin/problem-statements': 'admin/problem-statements.html',
   '/admin/payments':           'admin/payments.html',
   '/admin/ps-stats':           'admin/ps-stats.html',
   '/admin/winners':            'admin/winners.html',
+  '/admin/submissions':        'admin/submissions.html',
 };
 
 // ── Vercel-handler adapter ────────────────────────────────────────────────────
@@ -121,10 +139,13 @@ function mountHandler(handler) {
 }
 
 // ── Existing API Routes ───────────────────────────────────────────────────────
-app.all('/api/create-order',   mountHandler(createOrderHandler));
-app.all('/api/verify-payment', mountHandler(verifyPaymentHandler));
+app.all('/api/create-order',      mountHandler(createOrderHandler));
+app.all('/api/verify-payment',    mountHandler(verifyPaymentHandler));
+app.post('/api/cashfree-webhook', mountHandler(cashfreeWebhookHandler));  // Cashfree payment events
+app.get ('/api/payment-status',   mountHandler(paymentStatusHandler));    // Frontend polling after redirect
 app.all('/api/register',       mountHandler(registerHandler));
 app.all('/api/team',           mountHandler(teamHandler));
+app.get ('/api/team-dashboard',mountHandler(teamDashboardHandler));
 app.all('/api/spotify',        mountHandler(spotifyHandler));
 
 // ── PS Drop Public API ────────────────────────────────────────────────────────
@@ -145,18 +166,34 @@ app.get   ('/api/admin/ps/stats',      mountHandler(statsHandler));
 app.get   ('/api/admin/payments',      mountHandler(paymentsHandler));
 app.get   ('/api/admin/ps-stats',         mountHandler(psStatsHandler));
 
+// ── Admin Teams API ───────────────────────────────────────────────────────────
+app.get   ('/api/admin/teams',                mountHandler(teamsListHandler));
+app.post  ('/api/admin/teams/import',         mountHandler(teamsImportHandler));
+app.post  ('/api/admin/teams/generate-codes', mountHandler(generateCodesHandler));
+app.post  ('/api/admin/teams',                mountHandler(teamsAddHandler));
+app.patch ('/api/admin/teams/:id',            mountHandler(teamsUpdateHandler));
+app.delete('/api/admin/teams/:id',            mountHandler(teamsDeleteHandler));
+
 // ── Winners Admin API ─────────────────────────────────────────────────────────
 app.get ('/api/admin/winners',            mountHandler(getWinnersHandler));
 app.post('/api/admin/winners/save',       mountHandler(saveWinnersHandler));
 app.post('/api/admin/winners/publish',    mountHandler(publishWinnersHandler));
 app.post('/api/admin/winners/unpublish',  mountHandler(unpublishWinnersHandler));
 
+
+
+// ── Submissions API ───────────────────────────────────────────────────────────
+app.post('/api/submissions/submit', mountHandler(submitHandler));
+app.get ('/api/submissions/list',   mountHandler(listHandler));
+
 // ── Winners Public API ────────────────────────────────────────────────────────
 app.get('/api/winners', mountHandler(publicWinnersHandler));
 
 // ── Submissions API ───────────────────────────────────────────────────────────
 app.post('/api/submissions/submit', mountHandler(submitHandler));
-app.get ('/api/submissions/list',   mountHandler(listHandler));
+app.get ('/api/submissions/get',    mountHandler(getSubmissionHandler));
+app.get ('/api/admin/submissions',  mountHandler(listSubmissionsHandler));
+
 
 // ── Team Auth API ─────────────────────────────────────────────────────────────
 app.post('/api/auth/team', mountHandler(teamAuthHandler));
@@ -189,8 +226,9 @@ app.listen(PORT, () => {
   console.log(`✅ UDBHAV'26 server running on port ${PORT}`);
   console.log(`📦 Environment check:`);
   console.log(`   - MONGODB_URI:      ${process.env.MONGODB_URI      ? '✓ Set' : '✗ Missing'}`);
-  console.log(`   - RAZORPAY_KEY_ID:  ${process.env.RAZORPAY_KEY_ID  ? '✓ Set' : '✗ Missing'}`);
-  console.log(`   - PUSHER_APP_ID:    ${process.env.PUSHER_APP_ID    ? '✓ Set' : '✗ Missing'}`);
+  console.log(`   - CASHFREE_APP_ID:      ${process.env.CASHFREE_APP_ID      ? '✓ Set' : '✗ Missing'}`);
+  console.log(`   - CASHFREE_SECRET_KEY:  ${process.env.CASHFREE_SECRET_KEY  ? '✓ Set' : '✗ Missing'}`);
+  console.log(`   - CASHFREE_WEBHOOK_SEC: ${process.env.CASHFREE_WEBHOOK_SECRET ? '✓ Set' : '✗ Missing'}`);
   console.log(`   - RESEND_API_KEY:   ${process.env.RESEND_API_KEY   ? '✓ Set' : '✗ Missing'}`);
   console.log(`   - ADMIN_SECRET:     ${process.env.ADMIN_SECRET     ? '✓ Set' : '✗ Missing'}`);
   console.log(`   - ADMIN_USER:       ${process.env.ADMIN_USER       ? '✓ Set' : '✗ Missing'}`);

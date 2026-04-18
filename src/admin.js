@@ -197,6 +197,7 @@ export const RegistrationStore = {
   }
 };
 
+
 // ═══════════════════════════════════════════════════════════════════
 // SUBMISSION STORE
 // ═══════════════════════════════════════════════════════════════════
@@ -227,64 +228,31 @@ export const SubmissionStore = {
 };
 
 // ═══════════════════════════════════════════════════════════════════
-// SEED DATA
+// SUBMISSION STORE
 // ═══════════════════════════════════════════════════════════════════
-const FIRST_NAMES = ['Aarav', 'Vivaan', 'Aditya', 'Vihaan', 'Arjun', 'Reyansh', 'Sai', 'Arnav', 'Dhruv', 'Kabir', 'Ananya', 'Isha', 'Saanvi', 'Aanya', 'Kiara', 'Mira', 'Priya', 'Riya', 'Diya', 'Nisha', 'Rohan', 'Karthik', 'Rahul', 'Varun', 'Nikhil', 'Sneha', 'Tanvi', 'Pooja', 'Neha', 'Shruti'];
-const LAST_NAMES = ['Sharma', 'Patel', 'Gupta', 'Singh', 'Kumar', 'Joshi', 'Mehta', 'Shah', 'Verma', 'Rao', 'Reddy', 'Nair', 'Iyer', 'Chopra', 'Malhotra', 'Chauhan', 'Bhatia', 'Agarwal', 'Kapoor', 'Saxena'];
-const COLLEGES = ['Sage University Indore', 'IIT Indore', 'DAVV Indore', 'Medicaps University', 'IPS Academy', 'SGSITS Indore', 'Acropolis Institute', 'Shri Vaishnav Institute', 'Oriental Institute', 'MIT Ujjain', 'IIITM Gwalior', 'MANIT Bhopal', 'NIT Bhopal', 'VIT Bhopal', 'Amity University'];
-const TEAM_PREFIXES = ['Code', 'Byte', 'Algo', 'Hack', 'Dev', 'Pixel', 'Cyber', 'Tech', 'Neural', 'Quantum', 'Data', 'Cloud', 'Bit', 'Logic', 'Meta'];
-const TEAM_SUFFIXES = ['Warriors', 'Ninjas', 'Hawks', 'Titans', 'Force', 'Squad', 'Storm', 'Fusion', 'Blaze', 'Surge', 'Spark', 'Phoenix', 'Wolves', 'Legends', 'Coders'];
 
-function randomItem(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randomName() { return `${randomItem(FIRST_NAMES)} ${randomItem(LAST_NAMES)}`; }
-function randomEmail(name) { return `${name.toLowerCase().replace(/\s+/g, '.')}${Math.floor(Math.random() * 99)}@gmail.com`; }
-function randomPhone() { return `+91 ${Math.floor(7000000000 + Math.random() * 3000000000)}`; }
-function randomTeamName() { return `${randomItem(TEAM_PREFIXES)} ${randomItem(TEAM_SUFFIXES)}`; }
-function randomDate() {
-  const start = new Date('2026-03-20');
-  const end = new Date('2026-04-15');
-  return new Date(start.getTime() + Math.random() * (end.getTime() - start.getTime())).toISOString();
-}
 
-export function seedRegistrations(count = 50) {
-  const existing = loadRegistrations();
-  if (existing.length >= count) return existing;
+// ═══════════════════════════════════════════════════════════════════
+// CLEANUP — remove any seed/demo data from localStorage
+// ═══════════════════════════════════════════════════════════════════
 
-  const regs = [];
-  const statuses = ['pending', 'pending', 'pending', 'approved', 'approved', 'rejected']; // weighted
-
-  for (let i = 0; i < count; i++) {
-    const leaderName = randomName();
-    const memberCount = 1 + Math.floor(Math.random() * 3); // 1-3 additional members
-    const members = [];
-    for (let j = 0; j < memberCount; j++) {
-      const mn = randomName();
-      members.push({
-        name: mn,
-        email: randomEmail(mn),
-        phone: randomPhone(),
-      });
+/**
+ * Clears seed/demo registrations from localStorage.
+ * Called once on page load to purge any previously seeded data.
+ * Real data now comes from MongoDB via the API.
+ */
+export function seedRegistrations() {
+  // No-op: seed data removed. Clear localStorage if it has old seed data.
+  try {
+    const existing = JSON.parse(localStorage.getItem('udbhav_registrations') || '[]');
+    const hasSeedData = existing.some(r => r.id?.startsWith('reg_seed_'));
+    if (hasSeedData) {
+      localStorage.removeItem('udbhav_registrations');
+      console.log('[Admin] Cleared legacy seed data from localStorage');
     }
-
-    regs.push({
-      id: `reg_seed_${i}_${Math.random().toString(36).slice(2, 8)}`,
-      teamName: randomTeamName(),
-      leaderName,
-      email: randomEmail(leaderName),
-      phone: randomPhone(),
-      college: randomItem(COLLEGES),
-      members,
-      status: randomItem(statuses),
-      createdAt: randomDate(),
-      problemStatement: Math.random() > 0.3 ? `PS-${Math.ceil(Math.random() * 10)}` : null,
-    });
-  }
-
-  // Sort by date desc
-  regs.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-  saveRegistrations(regs);
-  return regs;
+  } catch (_) {}
 }
+
 
 // ═══════════════════════════════════════════════════════════════════
 // UI UTILITIES

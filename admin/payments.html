@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -414,6 +414,11 @@
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
         Registrations
       </a>
+
+      <a href="/admin/submissions.html" class="sidebar-link">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Submissions
+      </a>
       <a href="/admin/problem-statements.html" class="sidebar-link">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
         Problem Statements
@@ -505,21 +510,17 @@
         </div>
       </div>
 
-      <!-- Razorpay banner -->
+      <!-- Cashfree banner -->
       <div class="rzp-banner">
         <div class="rzp-banner-icon">
           <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
         </div>
         <div class="rzp-banner-text">
-          <div class="rzp-banner-title">Razorpay Dashboard</div>
-          <div class="rzp-banner-sub">For full reconciliation, refunds, and dispute management — view directly on Razorpay</div>
+          <div class="rzp-banner-title">Cashfree Merchant Dashboard</div>
+          <div class="rzp-banner-sub">For full reconciliation, refunds, and dispute management — view directly on Cashfree</div>
         </div>
         <div class="rzp-banner-actions">
-          <a href="https://dashboard.razorpay.com/app/payments" target="_blank" rel="noopener" class="btn btn--blue btn--sm">
-            <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-            Open Payments
-          </a>
-          <a href="https://dashboard.razorpay.com/app/orders" target="_blank" rel="noopener" class="btn btn--ghost btn--sm">
+          <a href="https://merchant.cashfree.com/merchants/pg/orders" target="_blank" rel="noopener" class="btn btn--ghost btn--sm">
             <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
             Open Orders
           </a>
@@ -561,11 +562,11 @@
                 <th>Leader</th>
                 <th>Amount</th>
                 <th>Status</th>
-                <th>Order ID</th>
-                <th>Payment ID</th>
+                <th>Cashfree Order ID</th>
+                <th>Cashfree Payment ID</th>
                 <th>Team Code</th>
-                <th>Date</th>
-                <th>Links</th>
+                <th>Payment Date</th>
+                <th>Members</th>
               </tr>
             </thead>
             <tbody id="tableBody">
@@ -584,13 +585,13 @@
 
   <script>
     // ── Helpers ───────────────────────────────────────────────────────────────
+    // ── Auth (reads same key as AdminAuth in src/admin.js) ──────────────────
     function getAdminToken() {
-      return sessionStorage.getItem('adminSecret')
-        || sessionStorage.getItem('adminToken')
-        || localStorage.getItem('adminSecret')
-        || localStorage.getItem('adminToken')
-        || '';
+      return localStorage.getItem('udbhav_admin_token') || '';
     }
+
+    // Auth guard
+    if (!getAdminToken()) { window.location.href = '/admin/login.html'; }
 
     function apiHeaders() {
       return { 'Content-Type': 'application/json', 'x-admin-secret': getAdminToken() };
@@ -647,9 +648,8 @@
       sidebarOverlay.classList.remove('is-visible');
     });
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      sessionStorage.clear();
-      localStorage.removeItem('adminSecret');
-      localStorage.removeItem('adminToken');
+      localStorage.removeItem('udbhav_admin_token');
+      localStorage.removeItem('udbhav_admin_time');
       window.location.href = '/admin/login.html';
     });
 
@@ -726,17 +726,16 @@
         const rowCls = p.paymentStatus === 'pending' ? 'row--pending'
           : p.paymentStatus === 'failed' ? 'row--failed' : '';
 
-        const orderId  = p.razorpayOrderId   || '—';
-        const payId    = p.razorpayPaymentId  || '—';
-        const hasPayId = p.razorpayPaymentId && p.razorpayPaymentId !== '—';
-        const hasOrdId = p.razorpayOrderId   && p.razorpayOrderId   !== '—';
+        const orderId  = p.cashfreeOrderId   || '—';
+        const payId    = p.cashfreePaymentId  || '—';
+        const hasPayId = p.cashfreePaymentId && p.cashfreePaymentId !== '—';
+        const hasOrdId = p.cashfreeOrderId   && p.cashfreeOrderId   !== '—';
 
-        const rzpPayLink = hasPayId
-          ? `<a href="https://dashboard.razorpay.com/app/payments/${p.razorpayPaymentId}" target="_blank" rel="noopener" class="rzp-link" title="View on Razorpay">
-               <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-             </a>` : '';
+        const payDate = p.paymentDate
+          ? new Date(p.paymentDate).toLocaleString('en-IN', { day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit', hour12:true })
+          : (p.paymentStatus === 'paid' ? fmtDate(p.updatedAt) : '—');
 
-        return `<tr class="${rowCls}" data-pay-id="${escHtml(payId)}" data-ord-id="${escHtml(orderId)}">
+        return `<tr class="${rowCls}">
           <td style="color:rgba(255,255,255,0.3);font-size:0.74rem;">${offset + i + 1}</td>
           <td class="td-bold" title="${escHtml(p.teamName)}">${escHtml(p.teamName)}</td>
           <td title="${escHtml(p.leaderEmail)}">${escHtml(p.leaderName)}</td>
@@ -748,18 +747,18 @@
             </span>
           </td>
           <td>
-            <span class="td-mono" title="${escHtml(orderId)}">${hasOrdId ? orderId.substring(0, 18) + '…' : '—'}</span>
+            <span class="td-mono" title="${escHtml(orderId)}">${hasOrdId ? orderId.substring(0, 20) + '…' : '—'}</span>
             ${hasOrdId ? `<button class="copy-btn" data-copy="${escHtml(orderId)}" title="Copy Order ID"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
           </td>
           <td>
-            <span class="td-mono" title="${escHtml(payId)}">${hasPayId ? payId.substring(0, 18) + '…' : '—'}</span>
+            <span class="td-mono" title="${escHtml(payId)}">${hasPayId ? payId.toString().substring(0, 16) + '…' : '—'}</span>
             ${hasPayId ? `<button class="copy-btn" data-copy="${escHtml(payId)}" title="Copy Payment ID"><svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button>` : ''}
           </td>
           <td>
-            <span class="td-mono" style="color:rgba(255,255,255,0.45);">${escHtml(p.teamCode || '—')}</span>
+            <span class="td-mono" style="color:#a855f7;font-weight:700;">${escHtml(p.teamCode || '—')}</span>
           </td>
-          <td style="color:rgba(255,255,255,0.4);font-size:0.76rem;">${fmtDate(p.createdAt)}</td>
-          <td>${rzpPayLink}</td>
+          <td style="color:rgba(255,255,255,0.4);font-size:0.76rem;">${payDate}</td>
+          <td style="color:rgba(255,255,255,0.4);font-size:0.76rem;">${p.memberCount || 1}</td>
         </tr>`;
       }).join('');
 
@@ -828,10 +827,10 @@
         const rows = data.payments || [];
 
         const headers = [
-          'No.', 'Team Name', 'College', 'Leader Name', 'Leader Email',
-          'Amount (₹)', 'Payment Status', 'Mentor Session',
-          'Razorpay Order ID', 'Razorpay Payment ID',
-          'Team Code', 'Registered At',
+          'No.', 'Team Name', 'College', 'Leader Name', 'Leader Email', 'Leader Phone',
+          'Amount (Rs.)', 'Payment Status', 'Mentor Session', 'Members',
+          'Cashfree Order ID', 'Cashfree Payment ID',
+          'Team Code', 'Payment Date', 'Registered At',
         ];
 
         const csvRows = [headers, ...rows.map((p, i) => [
@@ -840,12 +839,15 @@
           `"${(p.collegeName  || '').replace(/"/g, '""')}"`,
           `"${(p.leaderName   || '').replace(/"/g, '""')}"`,
           `"${(p.leaderEmail  || '').replace(/"/g, '""')}"`,
+          `"${(p.leaderPhone  || '').replace(/"/g, '""')}"`,
           p.amount || 0,
           p.paymentStatus || '',
           p.mentorSession ? 'Yes' : 'No',
-          `"${(p.razorpayOrderId   || '').replace(/"/g, '""')}"`,
-          `"${(p.razorpayPaymentId || '').replace(/"/g, '""')}"`,
+          p.memberCount || 1,
+          `"${(p.cashfreeOrderId   || '').replace(/"/g, '""')}"`,
+          `"${(p.cashfreePaymentId || '').replace(/"/g, '""')}"`,
           `"${(p.teamCode || '').replace(/"/g, '""')}"`,
+          p.paymentDate ? new Date(p.paymentDate).toLocaleString('en-IN') : '',
           p.createdAt ? new Date(p.createdAt).toLocaleString('en-IN') : '',
         ])];
 

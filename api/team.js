@@ -58,10 +58,18 @@ export default async function handler(req, res) {
       });
     }
 
-    // Return safe public fields only
+    if (!team.codeGenerated) {
+      return res.status(404).json({
+        success: false,
+        error: 'Team codes have not been generated yet. Please check back later.',
+      });
+    }
+
+    // Return public fields for autofill on registration page
     return res.status(200).json({
       success: true,
       team: {
+        _id:           team._id,
         code:          team.code,
         teamName:      team.teamName,
         collegeName:   team.collegeName,
@@ -70,7 +78,6 @@ export default async function handler(req, res) {
         mentorSession: team.mentorSession,
         totalAmount:   team.totalAmount,
         paymentStatus: team.paymentStatus,
-        // Pass these to Razorpay prefill (no passwords, no internal IDs)
         leader: {
           name:  team.leader.name,
           email: team.leader.email,

@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png" href="/logo.png" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact the UDBHAV'26 organising team. Reach out to our lead organisers for queries, sponsorships, and support." />
+  <title>Contact Us — UDBHAV'26</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #060608;
+      --surface: rgba(255,255,255,0.035);
+      --border:  rgba(255,255,255,0.07);
+      --white:   #ffffff;
+      --muted:   rgba(255,255,255,0.38);
+      --dim:     rgba(255,255,255,0.18);
+      --purple:  #a855f7;
+      --blue:    #60a5fa;
+      --green:   #4ade80;
+      --amber:   #fbbf24;
+      --red:     #f87171;
+    }
+
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg); color: var(--white);
+      font-family: 'Inter', sans-serif; min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── Noise + grain ── */
+    body::before {
+      content: ''; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+      opacity: 0.022;
+    }
+
+    /* ── Aurora background ── */
+    .aurora {
+      position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      overflow: hidden;
+    }
+    .aurora::before {
+      content: ''; position: absolute;
+      top: -20%; left: -10%; width: 70%; height: 70%;
+      background: radial-gradient(ellipse, rgba(168,85,247,0.12) 0%, transparent 65%);
+      animation: auroraA 18s ease-in-out infinite alternate;
+    }
+    .aurora::after {
+      content: ''; position: absolute;
+      bottom: -20%; right: -10%; width: 60%; height: 60%;
+      background: radial-gradient(ellipse, rgba(96,165,250,0.09) 0%, transparent 65%);
+      animation: auroraB 22s ease-in-out infinite alternate;
+    }
+    @keyframes auroraA { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(5%,8%) scale(1.08)} }
+    @keyframes auroraB { 0%{transform:translate(0,0) scale(1)} 100%{transform:translate(-6%,-5%) scale(1.06)} }
+
+    /* ════════════════════════════════
+       NAVBAR  (identical to site nav)
+    ════════════════════════════════ */
+    .navbar {
+      position: fixed; top: 1rem; left: 50%; transform: translateX(-50%);
+      z-index: 100; width: min(920px, calc(100vw - 2rem));
+    }
+    .nav-pill {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0.55rem 0.75rem; gap: 0.5rem;
+      background: rgba(12,12,18,0.82); backdrop-filter: blur(22px) saturate(160%);
+      border: 1px solid rgba(255,255,255,0.09); border-radius: 999px;
+    }
+    .nav-logo { display:flex;align-items:center;gap:0.55rem;text-decoration:none;padding:0 0.35rem; }
+    .nav-logo img { width:28px;height:28px;border-radius:6px;object-fit:cover; }
+    .nav-logo-text { font-family:'Sora',sans-serif;font-size:0.84rem;font-weight:700;color:var(--white); }
+    .nav-links { display:flex;align-items:center;gap:0.15rem; }
+    .nav-link {
+      font-size:0.78rem;font-weight:500;color:rgba(255,255,255,0.58);
+      text-decoration:none;padding:0.42rem 0.75rem;border-radius:999px;
+      transition:color 0.2s,background 0.2s;white-space:nowrap;
+    }
+    .nav-link:hover { color:var(--white);background:rgba(255,255,255,0.07); }
+    .nav-link.active { color:var(--white); }
+    .nav-right { display:flex;align-items:center;gap:0.5rem; }
+    .nav-cta {
+      font-size:0.78rem;font-weight:700;color:var(--white);
+      background:linear-gradient(135deg,#a855f7,#6366f1);
+      border:none;border-radius:999px;padding:0.45rem 1.05rem;
+      text-decoration:none;white-space:nowrap;
+      transition:opacity 0.2s,transform 0.2s;cursor:pointer;
+    }
+    .nav-cta:hover { opacity:0.88;transform:scale(1.02); }
+    @media(max-width:680px){
+      .nav-links { display:none; }
+      .nav-link { display:none; }
+    }
+
+    /* ════════════════════════════════
+       HERO
+    ════════════════════════════════ */
+    .hero {
+      position: relative; z-index: 1;
+      padding: 9rem 1.5rem 5rem;
+      max-width: 1100px; margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 0.45rem;
+      font-family: 'Sora', sans-serif; font-size: 0.68rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--purple);
+      padding: 0.35rem 1rem; border: 1px solid rgba(168,85,247,0.25);
+      border-radius: 999px; background: rgba(168,85,247,0.07);
+      margin-bottom: 2rem;
+    }
+    .hero-eyebrow::before {
+      content: ''; width: 6px; height: 6px; border-radius: 50%;
+      background: var(--purple); animation: pulse 2s ease infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.8)} }
+
+    .hero-headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(3.5rem, 10vw, 8rem);
+      line-height: 0.92;
+      letter-spacing: -0.01em;
+      color: var(--white);
+      margin-bottom: 1rem;
+    }
+    .hero-headline em {
+      font-style: normal;
+      background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #60a5fa 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-family: 'Sora', sans-serif; font-size: 1rem;
+      color: var(--muted); max-width: 500px; margin: 0 auto 1.5rem;
+      line-height: 1.7;
+    }
+    .hero-contact-chip {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      padding: 0.6rem 1.4rem; border-radius: 999px;
+      background: rgba(255,255,255,0.04); border: 1px solid var(--border);
+      font-family: 'Sora', sans-serif; font-size: 0.82rem; color: var(--muted);
+      text-decoration: none; transition: all 0.2s;
+      margin: 0.25rem;
+    }
+    .hero-contact-chip:hover { background: rgba(255,255,255,0.08); color: var(--white); border-color: rgba(255,255,255,0.15); }
+    .hero-contact-chip svg { width: 15px; height: 15px; opacity: 0.7; flex-shrink: 0; }
+
+    /* ══ Divider ══ */
+    .section-divider {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto 4rem;
+      padding: 0 1.5rem;
+    }
+    .section-divider::before {
+      content: ''; display: block; height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(168,85,247,0.3) 30%, rgba(96,165,250,0.3) 70%, transparent);
+    }
+
+    /* ════════════════════════════════
+       ORGANISER CARDS
+    ════════════════════════════════ */
+    .cards-section {
+      position: relative; z-index: 1;
+      max-width: 1100px; margin: 0 auto;
+      padding: 0 1.5rem 6rem;
+    }
+    .cards-label {
+      font-family: 'Sora', sans-serif; font-size: 0.62rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--dim);
+      margin-bottom: 2rem; text-align: center;
+    }
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+
+    .org-card {
+      position: relative; border-radius: 22px; overflow: hidden;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      padding: 2rem 1.8rem 1.8rem;
+      transition: transform 0.3s cubic-bezier(0.16,1,0.3,1), border-color 0.3s, box-shadow 0.3s;
+      cursor: default;
+    }
+    .org-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: var(--card-accent, linear-gradient(90deg, transparent, rgba(168,85,247,0.6), transparent));
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .org-card::after {
+      content: ''; position: absolute;
+      top: -40%; right: -20%; width: 200px; height: 200px; border-radius: 50%;
+      background: var(--card-glow, rgba(168,85,247,0.08)); filter: blur(50px);
+      pointer-events: none;
+    }
+    .org-card:hover { transform: translateY(-6px); border-color: rgba(255,255,255,0.13); box-shadow: 0 24px 60px rgba(0,0,0,0.5); }
+    .org-card:hover::before { opacity: 1; }
+
+    /* Individual card accents */
+    .org-card:nth-child(1) { --card-glow: rgba(168,85,247,0.12); --card-accent: linear-gradient(90deg, transparent, rgba(168,85,247,0.7), transparent); }
+    .org-card:nth-child(2) { --card-glow: rgba(96,165,250,0.12);  --card-accent: linear-gradient(90deg, transparent, rgba(96,165,250,0.7),  transparent); }
+    .org-card:nth-child(3) { --card-glow: rgba(74,222,128,0.12);  --card-accent: linear-gradient(90deg, transparent, rgba(74,222,128,0.7),  transparent); }
+    .org-card:nth-child(4) { --card-glow: rgba(251,191,36,0.12);  --card-accent: linear-gradient(90deg, transparent, rgba(251,191,36,0.7),  transparent); }
+
+    .org-card__badge {
+      display: inline-flex; align-items: center; gap: 0.35rem;
+      font-family: 'Sora', sans-serif; font-size: 0.6rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.2rem 0.65rem; border-radius: 999px;
+      background: var(--badge-bg, rgba(168,85,247,0.1));
+      color: var(--badge-color, #a855f7);
+      border: 1px solid var(--badge-border, rgba(168,85,247,0.2));
+      margin-bottom: 1.4rem;
+    }
+    .org-card:nth-child(1) .org-card__badge { --badge-bg:rgba(168,85,247,0.1); --badge-color:#a855f7; --badge-border:rgba(168,85,247,0.2); }
+    .org-card:nth-child(2) .org-card__badge { --badge-bg:rgba(96,165,250,0.1);  --badge-color:#60a5fa; --badge-border:rgba(96,165,250,0.2);  }
+    .org-card:nth-child(3) .org-card__badge { --badge-bg:rgba(74,222,128,0.1);  --badge-color:#4ade80; --badge-border:rgba(74,222,128,0.2);  }
+    .org-card:nth-child(4) .org-card__badge { --badge-bg:rgba(251,191,36,0.1);  --badge-color:#fbbf24; --badge-border:rgba(251,191,36,0.2);  }
+
+    .org-card__avatar {
+      width: 54px; height: 54px; border-radius: 16px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sora', sans-serif; font-size: 1.3rem; font-weight: 800;
+      color: var(--white); margin-bottom: 1.1rem;
+      background: var(--av-bg, rgba(168,85,247,0.15));
+      border: 1px solid var(--av-border, rgba(168,85,247,0.2));
+    }
+    .org-card:nth-child(1) .org-card__avatar { --av-bg:rgba(168,85,247,0.15); --av-border:rgba(168,85,247,0.3); }
+    .org-card:nth-child(2) .org-card__avatar { --av-bg:rgba(96,165,250,0.15);  --av-border:rgba(96,165,250,0.3);  }
+    .org-card:nth-child(3) .org-card__avatar { --av-bg:rgba(74,222,128,0.15);  --av-border:rgba(74,222,128,0.3);  }
+    .org-card:nth-child(4) .org-card__avatar { --av-bg:rgba(251,191,36,0.15);  --av-border:rgba(251,191,36,0.3);  }
+
+    .org-card__name {
+      font-family: 'Sora', sans-serif; font-size: 1.15rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.2rem; letter-spacing: -0.01em;
+    }
+    .org-card__role {
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; color: var(--muted);
+      margin-bottom: 1.6rem;
+    }
+
+    .org-card__divider {
+      height: 1px; background: rgba(255,255,255,0.06); margin-bottom: 1.4rem;
+    }
+
+    .org-card__contacts { display: flex; flex-direction: column; gap: 0.7rem; }
+
+    .org-contact-link {
+      display: flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; padding: 0.65rem 0.9rem; border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.07);
+      background: rgba(255,255,255,0.03);
+      transition: all 0.2s;
+      group: true;
+    }
+    .org-contact-link:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.14); transform: translateX(3px); }
+    .org-contact-link__icon {
+      width: 32px; height: 32px; border-radius: 9px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: var(--ico-bg, rgba(168,85,247,0.1));
+      color: var(--ico-color, #a855f7);
+    }
+    .org-contact-link__icon svg { width: 15px; height: 15px; }
+    .org-contact-link__body { display: flex; flex-direction: column; min-width: 0; }
+    .org-contact-link__label {
+      font-family: 'Sora', sans-serif; font-size: 0.58rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim);
+      margin-bottom: 0.1rem;
+    }
+    .org-contact-link__val {
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 500;
+      color: rgba(255,255,255,0.75); white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .org-contact-link.email-link .org-contact-link__icon { --ico-bg:rgba(96,165,250,0.1); --ico-color:#60a5fa; }
+    .org-contact-link.call-link  .org-contact-link__icon { --ico-bg:rgba(74,222,128,0.1); --ico-color:#4ade80; }
+    .org-contact-link.soon .org-contact-link__val { color: var(--dim); font-style: italic; }
+
+    /* ════════════════════════════════
+       GENERAL CONTACT SECTION
+    ════════════════════════════════ */
+    .general-section {
+      position: relative; z-index: 1;
+      max-width: 700px; margin: 0 auto 6rem;
+      padding: 0 1.5rem;
+      text-align: center;
+    }
+    .general-section h2 {
+      font-family: 'Sora', sans-serif; font-size: 1.4rem; font-weight: 700;
+      color: var(--white); margin-bottom: 0.6rem;
+    }
+    .general-section p {
+      font-family: 'Sora', sans-serif; font-size: 0.85rem; color: var(--muted);
+      line-height: 1.7; margin-bottom: 1.6rem;
+    }
+    .general-links {
+      display: flex; flex-wrap: wrap; justify-content: center; gap: 0.75rem;
+    }
+    .gen-link {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.75rem 1.4rem; border-radius: 12px;
+      font-family: 'Sora', sans-serif; font-size: 0.82rem; font-weight: 600;
+      text-decoration: none; transition: all 0.2s;
+    }
+    .gen-link--email {
+      background: rgba(96,165,250,0.1); color: #60a5fa;
+      border: 1px solid rgba(96,165,250,0.2);
+    }
+    .gen-link--email:hover { background: rgba(96,165,250,0.18); transform: translateY(-2px); }
+    .gen-link--whatsapp {
+      background: rgba(74,222,128,0.1); color: #4ade80;
+      border: 1px solid rgba(74,222,128,0.2);
+    }
+    .gen-link--whatsapp:hover { background: rgba(74,222,128,0.18); transform: translateY(-2px); }
+    .gen-link svg { width: 16px; height: 16px; }
+
+    /* ── Footer note ── */
+    .footer-note {
+      position: relative; z-index: 1;
+      text-align: center; padding: 2rem 1.5rem 3rem;
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; color: var(--dim);
+    }
+    .footer-note a { color: var(--purple); text-decoration: none; }
+    .footer-note a:hover { text-decoration: underline; }
+
+    @media (max-width: 540px) {
+      .hero { padding: 7.5rem 1rem 3.5rem; }
+      .cards-section { padding: 0 1rem 4rem; }
+      .cards-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Entrance animations */
+    .org-card { opacity: 0; transform: translateY(24px); animation: cardIn 0.6s cubic-bezier(0.16,1,0.3,1) forwards; }
+    .org-card:nth-child(1) { animation-delay: 0.05s; }
+    .org-card:nth-child(2) { animation-delay: 0.12s; }
+    .org-card:nth-child(3) { animation-delay: 0.19s; }
+    .org-card:nth-child(4) { animation-delay: 0.26s; }
+    @keyframes cardIn { to { opacity:1; transform:translateY(0); } }
+  </style>
+</head>
+<body>
+
+  <div class="aurora" aria-hidden="true"></div>
+
+  <!-- ══ NAVBAR ══ -->
+  <nav class="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-pill">
+      <a href="/" class="nav-logo" aria-label="UDBHAV'26 Home">
+        <img src="/logo.png" alt="UDBHAV'26 Logo" />
+        <span class="nav-logo-text">UDBHAV<span style="color:#a855f7;">'26</span></span>
+      </a>
+
+      <div class="nav-links">
+        <a href="/about.html"             class="nav-link">About</a>
+        <a href="/schedule.html"          class="nav-link">Schedule</a>
+        <a href="/problem-statement.html" class="nav-link">Problem Statements</a>
+        <a href="/winners.html"           class="nav-link">Winners</a>
+        <a href="/contact.html"           class="nav-link active">Contact</a>
+      </div>
+
+      <div class="nav-right">
+        <a href="/register.html" class="nav-cta">Register Now →</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ HERO ══ -->
+  <section class="hero" aria-label="Contact hero">
+    <div class="hero-eyebrow">Get In Touch</div>
+
+    <h1 class="hero-headline">
+      We're here.<br><em>Talk to us.</em>
+    </h1>
+
+    <p class="hero-sub">
+      Got a question, an idea, or just want to know more about UDBHAV'26?
+      Our organisers are always a message away.
+    </p>
+
+    <div>
+      <a href="mailto:udbhav26byalta@gmail.com" class="hero-contact-chip">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        udbhav26byalta@gmail.com
+      </a>
+      <a href="https://wa.me/918829841257" target="_blank" rel="noopener" class="hero-contact-chip">
+        <svg fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.559 4.14 1.535 5.874L0 24l6.31-1.517A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-1.885 0-3.638-.493-5.158-1.355l-.37-.22-3.745.9.934-3.617-.24-.383A9.814 9.814 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+        +91 8829841257
+      </a>
+    </div>
+  </section>
+
+  <div class="section-divider"></div>
+
+  <!-- ══ ORGANISER CARDS ══ -->
+  <section class="cards-section" aria-label="Organising team contacts">
+    <p class="cards-label">Organising Team</p>
+
+    <div class="cards-grid">
+
+      <!-- 1 · Rishab Vyas -->
+      <article class="org-card">
+        <div class="org-card__badge">Lead Organiser</div>
+        <div class="org-card__avatar">RV</div>
+        <div class="org-card__name">Rishab Vyas</div>
+        <div class="org-card__role">Lead Organiser · UDBHAV'26</div>
+        <div class="org-card__divider"></div>
+        <div class="org-card__contacts">
+          <a class="org-contact-link email-link" href="mailto:rishabvyas22@gmail.com">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Email me</span>
+              <span class="org-contact-link__val">rishabvyas22@gmail.com</span>
+            </div>
+          </a>
+          <a class="org-contact-link call-link" href="tel:+919575625112">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Call me</span>
+              <span class="org-contact-link__val">+91 9575625112</span>
+            </div>
+          </a>
+        </div>
+      </article>
+
+      <!-- 2 · Prince Yadav -->
+      <article class="org-card">
+        <div class="org-card__badge">Co-Lead Organiser</div>
+        <div class="org-card__avatar">PY</div>
+        <div class="org-card__name">Prince Yadav</div>
+        <div class="org-card__role">Co-Lead Organiser · UDBHAV'26</div>
+        <div class="org-card__divider"></div>
+        <div class="org-card__contacts">
+          <a class="org-contact-link email-link" href="mailto:princeyadav180py@gmail.com">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Email me</span>
+              <span class="org-contact-link__val">princeyadav180py@gmail.com</span>
+            </div>
+          </a>
+          <a class="org-contact-link call-link" href="tel:+918591442334">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Call me</span>
+              <span class="org-contact-link__val">+91 8591442334</span>
+            </div>
+          </a>
+        </div>
+      </article>
+
+      <!-- 3 · Krishna Soni -->
+      <article class="org-card">
+        <div class="org-card__badge">Lead Tech-Team</div>
+        <div class="org-card__avatar">KS</div>
+        <div class="org-card__name">Krishna Soni</div>
+        <div class="org-card__role">Lead Tech-Team · UDBHAV'26</div>
+        <div class="org-card__divider"></div>
+        <div class="org-card__contacts">
+          <div class="org-contact-link email-link soon" style="cursor:default;">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Email me</span>
+              <span class="org-contact-link__val">Will be provided soon</span>
+            </div>
+          </div>
+          <a class="org-contact-link call-link" href="tel:+917415618704">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Call me</span>
+              <span class="org-contact-link__val">+91 7415618704</span>
+            </div>
+          </a>
+        </div>
+      </article>
+
+      <!-- 4 · Vedansh Danot -->
+      <article class="org-card">
+        <div class="org-card__badge">Co-Lead Organiser</div>
+        <div class="org-card__avatar">VD</div>
+        <div class="org-card__name">Vedansh Danot</div>
+        <div class="org-card__role">Co-Lead Organiser · UDBHAV'26</div>
+        <div class="org-card__divider"></div>
+        <div class="org-card__contacts">
+          <a class="org-contact-link email-link" href="mailto:vedanshdanot3056@gmail.com">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Email me</span>
+              <span class="org-contact-link__val">vedanshdanot3056@gmail.com</span>
+            </div>
+          </a>
+          <a class="org-contact-link call-link" href="tel:+918829841257">
+            <div class="org-contact-link__icon">
+              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.45 2 2 0 0 1 3.6 1.27h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6.09 6.09l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            </div>
+            <div class="org-contact-link__body">
+              <span class="org-contact-link__label">Call me</span>
+              <span class="org-contact-link__val">+91 8829841257</span>
+            </div>
+          </a>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ══ GENERAL CONTACT ══ -->
+  <section class="general-section" aria-label="General contact">
+    <h2>General Enquiries</h2>
+    <p>For anything else — registrations, sponsorships, logistics — drop us a mail or ping us on WhatsApp and we'll get back to you within 24 hours.</p>
+    <div class="general-links">
+      <a href="mailto:udbhav26byalta@gmail.com" class="gen-link gen-link--email">
+        <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+        udbhav26byalta@gmail.com
+      </a>
+      <a href="https://wa.me/918829841257" target="_blank" rel="noopener" class="gen-link gen-link--whatsapp">
+        <svg fill="currentColor" viewBox="0 0 24 24" width="16" height="16"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.136.559 4.14 1.535 5.874L0 24l6.31-1.517A11.955 11.955 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.818c-1.885 0-3.638-.493-5.158-1.355l-.37-.22-3.745.9.934-3.617-.24-.383A9.814 9.814 0 0 1 2.182 12C2.182 6.578 6.578 2.182 12 2.182S21.818 6.578 21.818 12 17.422 21.818 12 21.818z"/></svg>
+        WhatsApp · +91 8829841257
+      </a>
+    </div>
+  </section>
+
+  <p class="footer-note">
+    UDBHAV'26 · Department of Alta, GPC Ajmer ·
+    <a href="/">Back to Home</a> · <a href="/register.html">Register Now</a>
+  </p>
+
+</body>
+</html>

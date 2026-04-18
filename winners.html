@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 
 <head>
@@ -468,6 +468,10 @@
                     <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></div>
                     <div class="md-item__body"><span class="md-item__title">Sponsors</span><span class="md-item__desc">Our partners &amp; supporters</span></div>
                   </a>
+                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Team Dashboard</span><span class="md-item__desc">View your assigned PS</span></div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -541,7 +545,16 @@
           <span class="mmd-link-text">Sponsors</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-      </nav>
+        <a href="/team-dashboard.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></span>
+          <span class="mmd-link-text">Team Dashboard</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+              <a href="/contact.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span class="mmd-link-text">Contact</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a></nav>
       <div class="mmd-footer">
         <a href="/register.html" class="mmd-cta-btn">Register Now →</a>
       </div>
@@ -706,7 +719,13 @@
         </div>
         <div class="cf-center" id="cfCenter">
           <h2 class="cf-heading">Ready to begin?</h2>
-          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div></div>
+          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div>
+            <div class="cf-secondary-pills" style="margin-top:0.75rem;">
+              <a href="/legal.html#terms" class="cf-pill cf-pill--ghost js-magnetic">Terms</a>
+              <a href="/legal.html#privacy" class="cf-pill cf-pill--ghost js-magnetic">Privacy</a>
+              <a href="/legal.html#refund" class="cf-pill cf-pill--ghost js-magnetic">Refund Policy</a>
+              <a href="/contact.html" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
+            </div></div>
         </div>
         <div class="cf-bottom-bar">
           <p class="cf-copyright">© 2026 UDBHAV'26. All rights reserved.</p>
@@ -724,7 +743,7 @@
   <div class="wn-toast" id="wnToast" role="alert" aria-live="polite"></div>
 
   <!-- main.js removed: only needed on index.html -->
-  <script src="/mobile-perf.js" defer></script>
+  <script type="module" src="/mobile-perf.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -813,15 +832,46 @@
       const podium = document.getElementById('pubPodium');
       if (!podium) return;
       podium.innerHTML = '';
-      // Sort by place
-      const sorted = [...winners].sort((a,b) => a.place - b.place);
-      // Reorder for visual podium: 2nd, 1st, 3rd
-      const order  = [sorted[1], sorted[0], sorted[2]].filter(Boolean);
 
-      order.forEach(w => {
+      if (!winners || !winners.length) {
+        podium.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.3);padding:4rem;">No winners data available.</p>';
+        return;
+      }
+
+      // Sort by order field (1,2,3…)
+      const sorted = [...winners].sort((a, b) => (a.order ?? 99) - (b.order ?? 99));
+
+      // Map rank label to place index (0=1st, 1=2nd, 2=3rd)
+      const RANK_MAP = { '1st': 0, '2nd': 1, '3rd': 2 };
+      const PLACE_LABELS = ['1st Place', '2nd Place', '3rd Place'];
+      const RANK_LABELS  = ['1ST PLACE', '2ND PLACE', '3RD PLACE'];
+
+      // Build all cards in order: 2nd, 1st, 3rd for visual podium
+      const top3    = sorted.slice(0, 3);
+      const extra   = sorted.slice(3);  // special prizes etc.
+      const podiumOrder = [top3[1], top3[0], top3[2]].filter(Boolean);
+      const allOrder = [...podiumOrder, ...extra];
+
+      allOrder.forEach(w => {
         if (!w) return;
-        const idx = w.place - 1; // 0-indexed
-        const membersList = Array.isArray(w.members) ? w.members.join(' · ') : (w.members || '');
+
+        // Determine rank index from 'rank' field (e.g. '1st', '2nd', '3rd') or 'order'
+        let idx = (w.order ?? 1) - 1; // default: 0-indexed from order
+        if (w.rank) {
+          const r = w.rank.toLowerCase().replace(/[^0-9a-z]/g,'').slice(0,3);
+          if (r.startsWith('1')) idx = 0;
+          else if (r.startsWith('2')) idx = 1;
+          else if (r.startsWith('3')) idx = 2;
+        }
+        idx = Math.max(0, Math.min(2, idx)); // clamp 0-2
+
+        const placeLabel = w.label || PLACE_LABELS[idx] || `${w.rank || '#'}`;
+        const teamName   = w.teamName  || 'Team Name';
+        const psTitle    = w.psTitle   || '';
+        const college    = w.college   || '';
+        const prize      = w.prizeAmount ? `₹${w.prizeAmount}` : '';
+        const desc       = w.description || '';
+
         const card = document.createElement('div');
         card.className = `wn-pub-card ${CLASSES[idx]}`;
         card.innerHTML = `
@@ -830,17 +880,21 @@
           <div class="wn-pub-card__inner">
             <div class="wn-pub-card__place-row">
               <span class="wn-pub-card__medal">${MEDALS[idx]}</span>
-              <span class="wn-pub-card__place-label">${PLACES[idx]}</span>
+              <span class="wn-pub-card__place-label">${esc(placeLabel)}</span>
+              ${prize ? `<span style="margin-left:auto;font-family:'Bebas Neue',sans-serif;font-size:1.1rem;color:${idx===0?'#FFD700':idx===1?'#C0C0C0':'#CD7F32'};">${esc(prize)}</span>` : ''}
             </div>
             <div class="wn-pub-card__divider"></div>
-            <div class="wn-pub-card__team">${w.team || 'Team Name'}</div>
-            <div class="wn-pub-card__project">${w.project || ''}</div>
-            ${w.tagline ? `<div class="wn-pub-card__tagline">${w.tagline}</div>` : ''}
-            ${w.domain  ? `<div class="wn-pub-card__domain">${w.domain}</div>` : ''}
-            ${membersList ? `<div class="wn-pub-card__members"><strong>Team Members</strong>${membersList}</div>` : ''}
+            <div class="wn-pub-card__team">${esc(teamName)}</div>
+            ${psTitle  ? `<div class="wn-pub-card__project">${esc(psTitle)}</div>` : ''}
+            ${desc     ? `<div class="wn-pub-card__tagline">${esc(desc)}</div>` : ''}
+            ${college  ? `<div class="wn-pub-card__domain">${esc(college)}</div>` : ''}
           </div>`;
         podium.appendChild(card);
       });
+    }
+
+    function esc(s) {
+      return String(s ?? '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
     }
 
     /* ══════════════════════════════════════════════════════════════
@@ -922,7 +976,7 @@
 
     async function checkWinners() {
       try {
-        const res = await fetch('/api/winners/status');
+        const res = await fetch('/api/winners');
         if (!res.ok) return;
         const data = await res.json();
         if (data.published && !revealed) {

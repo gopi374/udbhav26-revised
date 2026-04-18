@@ -10,6 +10,10 @@
 import { Resend } from 'resend';
 
 const ADMIN_EMAIL = process.env.ADMIN_ALERT_EMAIL || 'admin@udbhav26.in';
+// EMAIL_FROM: set to your verified Resend sender.
+// For testing: EMAIL_FROM=onboarding@resend.dev
+// For production (after domain verification): EMAIL_FROM=noreply@udbhav26.in
+const EMAIL_FROM  = process.env.EMAIL_FROM || `UDBHAV'26 <noreply@udbhav26.in>`;
 
 let _resend = null;
 function getResend() {
@@ -154,7 +158,7 @@ export async function sendTeamCodeEmail({ to, teamName, teamCode, wantsMentor, a
   async function attempt() {
     const resend = getResend();
     return resend.emails.send({
-      from:    `UDBHAV'26 <noreply@udbhav26.in>`,
+      from:    EMAIL_FROM,
       to:      [to],
       subject: `🎉 Your Team Code for UDBHAV'26 — ${teamCode}`,
       html,
@@ -181,7 +185,7 @@ export async function sendTeamCodeEmail({ to, teamName, teamCode, wantsMentor, a
       try {
         const resend = getResend();
         await resend.emails.send({
-          from:    `UDBHAV'26 Alerts <noreply@udbhav26.in>`,
+          from:    EMAIL_FROM,
           to:      [ADMIN_EMAIL],
           subject: `🚨 EMAIL DELIVERY FAILED — Team: ${teamName}`,
           html:    `<p>Failed to deliver team code email to <strong>${to}</strong>.<br>Team: ${teamName}<br>Code: <strong>${teamCode}</strong><br>Error: ${err2.message}</p>`,

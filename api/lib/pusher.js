@@ -63,3 +63,45 @@ export async function emitDropStatus(event, data = {}) {
     console.error('Pusher status emit failed (non-fatal):', err.message);
   }
 }
+
+/**
+ * Emit a payment_confirmed event to the admin payments dashboard.
+ * Subscribe on channel "payments", event "payment_confirmed".
+ */
+export async function emitPaymentConfirmed(team) {
+  const pusher = getPusher();
+  if (!pusher) return;
+  try {
+    await pusher.trigger('payments', 'payment_confirmed', {
+      teamCode:      team.code,
+      teamName:      team.teamName,
+      collegeName:   team.collegeName,
+      leaderName:    team.leader?.name   || '',
+      leaderEmail:   team.leader?.email  || '',
+      amountPaid:    team.totalAmount,
+      mentorSession: team.mentorSession  || false,
+      paidAt:        (team.paymentDate || new Date()).toISOString(),
+      cashfreeOrderId: team.cashfreeOrderId || '',
+    });
+  } catch (err) {
+    console.error('Pusher payment_confirmed emit failed (non-fatal):', err.message);
+  }
+}
+
+/**
+ * Emit a payment_failed event to the admin payments dashboard.
+ */
+export async function emitPaymentFailed(team) {
+  const pusher = getPusher();
+  if (!pusher) return;
+  try {
+    await pusher.trigger('payments', 'payment_failed', {
+      teamCode:  team.code,
+      teamName:  team.teamName,
+      orderId:   team.cashfreeOrderId || '',
+    });
+  } catch (err) {
+    console.error('Pusher payment_failed emit failed (non-fatal):', err.message);
+  }
+}
+

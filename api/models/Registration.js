@@ -43,6 +43,10 @@ const RegistrationSchema = new mongoose.Schema(
       enum: ['pending', 'paid', 'failed'],
       default: 'pending',
     },
+    cashfreeOrderId:   { type: String, default: null },
+    cashfreePaymentId: { type: String, default: null },
+
+    // Legacy — kept for historical records (Razorpay era)
     razorpayOrderId:   { type: String, default: null },
     razorpayPaymentId: { type: String, default: null },
 
@@ -79,9 +83,12 @@ RegistrationSchema.index({ paymentStatus: 1 });
 // Fast duplicate check in register.js (teamName + leader email)
 RegistrationSchema.index({ teamName: 1, 'leader.email': 1 });
 
-// Razorpay order/payment ID lookup (webhook + verify-payment)
-RegistrationSchema.index({ razorpayOrderId: 1 }, { sparse: true });
-RegistrationSchema.index({ razorpayPaymentId: 1 }, { sparse: true });
+// Cashfree order/payment ID lookup
+RegistrationSchema.index({ cashfreeOrderId: 1 },   { sparse: true });
+RegistrationSchema.index({ cashfreePaymentId: 1 },  { sparse: true });
+// Legacy Razorpay indexes (kept for existing records)
+RegistrationSchema.index({ razorpayOrderId: 1 },   { sparse: true });
+RegistrationSchema.index({ razorpayPaymentId: 1 },  { sparse: true });
 
 // Sort by creation date (admin registrations table default order)
 RegistrationSchema.index({ createdAt: -1 });

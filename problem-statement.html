@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -273,12 +273,16 @@
       font-family: 'Sora', sans-serif; font-size: 0.8rem; font-weight: 300;
       color: rgba(255,255,255,0.3); text-align: center; margin-bottom: 2.5rem;
     }
-    .ps-grid { display: grid; grid-template-columns: repeat(5,1fr); gap: 1rem; }
+    .ps-grid {
+      display: flex; flex-direction: column;
+      gap: 1.1rem; max-width: 960px; margin: 0 auto;
+    }
 
+    /* ── CARD : horizontal row layout ─────────────────────── */
     .ps-card {
       background: rgba(255,255,255,0.022); border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 18px; padding: 1.4rem 1.2rem 1.4rem;
-      display: flex; flex-direction: column; gap: 0.75rem;
+      border-radius: 18px; padding: 1.5rem 1.8rem;
+      display: flex; align-items: center; gap: 2rem;
       position: relative; overflow: hidden;
       transition: border-color 0.3s, box-shadow 0.3s, opacity 0.5s;
     }
@@ -287,11 +291,43 @@
       background: linear-gradient(90deg, transparent, var(--ps-purple), transparent);
       opacity: 0; transition: opacity 0.3s;
     }
-    .ps-card:hover:not(.is-full) { border-color: rgba(168,85,247,0.3); box-shadow: 0 0 28px rgba(168,85,247,0.07); }
+    .ps-card:hover:not(.is-full) { border-color: rgba(168,85,247,0.3); box-shadow: 0 0 32px rgba(168,85,247,0.07); }
     .ps-card:hover:not(.is-full)::before { opacity: 1; }
-    .ps-card.is-full { opacity: 0.35; pointer-events: none; }
-    .ps-card__num { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; letter-spacing: 0.1em; color: rgba(255,255,255,0.2); }
-    .ps-card__title { font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 600; color: #fff; line-height: 1.35; flex: 1; }
+    .ps-card.is-full { opacity: 0.38; pointer-events: none; }
+
+    /* Left: number badge */
+    .ps-card__num {
+      font-family: 'Bebas Neue', sans-serif; font-size: 2rem; letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.18); white-space: nowrap; flex-shrink: 0; min-width: 4rem;
+    }
+
+    /* Middle: domain + title + desc — takes all available space */
+    .ps-card__body {
+      flex: 1; display: flex; flex-direction: column; gap: 0.45rem; min-width: 0;
+    }
+    .ps-card__domain {
+      display: inline-block; align-self: flex-start;
+      font-family: 'JetBrains Mono', monospace; font-size: 0.58rem; font-weight: 500;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--ps-purple); background: rgba(168,85,247,0.1);
+      border: 1px solid rgba(168,85,247,0.25);
+      padding: 0.18rem 0.7rem; border-radius: 999px;
+    }
+    .ps-card__title {
+      font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 700;
+      color: #fff; line-height: 1.3;
+    }
+    .ps-card__desc {
+      font-family: 'Inter', sans-serif; font-size: 0.8rem; font-weight: 400;
+      color: rgba(255,255,255,0.45); line-height: 1.6;
+      white-space: pre-wrap; word-break: break-word;
+    }
+
+    /* Right: slots + button */
+    .ps-card__right {
+      flex-shrink: 0; display: flex; flex-direction: column;
+      align-items: flex-end; gap: 0.65rem; min-width: 130px;
+    }
     .ps-card__slots-row { display: flex; align-items: center; gap: 0.5rem; }
     .ps-card__dots { display: flex; gap: 4px; }
     .ps-card__dot {
@@ -300,16 +336,21 @@
       transition: background 0.35s, border-color 0.35s;
     }
     .ps-card__dot.filled { background: var(--ps-purple); border-color: var(--ps-purple); box-shadow: 0 0 5px rgba(168,85,247,0.5); }
-    .ps-card__slot-text { font-family: 'JetBrains Mono', monospace; font-size: 0.67rem; color: var(--ps-purple); flex: 1; text-align: right; }
+    .ps-card__slot-text {
+      font-family: 'JetBrains Mono', monospace; font-size: 0.7rem;
+      color: var(--ps-purple); white-space: nowrap;
+    }
     .ps-card__btn {
-      padding: 0.5rem 0.9rem; border-radius: 8px;
-      font-family: 'Sora', sans-serif; font-size: 0.68rem; font-weight: 700;
-      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 0.55rem 1.4rem; border-radius: 9px;
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; font-weight: 700;
+      letter-spacing: 0.12em; text-transform: uppercase; white-space: nowrap;
       border: 1px solid rgba(255,255,255,0.2); background: transparent; color: #fff; cursor: pointer;
       transition: background 0.2s, border-color 0.2s, transform 0.2s;
     }
     .ps-card__btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.45); transform: translateY(-1px); }
     .ps-card__btn:disabled { opacity: 0.25; cursor: not-allowed; transform: none; }
+
+    /* Full overlay */
     .ps-card__full-tag {
       position: absolute; inset: 0; border-radius: 18px;
       display: flex; align-items: center; justify-content: center;
@@ -322,6 +363,15 @@
       position: absolute; inset: 0; border-radius: 18px;
       background: rgba(168,85,247,0.18); pointer-events: none; opacity: 0;
     }
+    /* Legacy — not used in row layout but kept for safety */
+    .ps-card__divider { display: none; }
+
+    /* Responsive: stack on mobile */
+    @media (max-width: 640px) {
+      .ps-card { flex-direction: column; align-items: flex-start; gap: 1rem; padding: 1.2rem; }
+      .ps-card__num { font-size: 1.4rem; min-width: auto; }
+      .ps-card__right { align-items: flex-start; width: 100%; flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+    }
 
     /* ── CONFIRM MODAL ───────────────────────────────────── */
     .ps-modal-bg {
@@ -333,14 +383,64 @@
     .ps-modal-bg.open { opacity: 1; pointer-events: all; }
     .ps-modal {
       background: #0a0a10; border: 1px solid rgba(168,85,247,0.25);
-      border-radius: 24px; padding: 2.5rem; max-width: 420px; width: 90%;
+      border-radius: 24px; padding: 2.5rem; max-width: 460px; width: 90%;
       box-shadow: 0 0 0 1px rgba(168,85,247,0.06), 0 40px 80px rgba(0,0,0,0.7), 0 0 50px rgba(168,85,247,0.08);
       transform: scale(0.92); transition: transform 0.35s cubic-bezier(0.16,1,0.3,1);
     }
     .ps-modal-bg.open .ps-modal { transform: scale(1); }
     .ps-modal__num { font-family: 'Bebas Neue', sans-serif; font-size: 0.8rem; letter-spacing: 0.22em; color: rgba(255,255,255,0.25); margin-bottom: 0.3rem; }
     .ps-modal__heading { font-family: 'Inter', sans-serif; font-weight: 900; font-size: clamp(1.6rem,4vw,2.5rem); letter-spacing: -0.04em; text-transform: uppercase; color: #fff; margin-bottom: 0.7rem; line-height: 1; }
-    .ps-modal__ps-name { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ps-purple); margin-bottom: 1.6rem; line-height: 1.4; }
+    .ps-modal__ps-name { font-family: 'Sora', sans-serif; font-size: 1rem; font-weight: 600; color: var(--ps-purple); margin-bottom: 1.2rem; line-height: 1.4; }
+
+    /* Team code input inside modal */
+    .ps-modal__code-wrap { margin-bottom: 1.2rem; }
+    .ps-modal__code-label {
+      display: block; font-family: 'Sora', sans-serif; font-size: 0.7rem;
+      font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+      color: rgba(255,255,255,0.45); margin-bottom: 0.5rem;
+    }
+    .ps-modal__code-input {
+      width: 100%; padding: 0.7rem 1rem;
+      background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px; color: #fff; outline: none;
+      font-family: 'JetBrains Mono', monospace; font-size: 1rem; letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: border-color 0.2s, box-shadow 0.2s; box-sizing: border-box;
+    }
+    .ps-modal__code-input:focus { border-color: var(--ps-purple); box-shadow: 0 0 0 3px rgba(168,85,247,0.15); }
+    .ps-modal__code-input.error { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248,113,113,0.15); }
+    .ps-modal__code-error {
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; color: #f87171;
+      margin-top: 0.45rem; min-height: 1.1em;
+    }
+
+    /* Register-first notice (payment_pending) */
+    .ps-modal__register-notice {
+      display: none;
+      align-items: flex-start; gap: 0.75rem;
+      background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.25);
+      border-radius: 12px; padding: 0.9rem 1rem; margin-bottom: 1.2rem;
+    }
+    .ps-modal__register-notice.visible { display: flex; }
+    .ps-modal__register-notice__icon { color: #f87171; flex-shrink: 0; margin-top: 1px; }
+    .ps-modal__register-notice__body { flex: 1; }
+    .ps-modal__register-notice__title {
+      font-family: 'Sora', sans-serif; font-size: 0.8rem; font-weight: 700;
+      color: #f87171; margin-bottom: 0.25rem;
+    }
+    .ps-modal__register-notice__sub {
+      font-family: 'Sora', sans-serif; font-size: 0.72rem;
+      color: rgba(255,255,255,0.4); line-height: 1.5;
+    }
+    .ps-modal__register-notice__link {
+      display: inline-block; margin-top: 0.5rem;
+      font-family: 'Sora', sans-serif; font-size: 0.72rem; font-weight: 700;
+      color: #f87171; text-decoration: none;
+      border: 1px solid rgba(239,68,68,0.3); padding: 0.3rem 0.75rem;
+      border-radius: 6px; transition: background 0.2s;
+    }
+    .ps-modal__register-notice__link:hover { background: rgba(239,68,68,0.1); }
+
     .ps-modal__warn {
       display: flex; align-items: center; gap: 0.6rem;
       font-family: 'JetBrains Mono', monospace; font-size: 0.75rem;
@@ -353,9 +453,10 @@
       flex: 1; padding: 0.85rem; border-radius: 10px;
       font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 700;
       letter-spacing: 0.08em; background: var(--ps-purple); color: #fff; border: none; cursor: pointer;
-      transition: transform 0.2s, box-shadow 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s; display: flex; align-items: center; justify-content: center; gap: 0.5rem;
     }
     .ps-modal__confirm:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(168,85,247,0.35); }
+    .ps-modal__confirm:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
     .ps-modal__cancel {
       flex: 1; padding: 0.85rem; border-radius: 10px;
       font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 600;
@@ -363,6 +464,36 @@
       transition: background 0.2s, color 0.2s;
     }
     .ps-modal__cancel:hover { background: rgba(255,255,255,0.05); color: #fff; }
+
+    /* Success step */
+    .ps-modal__success-icon {
+      width: 58px; height: 58px; border-radius: 50%;
+      background: rgba(34,197,94,0.1); border: 2px solid rgba(34,197,94,0.3);
+      display: flex; align-items: center; justify-content: center;
+      color: #22c55e; margin: 0 auto 1.2rem;
+      animation: ps-check-pop 0.6s cubic-bezier(0.16,1,0.3,1) both;
+    }
+    .ps-modal__success-label {
+      font-family: 'Sora', sans-serif; font-size: 0.65rem; font-weight: 700;
+      letter-spacing: 0.2em; text-transform: uppercase; color: #22c55e; margin-bottom: 0.6rem;
+    }
+    .ps-modal__success-ps {
+      font-family: 'Inter', sans-serif; font-weight: 800; font-size: 1.2rem;
+      color: #fff; margin-bottom: 0.8rem; line-height: 1.2;
+    }
+    .ps-modal__success-note {
+      font-family: 'Sora', sans-serif; font-size: 0.78rem; color: rgba(255,255,255,0.4);
+      margin-bottom: 1.4rem; line-height: 1.6;
+    }
+    .ps-modal__dashboard-btn {
+      display: flex; align-items: center; justify-content: center; gap: 0.55rem;
+      width: 100%; padding: 0.85rem; border-radius: 10px;
+      font-family: 'Sora', sans-serif; font-size: 0.85rem; font-weight: 700;
+      letter-spacing: 0.06em; background: var(--ps-purple); color: #fff;
+      text-decoration: none; margin-bottom: 0.75rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .ps-modal__dashboard-btn:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(168,85,247,0.35); }
 
     /* ══════════════════════════════════════════════════════
        STATE 3 — CLOSED
@@ -420,12 +551,8 @@
     .ps-sel__code { font-family: 'JetBrains Mono', monospace; font-size: 0.88rem; color: var(--ps-purple); padding: 0.45rem 1.2rem; border-radius: 8px; background: rgba(168,85,247,0.07); border: 1px solid rgba(168,85,247,0.18); letter-spacing: 0.12em; }
 
     /* ── RESPONSIVE ──────────────────────────────────────── */
-    @media (max-width: 1100px) { .ps-grid { grid-template-columns: repeat(3,1fr); } }
-    @media (max-width: 740px)  { .ps-grid { grid-template-columns: repeat(2,1fr); } }
-    @media (max-width: 520px) {
-      /* mobile-perf.css handles ps-cd-digit sizing; these handle grid only */
+    @media (max-width: 600px) {
       .ps-countdown { gap: 0.6rem; }
-      .ps-grid { grid-template-columns: 1fr; }
     }
 
     @keyframes psFadeUp { to { opacity: 1; transform: translateY(0); } }
@@ -486,6 +613,10 @@
                     <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></div>
                     <div class="md-item__body"><span class="md-item__title">Sponsors</span><span class="md-item__desc">Our partners &amp; supporters</span></div>
                   </a>
+                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                    <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
+                    <div class="md-item__body"><span class="md-item__title">Team Dashboard</span><span class="md-item__desc">View your assigned PS</span></div>
+                  </a>
                 </div>
               </div>
             </div>
@@ -544,6 +675,16 @@
           <span class="mmd-link-text">Winners</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
+        <a href="/sponsors.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></span>
+          <span class="mmd-link-text">Sponsors</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
+        <a href="/team-dashboard.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></span>
+          <span class="mmd-link-text">Team Dashboard</span>
+          <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+        </a>
         <a href="/code-of-conduct.html" class="mmd-link">
           <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></span>
           <span class="mmd-link-text">Code of Conduct</span>
@@ -554,12 +695,12 @@
           <span class="mmd-link-text">Our Team</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-        <a href="/sponsors.html" class="mmd-link">
-          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></span>
-          <span class="mmd-link-text">Sponsors</span>
+        
+              <a href="/contact.html" class="mmd-link">
+          <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+          <span class="mmd-link-text">Contact</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-        </a>
-      </nav>
+        </a></nav>
       <div class="mmd-footer">
         <a href="/register.html" class="mmd-cta-btn">Register Now →</a>
       </div>
@@ -605,7 +746,7 @@
     <div id="statePreDrop">
       <p class="ps-pre__eyebrow">
         <span class="ps-pre__eyebrow-dot" aria-hidden="true"></span>
-        UDBHAV'26 &nbsp;·&nbsp; 25 APRIL 2026
+        UDBHAV'26 &nbsp;·&nbsp; <span id="preDropEyebrowDate">25 APRIL 2026</span>
       </p>
       <h1 class="ps-pre__title">
         Problem<br>
@@ -649,8 +790,7 @@
       </div>
 
       <div class="ps-pre__note-block">
-        <p class="ps-pre__note">PS Drop opens at <em>10:45 AM IST</em> on <em>25 April 2026</em></p>
-        <p class="ps-pre__note">Be ready with your <em>Team Code</em></p>
+        <p class="ps-pre__note">PS Drop opens at <em id="preDropTime">—</em> on <em id="preDropDate">—</em></p>
         <div class="ps-pre__pulse">
           <div class="ps-pre__pulse-dot" aria-hidden="true"></div>
           Waiting for the drop…
@@ -720,7 +860,13 @@
         </div>
         <div class="cf-center" id="cfCenter">
           <h2 class="cf-heading">Ready to begin?</h2>
-          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div></div>
+          <div class="cf-links"><div class="cf-primary-pills"><a href="/register.html" class="cf-pill cf-pill--primary js-magnetic" id="cfBtnRegister">Register</a></div>
+            <div class="cf-secondary-pills" style="margin-top:0.75rem;">
+              <a href="/legal.html#terms" class="cf-pill cf-pill--ghost js-magnetic">Terms</a>
+              <a href="/legal.html#privacy" class="cf-pill cf-pill--ghost js-magnetic">Privacy</a>
+              <a href="/legal.html#refund" class="cf-pill cf-pill--ghost js-magnetic">Refund Policy</a>
+              <a href="/contact.html" class="cf-pill cf-pill--ghost js-magnetic">Contact Us</a>
+            </div></div>
         </div>
         <div class="cf-bottom-bar">
           <p class="cf-copyright">© 2026 UDBHAV'26. All rights reserved.</p>
@@ -735,23 +881,63 @@
 
   <!-- Confirmation modal -->
   <div class="ps-modal-bg" id="psModalBg" role="dialog" aria-modal="true" aria-labelledby="psModalHeading">
-    <div class="ps-modal">
-      <div class="ps-modal__num" id="modalPsNum">PS 00</div>
-      <div class="ps-modal__heading" id="psModalHeading">Confirm<br>Selection</div>
-      <div class="ps-modal__ps-name" id="modalPsName">—</div>
-      <div class="ps-modal__warn">
-        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-        This selection cannot be changed once confirmed.
+    <div class="ps-modal" id="psModalInner">
+      <!-- STEP 1: Confirm + team code -->
+      <div id="psModalStep1">
+        <div class="ps-modal__num" id="modalPsNum">PS 00</div>
+        <div class="ps-modal__heading" id="psModalHeading">Confirm<br>Selection</div>
+        <div class="ps-modal__ps-name" id="modalPsName">—</div>
+
+        <!-- Team code input -->
+        <div class="ps-modal__code-wrap">
+          <label class="ps-modal__code-label" for="modalTeamCode">Your Team Code</label>
+          <input type="text" id="modalTeamCode" class="ps-modal__code-input"
+            placeholder="UDB-XXXX" maxlength="12" autocomplete="off"
+            spellcheck="false" autocapitalize="characters"
+            aria-label="Team Code" />
+          <div class="ps-modal__code-error" id="modalCodeError" role="alert" aria-live="polite"></div>
+        </div>
+
+        <div class="ps-modal__register-notice" id="modalRegisterNotice">
+          <span class="ps-modal__register-notice__icon" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          </span>
+          <div class="ps-modal__register-notice__body">
+            <div class="ps-modal__register-notice__title">Registration payment not confirmed</div>
+            <div class="ps-modal__register-notice__sub">Your team code is valid, but payment hasn't been received yet. Complete your registration to select a Problem Statement.</div>
+            <a href="/register.html" class="ps-modal__register-notice__link" target="_blank">Register Now →</a>
+          </div>
+        </div>
+
+        <div class="ps-modal__warn">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          This selection is permanent and cannot be changed.
+        </div>
+        <div class="ps-modal__btns">
+          <button class="ps-modal__confirm" id="modalConfirmBtn">Confirm Selection</button>
+          <button class="ps-modal__cancel" id="modalCancelBtn">Cancel</button>
+        </div>
       </div>
-      <div class="ps-modal__btns">
-        <button class="ps-modal__confirm" id="modalConfirmBtn">Confirm</button>
-        <button class="ps-modal__cancel" id="modalCancelBtn">Cancel</button>
+
+      <!-- STEP 2: Success -->
+      <div id="psModalStep2" style="display:none;text-align:center;">
+        <div class="ps-modal__success-icon">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+        <div class="ps-modal__success-label">Problem Statement Assigned!</div>
+        <div class="ps-modal__success-ps" id="modalSuccessPs">—</div>
+        <p class="ps-modal__success-note">Your team has been locked into this PS.<br>Good luck building!</p>
+        <a class="ps-modal__dashboard-btn" id="modalDashboardBtn" href="/team-dashboard.html">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+          Visit Team Dashboard
+        </a>
+        <button class="ps-modal__cancel" id="modalSuccessClose" style="margin-top:0.6rem;width:100%;">Close</button>
       </div>
     </div>
   </div>
 
   <!-- main.js removed: only needed on index.html -->
-  <script src="/mobile-perf.js" defer></script>
+  <script type="module" src="/mobile-perf.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
@@ -760,26 +946,10 @@
   (function() {
     'use strict';
 
-    // ── PS DATA ──────────────────────────────────────────────────
-    const PS_LIST = [
-      { id:1,  title:'AI in Healthcare',           totalSlots:5 },
-      { id:2,  title:'EdTech for Rural India',      totalSlots:5 },
-      { id:3,  title:'FinTech & Digital Payments',  totalSlots:5 },
-      { id:4,  title:'Smart Cities & IoT',          totalSlots:5 },
-      { id:5,  title:'Cybersecurity Solutions',     totalSlots:5 },
-      { id:6,  title:'Sustainable Agriculture',     totalSlots:5 },
-      { id:7,  title:'Climate & Environment',       totalSlots:5 },
-      { id:8,  title:'Mental Health & Wellness',    totalSlots:5 },
-      { id:9,  title:'Legal Tech & Justice Access', totalSlots:5 },
-      { id:10, title:'Women Safety & Empowerment',  totalSlots:5 },
-    ];
-
-    // ── TIME WINDOWS (IST) ───────────────────────────────────────
-    const DROP_OPEN  = new Date('2026-04-25T10:45:00+05:30');
-    const DROP_CLOSE = new Date('2026-04-25T11:00:00+05:30');
-
     // ── STATE ────────────────────────────────────────────────────
-    let verifiedCode = null, pendingPsId = null, slotData = {}, pollTimer = null;
+    let verifiedCode = null, pendingPsId = null, pollTimer = null, statusTimer = null;
+    let psListData = []; // fetched from API
+    let currentState = null; // track to avoid re-rendering same state
 
     // ── ELEMENTS ─────────────────────────────────────────────────
     const elPre      = document.getElementById('statePreDrop');
@@ -799,20 +969,33 @@
     }
     tickClock(); setInterval(tickClock, 1000);
 
-    // ── PAGE STATE ───────────────────────────────────────────────
-    function getState() {
-      const n = new Date();
-      if (n < DROP_OPEN)  return 'pre';
-      if (n < DROP_CLOSE) return 'active';
-      return 'closed';
+    // ── API: POLL STATUS ─────────────────────────────────────────
+    let dropStartTime = null, dropEndTime = null;
+
+    async function fetchStatus() {
+      try {
+        const res  = await fetch('/api/ps/status');
+        if (!res.ok) throw new Error('status api error');
+        const data = await res.json();
+        dropStartTime = data.startTime ? new Date(data.startTime) : null;
+        dropEndTime   = data.endTime   ? new Date(data.endTime)   : null;
+        const mapped = data.state === 'pre-drop' ? 'pre' : data.state; // 'pre'|'active'|'closed'
+        if (mapped !== currentState) {
+          currentState = mapped;
+          showState(mapped);
+        }
+      } catch (err) {
+        console.warn('[ps/status] fetch failed:', err);
+      }
     }
 
+    // ── PAGE STATE ───────────────────────────────────────────────
     function showState(s) {
-      [elPre, elActive, elClosed, elSelected].forEach(e => e.style.display = 'none');
-      if (s === 'pre')      { elPre.style.display      = 'flex';  startCountdown(); }
-      if (s === 'active')   { elActive.style.display   = 'block'; initActive(); }
-      if (s === 'closed')   { elClosed.style.display   = 'flex'; }
-      if (s === 'selected') { elSelected.style.display = 'flex'; }
+      [elPre, elActive, elClosed, elSelected].forEach(e => { if(e) e.style.display = 'none'; });
+      if (s === 'pre')      { if(elPre)      { elPre.style.display      = 'flex';  startCountdown(); } }
+      if (s === 'active')   { if(elActive)   { elActive.style.display   = 'block'; initActive(); } }
+      if (s === 'closed')   { if(elClosed)   { elClosed.style.display   = 'flex'; } }
+      if (s === 'selected') { if(elSelected) { elSelected.style.display = 'flex'; } }
     }
 
     // ── COUNTDOWN: DD HH MM SS ───────────────────────────────────
@@ -833,10 +1016,28 @@
       }
     }
 
+    let countdownInterval = null;
     function startCountdown() {
+      if (countdownInterval) clearInterval(countdownInterval);
+
+      // Populate the note text with the real date/time from API
+      if (dropStartTime) {
+        const timeStr = dropStartTime.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: true, timeZone: 'Asia/Kolkata' });
+        const dateStr = dropStartTime.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' });
+        const eyebrow = dropStartTime.toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Asia/Kolkata' }).toUpperCase();
+        const timeEl   = document.getElementById('preDropTime');
+        const dateEl   = document.getElementById('preDropDate');
+        const eyebrowEl = document.getElementById('preDropEyebrowDate');
+        if (timeEl)    timeEl.textContent    = timeStr + ' IST';
+        if (dateEl)    dateEl.textContent    = dateStr;
+        if (eyebrowEl) eyebrowEl.textContent = eyebrow;
+      }
+
       function tick() {
-        const diff = DROP_OPEN - new Date();
-        if (diff <= 0) { showState(getState()); return; }
+        const target = dropStartTime;
+        if (!target) return; // no start time yet from API
+        const diff = target - new Date();
+        if (diff <= 0) { fetchStatus(); return; } // re-check API when reaches 0
         const d = Math.floor(diff / 86400000);
         const h = Math.floor((diff % 86400000) / 3600000);
         const m = Math.floor((diff % 3600000) / 60000);
@@ -848,102 +1049,108 @@
         setDigit('M0',ms[0]); setDigit('M1',ms[1]);
         setDigit('S0',ss[0]); setDigit('S1',ss[1]);
       }
-      tick(); setInterval(tick, 1000);
+      tick(); countdownInterval = setInterval(tick, 1000);
     }
 
     // ── ACTIVE STATE ─────────────────────────────────────────────
     function initActive() {
       if (elBarLive) elBarLive.style.display = 'flex';
-      if (elBarClose) elBarClose.style.display = 'inline';
-      function tickClose() {
-        const diff = DROP_CLOSE - new Date();
-        if (diff <= 0) { showState('closed'); return; }
-        const m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
-        const p = n => String(n).padStart(2,'0');
-        if (elBarClose) elBarClose.textContent = `Closes in ${p(m)}:${p(s)}`;
+      if (elBarClose) {
+        function tickClose() {
+          const target = dropEndTime;
+          if (!target) return;
+          const diff = target - new Date();
+          if (diff <= 0) { fetchStatus(); return; }
+          const m = Math.floor(diff/60000), s = Math.floor((diff%60000)/1000);
+          const p = n => String(n).padStart(2,'0');
+          elBarClose.textContent = `Closes in ${p(m)}:${p(s)}`;
+        }
+        tickClose(); setInterval(tickClose, 1000);
       }
-      tickClose(); setInterval(tickClose, 1000);
+      loadAndShowGrid();
     }
 
-    // ── AUTH ─────────────────────────────────────────────────────
-    const tcInput  = document.getElementById('teamCodeInput');
-    const vBtn     = document.getElementById('verifyBtn');
-    const authErr  = document.getElementById('authError');
+    // ── LOAD + SHOW GRID (public, no team code needed) ──────────────
+    async function loadAndShowGrid() {
+      if (elAuth) elAuth.style.display = 'none';
+      if (elGrid) elGrid.style.display = 'block';
+      const subEl = document.getElementById('psGridSub');
+      if (subEl) subEl.textContent = 'Choose your problem domain.';
 
-    tcInput?.addEventListener('input', () => {
-      tcInput.value = tcInput.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
-      authErr.textContent = ''; tcInput.classList.remove('error');
-    });
-    vBtn?.addEventListener('click', doVerify);
-    tcInput?.addEventListener('keydown', e => { if(e.key==='Enter') doVerify(); });
-
-    async function doVerify() {
-      const code = tcInput.value.trim();
-      if (!code || code.length < 3) { showErr('Please enter your Team Code.'); return; }
-      setBusy(true);
       try {
-        const res  = await fetch('/api/ps/verify-code', { method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({code}) });
+        const res  = await fetch('/api/ps/list');
         const data = await res.json();
-        if (!res.ok || !data.valid) { showErr(data.message || 'Invalid Team Code.'); setBusy(false); return; }
-        if (data.alreadySelected) { revealSelected(data.alreadySelected, code, data.selectedAt); return; }
-        verifiedCode = code; slotData = data.slots || {};
-        slideToGrid(code);
-      } catch {
-        // Demo fallback — any UDB-XXXX works
-        if (/^UDB-[A-Z0-9]{4}$/i.test(code) || code.startsWith('UDB-')) {
-          verifiedCode = code; slotData = {};
-          PS_LIST.forEach(p => { slotData[p.id] = Math.floor(Math.random()*4); });
-          slideToGrid(code);
-        } else { showErr('Invalid code. Try a format like UDB-1234'); setBusy(false); }
+        if (res.ok && data.psList) {
+          psListData = data.psList.map(ps => ({
+            id:          ps.order,
+            title:       ps.title,
+            description: ps.description || '',
+            domain:      ps.domain      || '',
+            totalSlots:  ps.slotsTotal,
+            slotsTaken:  ps.slotsTaken,
+            isFull:      ps.isFull,
+          }));
+        }
+      } catch (err) {
+        console.warn('[loadAndShowGrid]', err);
       }
-    }
-
-    function showErr(msg) { authErr.textContent = msg; tcInput.classList.add('error'); }
-
-    function setBusy(on) {
-      vBtn.disabled = on;
-      vBtn.innerHTML = on ? '<span class="ps-spinner"></span>Verifying…' : 'Verify Code';
-      tcInput.disabled = on;
-    }
-
-    function slideToGrid(code) {
-      if (typeof gsap !== 'undefined') {
-        gsap.to(elAuth, { y:-40, opacity:0, duration:0.4, ease:'power2.in', onComplete: () => {
-          elAuth.style.display='none'; elGrid.style.display='block';
-          document.getElementById('psGridSub').textContent = `Team ${code} — choose your domain`;
-          buildGrid();
-          gsap.from(elGrid, { y:60, opacity:0, duration:0.65, ease:'power3.out' });
-        }});
-      } else {
-        elAuth.style.display='none'; elGrid.style.display='block';
-        document.getElementById('psGridSub').textContent = `Team ${code} — choose your domain`;
-        buildGrid();
+      // Always render the grid (shows cards or empty state message)
+      buildGrid();
+      if (psListData.length && typeof gsap !== 'undefined') {
+        gsap.from(elGrid, { y:60, opacity:0, duration:0.65, ease:'power3.out' });
       }
       startPolling();
+    }
+
+
+    // ── HELPERS ──────────────────────────────────────────────
+    function escHtml(str) {
+      return String(str ?? '')
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
     }
 
     // ── BUILD GRID ───────────────────────────────────────────────
     function buildGrid() {
       elPsGrid.innerHTML = '';
-      PS_LIST.forEach(ps => {
-        const taken  = slotData[ps.id] || 0;
-        const isFull = taken >= ps.totalSlots;
+      if (!psListData.length) {
+        elPsGrid.innerHTML = '<p style="text-align:center;color:rgba(255,255,255,0.3);padding:3rem;">No problem statements available yet.</p>';
+        return;
+      }
+      psListData.forEach(ps => {
+        const taken  = ps.slotsTaken || 0;
+        const isFull = ps.isFull || taken >= ps.totalSlots;
         const card   = document.createElement('div');
-        card.className = 'ps-card' + (isFull?' is-full':'');
+        card.className = 'ps-card' + (isFull ? ' is-full' : '');
         card.setAttribute('role','listitem'); card.dataset.psId = ps.id;
+
+        const domainTag = ps.domain
+          ? `<div class="ps-card__domain">${escHtml(ps.domain)}</div>`
+          : '';
+        const descBlock = ps.description
+          ? `<div class="ps-card__desc">${escHtml(ps.description).replace(/\n/g,'<br>')}</div>`
+          : '';
+
         card.innerHTML = `
           <div class="ps-card__num">PS ${String(ps.id).padStart(2,'0')}</div>
-          <div class="ps-card__title">${ps.title}</div>
-          <div class="ps-card__slots-row">
-            <div class="ps-card__dots" id="dots-${ps.id}">${mkDots(taken,ps.totalSlots)}</div>
-            <div class="ps-card__slot-text" id="txt-${ps.id}">${taken}/${ps.totalSlots} slots</div>
+          <div class="ps-card__body">
+            ${domainTag}
+            <div class="ps-card__title">${escHtml(ps.title)}</div>
+            ${descBlock}
           </div>
-          <button class="ps-card__btn" data-id="${ps.id}" data-title="${ps.title}"
-            ${isFull?'disabled aria-disabled="true"':''}>${isFull?'FULL':'SELECT'}</button>
+          <div class="ps-card__right">
+            <div class="ps-card__slots-row">
+              <div class="ps-card__dots" id="dots-${ps.id}">${mkDots(taken,ps.totalSlots)}</div>
+              <div class="ps-card__slot-text" id="txt-${ps.id}">${taken}/${ps.totalSlots} slots</div>
+            </div>
+            <button class="ps-card__btn" data-id="${ps.id}" data-title="${escHtml(ps.title)}"
+              ${isFull ? 'disabled aria-disabled="true"' : ''}>${isFull ? 'FULL' : 'SELECT'}</button>
+          </div>
           <div class="ps-card__full-tag" aria-hidden="true">FULL</div>
           <div class="ps-card__flash" id="flash-${ps.id}" aria-hidden="true"></div>`;
+
         card.querySelector('.ps-card__btn')?.addEventListener('click', e => {
-          const b=e.currentTarget; if(b.disabled)return;
+          const b = e.currentTarget; if (b.disabled) return;
           openModal(parseInt(b.dataset.id), b.dataset.title);
         });
         elPsGrid.appendChild(card);
@@ -956,90 +1163,191 @@
       ).join('');
     }
 
-    // ── POLLING ──────────────────────────────────────────────────
+    // ── POLLING (public, no team code) ───────────────────────────────
     function startPolling() {
       if(pollTimer) clearInterval(pollTimer);
       pollTimer = setInterval(async () => {
         try {
-          const res  = await fetch('/api/ps/slots');
+          const res  = await fetch('/api/ps/list');
           const data = await res.json();
-          applySlots(data.slots);
-        } catch {
-          // Demo: random increment
-          const id = PS_LIST[Math.floor(Math.random()*PS_LIST.length)].id;
-          const s  = {...slotData};
-          if((s[id]||0) < 5) s[id] = (s[id]||0)+1;
-          applySlots(s);
+          if (res.ok && data.psList) {
+            if (psListData.length === 0) {
+              // Grid was empty on first load — rebuild fully now
+              psListData = data.psList.map(ps => ({
+                id:          ps.order,
+                title:       ps.title,
+                description: ps.description || '',
+                domain:      ps.domain      || '',
+                totalSlots:  ps.slotsTotal,
+                slotsTaken:  ps.slotsTaken,
+                isFull:      ps.isFull,
+              }));
+              buildGrid();
+            } else {
+              applySlots(data.psList);
+            }
+          }
+        } catch (err) {
+          console.warn('[poll]', err);
         }
       }, 4000);
     }
 
-    function applySlots(newSlots) {
-      PS_LIST.forEach(ps => {
-        const oldT = slotData[ps.id]||0, newT = newSlots[ps.id]??oldT;
-        if(newT===oldT) return;
-        slotData[ps.id] = newT;
-        const card = elPsGrid.querySelector(`[data-ps-id="${ps.id}"]`); if(!card) return;
-        const isFull = newT >= ps.totalSlots;
-        // Flash
-        const flash = document.getElementById(`flash-${ps.id}`);
-        if(flash && typeof gsap!=='undefined') gsap.fromTo(flash,{opacity:0.7},{opacity:0,duration:0.55,ease:'power2.out'});
-        document.getElementById(`dots-${ps.id}`).innerHTML = mkDots(newT, ps.totalSlots);
-        document.getElementById(`txt-${ps.id}`).textContent = `${newT}/${ps.totalSlots} slots`;
-        if(isFull) {
+    function applySlots(newList) {
+      newList.forEach(ps => {
+        const id     = ps.order || ps.id;
+        const newT   = ps.slotsTaken ?? 0;
+        const total  = ps.slotsTotal || 5;
+        const isFull = ps.isFull || newT >= total;
+        // Update local data
+        const local = psListData.find(p => p.id === id);
+        if (local) { local.slotsTaken = newT; local.isFull = isFull; }
+        const card = elPsGrid.querySelector(`[data-ps-id="${id}"]`); if(!card) return;
+        const oldT = parseInt(document.getElementById(`txt-${id}`)?.textContent) || 0;
+        if (newT !== oldT) {
+          const flash = document.getElementById(`flash-${id}`);
+          if(flash && typeof gsap!=='undefined') gsap.fromTo(flash,{opacity:0.7},{opacity:0,duration:0.55,ease:'power2.out'});
+        }
+        const dotsEl = document.getElementById(`dots-${id}`);
+        const txtEl  = document.getElementById(`txt-${id}`);
+        if (dotsEl) dotsEl.innerHTML = mkDots(newT, total);
+        if (txtEl)  txtEl.textContent = `${newT}/${total} slots`;
+        if(isFull && !card.classList.contains('is-full')) {
           card.classList.add('is-full');
           const btn = card.querySelector('.ps-card__btn');
           if(btn){ btn.disabled=true; btn.textContent='FULL'; }
         }
       });
-      slotData = {...slotData, ...newSlots};
     }
 
     // ── MODAL ────────────────────────────────────────────────────
-    const modalBg = document.getElementById('psModalBg');
-    document.getElementById('modalCancelBtn')?.addEventListener('click', () => modalBg.classList.remove('open'));
-    modalBg?.addEventListener('click', e => { if(e.target===modalBg) modalBg.classList.remove('open'); });
-    document.addEventListener('keydown', e => { if(e.key==='Escape') modalBg?.classList.remove('open'); });
+    const modalBg      = document.getElementById('psModalBg');
+    const modalStep1   = document.getElementById('psModalStep1');
+    const modalStep2   = document.getElementById('psModalStep2');
+    const modalCodeIn  = document.getElementById('modalTeamCode');
+    const modalCodeErr = document.getElementById('modalCodeError');
+
+    function closeModal() {
+      modalBg.classList.remove('open');
+      // Reset to step 1 after animation
+      setTimeout(() => {
+        modalStep1.style.display = '';
+        modalStep2.style.display = 'none';
+        if (modalCodeIn) { modalCodeIn.value = ''; modalCodeIn.classList.remove('error'); }
+        if (modalCodeErr) modalCodeErr.textContent = '';
+        document.getElementById('modalRegisterNotice')?.classList.remove('visible');
+        const btn = document.getElementById('modalConfirmBtn');
+        if (btn) { btn.disabled = false; btn.textContent = 'Confirm Selection'; }
+      }, 350);
+    }
+
+    function showRegisterNotice() {
+      // Hide field error, clear field highlight, show the red notice banner
+      if (modalCodeIn) modalCodeIn.classList.remove('error');
+      if (modalCodeErr) modalCodeErr.textContent = '';
+      document.getElementById('modalRegisterNotice')?.classList.add('visible');
+    }
+
+    document.getElementById('modalCancelBtn')?.addEventListener('click', closeModal);
+    document.getElementById('modalSuccessClose')?.addEventListener('click', closeModal);
+    modalBg?.addEventListener('click', e => { if (e.target === modalBg) closeModal(); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+
+    // Auto-format team code input (uppercase + trim)
+    modalCodeIn?.addEventListener('input', () => {
+      modalCodeIn.value = modalCodeIn.value.toUpperCase().replace(/[^A-Z0-9-]/g,'');
+      modalCodeIn.classList.remove('error');
+      if (modalCodeErr) modalCodeErr.textContent = '';
+    });
+    // Submit on Enter
+    modalCodeIn?.addEventListener('keydown', e => {
+      if (e.key === 'Enter') document.getElementById('modalConfirmBtn')?.click();
+    });
 
     function openModal(id, title) {
       pendingPsId = id;
       document.getElementById('modalPsNum').textContent  = `PS ${String(id).padStart(2,'0')}`;
       document.getElementById('modalPsName').textContent = title;
-      modalBg.classList.add('open');
+      modalStep1.style.display = '';
+      modalStep2.style.display = 'none';
+      if (modalBg) modalBg.classList.add('open');
+      setTimeout(() => modalCodeIn?.focus(), 350);
     }
 
+    const CODE_RE = /^UDB-[A-Z0-9]{2,8}$/i;
+
     document.getElementById('modalConfirmBtn')?.addEventListener('click', async () => {
-      if(!pendingPsId || !verifiedCode) return;
+      if (!pendingPsId) return;
+
+      const code = (modalCodeIn?.value || '').trim().toUpperCase();
+
+      // Client-side format check
+      if (!code || !CODE_RE.test(code)) {
+        if (modalCodeIn) modalCodeIn.classList.add('error');
+        if (modalCodeErr) modalCodeErr.textContent = 'Invalid format. Expected: UDB-XXXX';
+        modalCodeIn?.focus();
+        return;
+      }
+
       const btn = document.getElementById('modalConfirmBtn');
       btn.disabled = true;
       btn.innerHTML = '<span class="ps-spinner"></span>Confirming…';
+      if (modalCodeErr) modalCodeErr.textContent = '';
+
       try {
-        const res = await fetch('/api/ps/select',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({code:verifiedCode,psId:pendingPsId})});
-        const d   = await res.json();
-        if(!res.ok) throw new Error(d.message);
-      } catch { /* demo: proceed anyway */ }
-      const ps = PS_LIST.find(p=>p.id===pendingPsId);
-      modalBg.classList.remove('open');
-      revealSelected({psTitle:ps?.title}, verifiedCode, new Date().toISOString());
-      btn.disabled=false; btn.textContent='Confirm';
+        const res = await fetch('/api/ps/select', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ teamCode: code, psId: pendingPsId }),
+        });
+        const d = await res.json();
+
+        if (!res.ok) {
+          if (d.error === 'payment_pending') {
+            // Special case: payment not done — show register-first notice
+            showRegisterNotice();
+          } else if (d.error === 'already_selected') {
+            // Team already picked a PS
+            if (modalCodeIn) modalCodeIn.classList.add('error');
+            if (modalCodeErr) modalCodeErr.textContent = d.message || 'Your team has already selected a Problem Statement.';
+          } else {
+            // Generic error (not found, full, etc.)
+            if (modalCodeIn) modalCodeIn.classList.add('error');
+            if (modalCodeErr) modalCodeErr.textContent = d.message || 'Selection failed. Please try again.';
+          }
+          btn.disabled = false;
+          btn.textContent = 'Confirm Selection';
+          return;
+        }
+
+        // ── SUCCESS ────────────────────────────────────────────
+        // Store team code so dashboard can pre-fill
+        try { sessionStorage.setItem('udbhav_team_code', code); } catch(_){}
+
+        // Update dashboard link with code param
+        const dashBtn = document.getElementById('modalDashboardBtn');
+        if (dashBtn) dashBtn.href = `/team-dashboard.html?code=${encodeURIComponent(code)}`;
+
+        // Show success step
+        document.getElementById('modalSuccessPs').textContent = d.psTitle || psListData.find(p => p.id === pendingPsId)?.title || '—';
+        modalStep1.style.display = 'none';
+        modalStep2.style.display = '';
+
+        // Stop polling — selection done
+        if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+
+      } catch (err) {
+        if (modalCodeErr) modalCodeErr.textContent = 'Network error. Please try again.';
+        btn.disabled = false;
+        btn.textContent = 'Confirm Selection';
+      }
     });
 
-    function revealSelected(sel, code, ts) {
-      if(pollTimer) clearInterval(pollTimer);
-      document.getElementById('selPsTitle').textContent  = sel.psTitle || '—';
-      document.getElementById('selTeamCode').textContent = code;
-      const dt = ts ? new Date(ts) : new Date();
-      document.getElementById('selTimestamp').textContent = `Selected at ${dt.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true})} IST`;
-      showState('selected');
-    }
-
     // ── INIT ─────────────────────────────────────────────────────
-    showState(getState());
-    setInterval(() => {
-      const s = getState();
-      if(s==='active' && elActive.style.display==='none') showState('active');
-      if(s==='closed' && elClosed.style.display==='none') showState('closed');
-    }, 30000);
+    // Start by fetching live status from API (not hardcoded dates)
+    fetchStatus();
+    // Poll API every 10 seconds for state changes (admin start/stop drop)
+    statusTimer = setInterval(fetchStatus, 10000);
 
     // ── LENIS + GSAP ─────────────────────────────────────────────
     const lenis = new Lenis({duration:1.2,easing:t=>Math.min(1,1.001-Math.pow(2,-10*t)),smooth:true,smoothTouch:false});
@@ -1104,6 +1412,7 @@
         {label:'Problem Statement',icon:'file',description:'PS Drop',href:'/problem-statement.html',color:'#34d399'},
         {label:'Winners',icon:'trophy',description:'Hackathon results',href:'/winners.html',color:'#fbbf24'},
         {label:'Sponsors',icon:'star',description:'Our partners',href:'/sponsors.html',color:'#a855f7'},
+        {label:'Team Dashboard',icon:'users',description:'View your assigned PS',href:'/team-dashboard.html',color:'#22c55e'},
         {label:'Code of Conduct',icon:'shield',description:'Rules & guidelines',href:'/code-of-conduct.html',color:'#c084fc'},
         {label:'Our Team',icon:'users',description:'Meet the team',href:'/our-team.html',color:'#38bdf8'},
         {label:'Register',icon:'briefcase',description:"Join UDBHAV'26",href:'/register.html',color:'#e879f9'},

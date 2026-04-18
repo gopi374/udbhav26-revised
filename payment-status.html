@@ -1,0 +1,367 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Payment Status — UDBHAV'26</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="icon" href="/logo.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&display=swap" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:      #07070f;
+      --surface: rgba(255,255,255,0.04);
+      --border:  rgba(255,255,255,0.08);
+      --green:   #4ade80;
+      --red:     #f87171;
+      --amber:   #fbbf24;
+      --purple:  #a855f7;
+      --text:    rgba(255,255,255,0.85);
+      --muted:   rgba(255,255,255,0.35);
+    }
+
+    html, body {
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Outfit', sans-serif;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem 2rem;
+      text-align: center;
+      animation: popIn 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    }
+
+    @keyframes popIn {
+      from { opacity: 0; transform: translateY(24px) scale(0.96); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .icon-wrap {
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2.4rem;
+    }
+
+    .icon-wrap.success { background: rgba(74,222,128,0.12); border: 2px solid rgba(74,222,128,0.3); }
+    .icon-wrap.failed  { background: rgba(248,113,113,0.12); border: 2px solid rgba(248,113,113,0.3); }
+    .icon-wrap.pending { background: rgba(251,191,36,0.12);  border: 2px solid rgba(251,191,36,0.3); }
+    .icon-wrap.loading { background: rgba(168,85,247,0.12);  border: 2px solid rgba(168,85,247,0.3); }
+
+    .title {
+      font-size: 1.6rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+
+    .title.success { color: var(--green); }
+    .title.failed  { color: var(--red); }
+    .title.pending { color: var(--amber); }
+    .title.loading { color: var(--purple); }
+
+    .subtitle {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+      margin-bottom: 1.8rem;
+    }
+
+    .detail-box {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 1.1rem 1.3rem;
+      text-align: left;
+      margin-bottom: 1.8rem;
+    }
+
+    .detail-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.4rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .detail-row:last-child { border-bottom: none; }
+    .detail-label { color: var(--muted); }
+    .detail-value { font-weight: 600; color: var(--text); text-align: right; max-width: 55%; word-break: break-all; }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.85rem 2rem;
+      border-radius: 14px;
+      border: none;
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      text-decoration: none;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+    .btn:hover { opacity: 0.88; transform: translateY(-2px); }
+    .btn-primary { background: linear-gradient(135deg,#6d28d9,#a855f7); color: #fff; }
+    .btn-outline { background: rgba(255,255,255,0.06); border: 1px solid var(--border); color: var(--text); }
+    .btn-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    .spinner {
+      width: 36px; height: 36px;
+      border: 3px solid rgba(168,85,247,0.2);
+      border-top-color: #a855f7;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .order-id {
+      font-family: 'Courier New', monospace;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1.5rem;
+      word-break: break-all;
+    }
+
+    .btn-download {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.7);
+      font-size: 0.83rem;
+      padding: 0.6rem 1.3rem;
+      margin-top: 0.8rem;
+    }
+    .btn-download:hover { background: rgba(255,255,255,0.1); color: #fff; }
+
+    /* ── PRINT RECEIPT ─────────────────────────────────── */
+    #receipt {
+      display: none;
+    }
+
+    @media print {
+      body > .card, body > *:not(#receipt) { display: none !important; }
+      #receipt {
+        display: block !important;
+        font-family: 'Outfit', sans-serif;
+        width: 100%;
+        max-width: 600px;
+        margin: 0 auto;
+        color: #111;
+        background: #fff;
+        padding: 2rem;
+      }
+      .rcpt-header {
+        text-align: center;
+        border-bottom: 2px solid #7c3aed;
+        padding-bottom: 1.2rem;
+        margin-bottom: 1.5rem;
+      }
+      .rcpt-logo-text {
+        font-size: 2rem;
+        font-weight: 900;
+        letter-spacing: -0.04em;
+        background: linear-gradient(135deg, #7c3aed, #a855f7);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+      .rcpt-sub { font-size: 0.8rem; color: #666; margin-top: 0.2rem; }
+      .rcpt-title {
+        font-size: 1.3rem; font-weight: 800;
+        text-align: center; margin: 1.2rem 0 0.3rem;
+        color: #16a34a;
+      }
+      .rcpt-badge {
+        text-align: center;
+        display: inline-block;
+        background: #dcfce7;
+        color: #15803d;
+        border: 1px solid #86efac;
+        border-radius: 8px;
+        padding: 0.2rem 1rem;
+        font-size: 0.78rem;
+        font-weight: 700;
+        margin: 0 auto 1.5rem;
+        display: block;
+        width: fit-content;
+        margin: 0 auto 1.5rem;
+      }
+      .rcpt-table { width: 100%; border-collapse: collapse; margin-bottom: 1.2rem; }
+      .rcpt-table th { text-align: left; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.08em; color: #888; padding: 0.4rem 0.5rem; background: #f5f3ff; }
+      .rcpt-table td { padding: 0.55rem 0.5rem; font-size: 0.88rem; border-bottom: 1px solid #f0f0f0; }
+      .rcpt-table td:first-child { color: #555; width: 40%; }
+      .rcpt-table td:last-child { font-weight: 600; color: #111; }
+      .rcpt-code { font-family: monospace; font-size: 1rem; font-weight: 800; color: #7c3aed; }
+      .rcpt-amount { font-size: 1.1rem; font-weight: 900; color: #111; }
+      .rcpt-footer { text-align: center; font-size: 0.72rem; color: #999; border-top: 1px solid #eee; padding-top: 1rem; margin-top: 1rem; }
+      .rcpt-footer strong { color: #7c3aed; }
+    }
+  </style>
+</head>
+<body>
+  <div class="card" id="card">
+    <div class="icon-wrap loading" id="iconWrap">
+      <div class="spinner"></div>
+    </div>
+    <div class="title loading" id="statusTitle">Verifying Payment…</div>
+    <div class="subtitle" id="statusSubtitle">Please wait while we confirm your payment with Cashfree.</div>
+    <div class="order-id" id="orderId"></div>
+  </div>
+
+  <!-- Hidden print receipt — shown only on print -->
+  <div id="receipt">
+    <div class="rcpt-header">
+      <div class="rcpt-logo-text">UDBHAV'26</div>
+      <div class="rcpt-sub">Round 2 — Hackathon Registration</div>
+    </div>
+    <div class="rcpt-title">✓ Payment Confirmed</div>
+    <div class="rcpt-badge">REGISTRATION SUCCESSFUL</div>
+    <table class="rcpt-table">
+      <tbody id="rcptRows"></tbody>
+    </table>
+    <div class="rcpt-footer">
+      Generated on <span id="rcptDate"></span> &nbsp;|&nbsp;
+      Keep this receipt for your records.<br/>
+      Questions? Contact <strong>udbhav26byalta@gmail.com</strong>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      var params   = new URLSearchParams(window.location.search);
+      var orderId  = params.get('order_id') || '';
+      var status   = (params.get('status') || '').toLowerCase();
+
+      document.getElementById('orderId').textContent = orderId ? 'Order: ' + orderId : '';
+
+      // Call the verify endpoint to get authoritative status from Cashfree
+      async function checkPayment() {
+        try {
+          var res  = await fetch('/api/verify-payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ orderId: orderId }),
+          });
+          var data = await res.json();
+          // If success:true from verify endpoint = payment confirmed as PAID
+          var s = data.success
+            ? 'PAID'
+            : (data.status || data.paymentStatus || status || '').toUpperCase();
+          renderStatus({ status: s, teamName: data.teamName, teamCode: data.teamCode, amount: data.amount || data.amountPaid, leaderEmail: data.leaderEmail });
+        } catch(e) {
+          renderStatus({ status: status || 'UNKNOWN', orderId: orderId });
+        }
+      }
+
+      function renderStatus(data) {
+        var s     = (data.status || data.paymentStatus || '').toUpperCase();
+        var icon  = document.getElementById('iconWrap');
+        var title = document.getElementById('statusTitle');
+        var sub   = document.getElementById('statusSubtitle');
+
+        var isPaid    = ['PAID', 'SUCCESS', 'PAYMENT_SUCCESS'].includes(s);
+        var isPending = ['ACTIVE', 'PENDING', 'USER_DROPPED', 'EXPIRED'].includes(s);
+
+        if (isPaid) {
+          icon.className  = 'icon-wrap success';
+          icon.innerHTML  = '🎉';
+          title.className = 'title success';
+          title.textContent = 'Payment Successful!';
+          sub.textContent = 'You are officially registered for UDBHAV\'26. Check your email for confirmation.';
+
+          var box = '<div class="detail-box">';
+          if (data.teamName)    box += row('Team', data.teamName);
+          if (data.teamCode)    box += row('Team Code', '<span style="font-family:monospace;color:#a855f7;font-weight:700">' + data.teamCode + '</span>');
+          if (data.amount)      box += row('Amount Paid', '\u20B9' + data.amount);
+          if (data.leaderEmail) box += row('Email', data.leaderEmail);
+          box += '</div>';
+
+          var downloadBtn = '<div style="text-align:center;margin-top:0.5rem;">' +
+            '<button class="btn btn-download" onclick="downloadReceipt()">' +
+            '\uD83D\uDCE5 Download Receipt (PDF)</button></div>';
+
+          sub.insertAdjacentHTML('afterend',
+            box +
+            '<div class="btn-row"><a href="/" class="btn btn-primary">\uD83C\uDFE0 Back to UDBHAV\'26</a></div>' +
+            downloadBtn
+          );
+
+          // Populate print receipt
+          var rcptRows = document.getElementById('rcptRows');
+          var rcptDate = document.getElementById('rcptDate');
+          if (rcptDate) rcptDate.textContent = new Date().toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' });
+          if (rcptRows) {
+            var rows = [
+              ['Team Name',      data.teamName  || '—'],
+              ['Team Code',      data.teamCode  || '—'],
+              ['Leader Email',   data.leaderEmail || '—'],
+              ['Amount Paid',    '\u20B9' + (data.amount || '—')],
+              ['Mentor Session', data.wantsMentor ? 'Yes (+\u20B9300)' : 'No'],
+              ['Order ID',       orderId || '—'],
+              ['Payment Status', 'PAID \u2714'],
+            ];
+            rcptRows.innerHTML = rows.map(function(r) {
+              return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td></tr>';
+            }).join('');
+          }
+
+          window.downloadReceipt = function() {
+            window.print();
+          };
+
+        } else if (isPending) {
+          icon.className  = 'icon-wrap pending';
+          icon.innerHTML  = '\u23F3';
+          title.className = 'title pending';
+          title.textContent = 'Payment Pending';
+          sub.textContent = 'Your payment is being processed. If money was deducted, it will be confirmed shortly.';
+          sub.insertAdjacentHTML('afterend',
+            '<div class="btn-row">'+
+              '<a href="/register" class="btn btn-primary">\u21A9 Back to Register</a>'+
+              '<a href="/" class="btn btn-outline">Home</a>'+
+            '</div>'
+          );
+        } else {
+          icon.className  = 'icon-wrap failed';
+          icon.innerHTML  = '\u274C';
+          title.className = 'title failed';
+          title.textContent = 'Payment Failed';
+          sub.textContent = 'Your payment could not be completed. No money has been deducted. Please try again.';
+          sub.insertAdjacentHTML('afterend',
+            '<div class="btn-row">'+
+              '<a href="/register" class="btn btn-primary">\u21A9 Try Again</a>'+
+              '<a href="/" class="btn btn-outline">Home</a>'+
+            '</div>'
+          );
+        }
+      }
+
+      function row(label, value) {
+        return '<div class="detail-row"><span class="detail-label">' + label + '</span><span class="detail-value">' + value + '</span></div>';
+      }
+
+      if (orderId) {
+        checkPayment();
+      } else {
+        renderStatus({ status: 'failed' });
+      }
+    })();
+  </script>
+</body>
+</html>

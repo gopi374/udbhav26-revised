@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -498,6 +498,11 @@
         Registrations
       </a>
 
+      <a href="/admin/submissions.html" class="sidebar-link">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Submissions
+      </a>
+
       <a href="/admin/problem-statements.html" class="sidebar-link active">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
         Problem Statements
@@ -575,26 +580,33 @@
           </div>
         </div>
         <div class="drop-control-body">
-          <div class="form-group">
-            <label class="form-label" for="startTimeInput">Drop Start Time</label>
-            <input type="datetime-local" class="form-input" id="startTimeInput" />
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="endTimeInput">Drop End Time</label>
-            <input type="datetime-local" class="form-input" id="endTimeInput" />
+          <!-- Schedule is set in .env — PS_DROP_START / PS_DROP_END -->
+          <div style="
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px;
+            padding: 0.9rem 1.2rem;
+            font-size: 0.8rem;
+            color: rgba(255,255,255,0.45);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            margin-bottom: 1.2rem;
+          ">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24" style="flex-shrink:0;opacity:0.6"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            Drop schedule is set in <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-family:monospace;color:#a78bfa;">.env</code> via
+            <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-family:monospace;color:#a78bfa;">PS_DROP_START</code> &amp;
+            <code style="background:rgba(255,255,255,0.07);padding:1px 6px;border-radius:4px;font-family:monospace;color:#a78bfa;">PS_DROP_END</code>.
+            Use the buttons below to <strong style="color:#fff;">override manually</strong>.
           </div>
           <div class="drop-control-actions">
-            <button class="btn btn--ghost" id="saveScheduleBtn">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-              Save Schedule
-            </button>
             <button class="btn btn--green" id="startDropBtn">
               <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
               Start Drop
             </button>
             <button class="btn btn--red" id="stopDropBtn">
-              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
-              Stop Drop
+              <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M3 12a9 9 0 1 0 18 0 9 9 0 0 0-18 0"/><path d="M9 9h.01M15 9h.01M9 15h6"/></svg>
+              Reset to Schedule
             </button>
           </div>
         </div>
@@ -695,17 +707,10 @@
   <div class="toast-container" id="toastContainer"></div>
 
   <script type="module">
-    // ── Admin Secret (stored in sessionStorage after login) ──────────────────
-    const ADMIN_SECRET = sessionStorage.getItem('adminSecret') || localStorage.getItem('adminSecret') || '';
-
     // ── Auth Guard ─────────────────────────────────────────────────────────────
+    // Token is stored by AdminAuth (src/admin.js) under 'udbhav_admin_token'
     function getAdminToken() {
-      // Try multiple storage locations
-      return sessionStorage.getItem('adminSecret')
-        || sessionStorage.getItem('adminToken')
-        || localStorage.getItem('adminSecret')
-        || localStorage.getItem('adminToken')
-        || '';
+      return localStorage.getItem('udbhav_admin_token') || '';
     }
 
     const token = getAdminToken();
@@ -756,9 +761,8 @@
 
     // ── Logout ─────────────────────────────────────────────────────────────────
     document.getElementById('logoutBtn')?.addEventListener('click', () => {
-      sessionStorage.clear();
-      localStorage.removeItem('adminSecret');
-      localStorage.removeItem('adminToken');
+      localStorage.removeItem('udbhav_admin_token');
+      localStorage.removeItem('udbhav_admin_time');
       window.location.href = '/admin/login.html';
     });
 
@@ -791,17 +795,11 @@
     // ═══════════════════════════════════════════════════════════
     // RENDER DROP STATUS
     // ═══════════════════════════════════════════════════════════
-    function toLocalDatetimeValue(date) {
-      if (!date) return '';
-      const d = new Date(date);
-      // Format to YYYY-MM-DDTHH:MM suitable for datetime-local input
-      const pad = n => String(n).padStart(2, '0');
-      return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
-    }
-
     function computeDropStatus(cfg) {
       if (!cfg) return 'pre-drop';
       if (cfg.manualStatus) return cfg.manualStatus;
+      // Schedule is driven by .env on the server; cfg may not have times
+      // Fall back to pre-drop if no data
       const now   = Date.now();
       const start = cfg.startTime ? new Date(cfg.startTime).getTime() : Infinity;
       const end   = cfg.endTime   ? new Date(cfg.endTime).getTime()   : 0;
@@ -811,10 +809,10 @@
     }
 
     function renderDropStatus() {
-      const pill  = document.getElementById('dropStatusPill');
-      const label = document.getElementById('dropStatusLabel');
-      const start = document.getElementById('startTimeInput');
-      const end   = document.getElementById('endTimeInput');
+      const pill       = document.getElementById('dropStatusPill');
+      const label      = document.getElementById('dropStatusLabel');
+      const startBtn   = document.getElementById('startDropBtn');
+      const stopBtn    = document.getElementById('stopDropBtn');
 
       const status = computeDropStatus(dropConfig);
 
@@ -825,12 +823,32 @@
       };
 
       const info = map[status] || map['pre-drop'];
-      pill.className  = `drop-status-pill ${info.cls}`;
+      pill.className    = `drop-status-pill ${info.cls}`;
       label.textContent = info.text;
 
-      if (dropConfig) {
-        start.value = toLocalDatetimeValue(dropConfig.startTime);
-        end.value   = toLocalDatetimeValue(dropConfig.endTime);
+      // Update button states to prevent accidental clicks
+      if (status === 'active') {
+        if (startBtn) {
+          startBtn.disabled = true;
+          startBtn.title = 'Drop is already LIVE';
+          startBtn.style.opacity = '0.4';
+        }
+        if (stopBtn) {
+          stopBtn.disabled = false;
+          stopBtn.style.opacity = '';
+          stopBtn.title = 'Clear manual override — return to .env schedule';
+        }
+      } else {
+        if (startBtn) {
+          startBtn.disabled = false;
+          startBtn.title = 'Force-start the drop now (bypasses schedule)';
+          startBtn.style.opacity = '';
+        }
+        if (stopBtn) {
+          stopBtn.disabled = false;
+          stopBtn.style.opacity = '';
+          stopBtn.title = 'Reset manual override to .env schedule';
+        }
       }
     }
 
@@ -910,35 +928,7 @@
     // ═══════════════════════════════════════════════════════════
     // DROP CONTROL
     // ═══════════════════════════════════════════════════════════
-    document.getElementById('saveScheduleBtn')?.addEventListener('click', async () => {
-      const startVal = document.getElementById('startTimeInput').value;
-      const endVal   = document.getElementById('endTimeInput').value;
-
-      if (!startVal || !endVal) { showToast('Please fill in both start and end times.', 'error'); return; }
-
-      const btn = document.getElementById('saveScheduleBtn');
-      btn.disabled = true;
-      try {
-        const res = await fetch('/api/admin/ps/config', {
-          method: 'POST',
-          headers: apiHeaders(),
-          body: JSON.stringify({
-            startTime: new Date(startVal).toISOString(),
-            endTime:   new Date(endVal).toISOString(),
-            manualStatus: null, // reset manual override when saving schedule
-          }),
-        });
-        const data = await res.json();
-        if (!res.ok) throw new Error(data.error || 'Failed');
-        dropConfig = data.config;
-        renderDropStatus();
-        showToast('Drop schedule saved successfully.', 'success');
-      } catch (err) {
-        showToast('Error saving schedule: ' + err.message, 'error');
-      } finally {
-        btn.disabled = false;
-      }
-    });
+    // Save Schedule removed — schedule is now set in .env (PS_DROP_START / PS_DROP_END)
 
     document.getElementById('startDropBtn')?.addEventListener('click', async () => {
       const btn = document.getElementById('startDropBtn');
@@ -963,10 +953,10 @@
         const res  = await fetch('/api/admin/ps/stop-drop', { method: 'POST', headers: apiHeaders() });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Failed');
-        showToast('🔴 PS Drop is now CLOSED.', 'info');
+        showToast('🔄 Manual override cleared. Returned to .env schedule.', 'info');
         await fetchData();
       } catch (err) {
-        showToast('Error stopping drop: ' + err.message, 'error');
+        showToast('Error resetting drop: ' + err.message, 'error');
       } finally {
         btn.disabled = false;
       }
