@@ -78,8 +78,7 @@ import {
 import submitHandler           from './api/submissions/submit.js';
 import listSubmissionsHandler  from './api/submissions/list.js';
 import getSubmissionHandler    from './api/submissions/get.js';
-import listHandler   from './api/submissions/list.js';
-import teamAuthHandler from './api/auth/team.js';
+import teamAuthHandler         from './api/auth/team.js';
 
 
 // ── App setup ────────────────────────────────────────────────────────────────
@@ -122,7 +121,7 @@ const cleanRoutes = {
   '/admin/login':        'admin/login.html',
   '/admin/dashboard':    'admin/dashboard.html',
   '/admin/registrations':'admin/registrations.html',
-    '/admin/submissions':  'admin/submissions.html',
+  '/admin/submissions':  'admin/submissions.html',
   '/admin/problem-statements': 'admin/problem-statements.html',
   '/admin/payments':           'admin/payments.html',
   '/admin/ps-stats':           'admin/ps-stats.html',
@@ -193,19 +192,14 @@ app.post('/api/admin/winners/publish',    mountHandler(publishWinnersHandler));
 app.post('/api/admin/winners/unpublish',  mountHandler(unpublishWinnersHandler));
 
 
-
 // ── Submissions API ───────────────────────────────────────────────────────────
 app.post('/api/submissions/submit', mountHandler(submitHandler));
-app.get ('/api/submissions/list',   mountHandler(listHandler));
-
-// ── Winners Public API ────────────────────────────────────────────────────────
-app.get('/api/winners', mountHandler(publicWinnersHandler));
-
-// ── Submissions API ───────────────────────────────────────────────────────────
-app.post('/api/submissions/submit', mountHandler(submitHandler));
+app.get ('/api/submissions/list',   mountHandler(listSubmissionsHandler));
 app.get ('/api/submissions/get',    mountHandler(getSubmissionHandler));
 app.get ('/api/admin/submissions',  mountHandler(listSubmissionsHandler));
 
+// ── Winners Public API ────────────────────────────────────────────────────────
+app.get('/api/winners', mountHandler(publicWinnersHandler));
 
 // ── Team Auth API ─────────────────────────────────────────────────────────────
 app.post('/api/auth/team', mountHandler(teamAuthHandler));
