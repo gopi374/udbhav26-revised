@@ -164,21 +164,26 @@ img, video, svg, canvas {
   .mobile-nav-pill {
     display: flex !important;
     align-items: center;
-    gap: 0.75rem;
     position: fixed;
-    top: 0.75rem;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
     z-index: 9000;
-    padding: 0.45rem 0.85rem 0.45rem 0.6rem;
-    border-radius: 999px;
-    border: 1px solid rgba(255,255,255,0.12);
-    background: rgba(8,8,8,0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    padding: 0 0.85rem;
+    height: 52px;
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+    background: rgba(6,6,6,0.93);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: none;
+    transform: none;
+    justify-content: space-between;
+    gap: 0.5rem;
     white-space: nowrap;
-    min-height: 44px;
+    min-height: 52px;
   }
   .mobile-logo-img { height: 26px; width: auto; flex-shrink: 0; }
   .mobile-nav-sep  { width: 1px; height: 16px; background: rgba(255,255,255,0.15); flex-shrink: 0; }
