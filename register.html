@@ -84,13 +84,35 @@
       background-size: 200px 200px; mix-blend-mode: overlay;
     }
 
-    /* ── Purple ambient background ─────────────────────────────────────────── */
+    /* ── Premium Animated Ambient Background ─────────────────────────────── */
     .reg-ambient {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 50% at 15% 50%, rgba(139,92,246,0.07) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 85% 20%, rgba(139,92,246,0.05) 0%, transparent 60%),
-        var(--clr-bg);
+      background: var(--clr-bg);
+      overflow: hidden;
+    }
+    .reg-ambient::before, .reg-ambient::after {
+      content: ''; position: absolute;
+      width: 100vw; height: 100vh;
+      filter: blur(100px); opacity: 0.25;
+      animation: ambientDrift 20s ease-in-out infinite alternate;
+      border-radius: 50%;
+    }
+    .reg-ambient::before {
+      background: radial-gradient(circle at center, #8b5cf6 0%, transparent 60%);
+      top: -20%; left: -10%;
+      width: 80vw; height: 80vh;
+    }
+    .reg-ambient::after {
+      background: radial-gradient(circle at center, #ec4899 0%, transparent 60%);
+      bottom: -20%; right: -10%;
+      width: 70vw; height: 70vh;
+      animation-delay: -10s;
+      opacity: 0.15;
+    }
+    @keyframes ambientDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(5%, 10%) scale(1.1); }
+      100% { transform: translate(-5%, -5%) scale(0.95); }
     }
 
 
@@ -1813,8 +1835,8 @@
 
           <!-- Registration Dashboard Notice -->
           <div style="width:100%;max-width:380px;padding:1rem 1.2rem;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:12px;margin-bottom:1.5rem;text-align:center;">
-            <p style="margin:0;font-size:0.82rem;color:#34d399;font-weight:600;line-height:1.5;">✨ Successfully Registered!</p>
-            <p style="margin:0.25rem 0 0 0;font-size:0.75rem;color:rgba(52,211,153,0.8);line-height:1.5;">Within an hour you will have access to your team dashboard.</p>
+            <p style="margin:0;font-size:0.82rem;color:#34d399;font-weight:600;line-height:1.5;">✨ Welcome to the Hackathon!</p>
+            <p style="margin:0.25rem 0 0 0;font-size:0.75rem;color:rgba(52,211,153,0.8);line-height:1.5;">Best of luck for the upcoming hackathon, looking forward to seeing you at the college.</p>
           </div>
 
           <!-- What's next -->
@@ -2258,13 +2280,11 @@
                   success.classList.add('visible');
                   gsap.from(success.children, { opacity: 0, y: 30, stagger: 0.1, duration: 0.6, ease: 'power3.out' });
                 }
-                setTimeout(() => alert('Successfully registered!\n\nNow within an hour you will have access to your team dashboard.'), 300);
               }
             });
           } else {
             form.style.display = 'none';
             success?.classList.add('visible');
-            setTimeout(() => alert('Successfully registered!\n\nNow within an hour you will have access to your team dashboard.'), 300);
           }
         }
         document.getElementById('regRight')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2754,7 +2774,7 @@
           if (!res.ok || !data.success) {
             // Already paid / registered
             if (data.alreadyPaid) {
-              showToast('warn', 'Already Paid', 'You have already paid the amount.');
+              showToast('warn', 'Registration Complete', 'Your payment is done, no need to register again.');
             } else if (res.status === 404) {
               showToast('error', 'Code Not Found',
                 '\'' + code + '\' doesn\'t match any team. Double-check your shortlisting email.');

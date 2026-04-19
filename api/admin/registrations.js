@@ -14,6 +14,7 @@
 
 import { connectDB }    from '../lib/mongodb.js';
 import { Registration } from '../models/Registration.js';
+import { Team }         from '../models/Team.js';
 
 // ── Auth guard ────────────────────────────────────────────────────────────────
 function authGuard(req, res) {
@@ -90,12 +91,34 @@ export async function registrationUpdateHandler(req, res) {
       return res.status(400).json({ success: false, error: 'Invalid paymentStatus. Use: pending, paid, failed.' });
     }
 
+    // Fetch BEFORE update so we always have teamCode
+    const existing = await Registration.findById(id).lean();
+    if (!existing) return res.status(404).json({ success: false, error: 'Registration not found.' });
+
     const reg = await Registration.findByIdAndUpdate(
       id,
       { $set: { paymentStatus } },
       { new: true }
     );
-    if (!reg) return res.status(404).json({ success: false, error: 'Registration not found.' });
+
+    // Sync to Teams collection by teamCode
+    const teamCode = existing.teamCode;
+    console.log(`[admin/registrations] Updating paymentStatus=${paymentStatus} for id=${id}, teamCode=${teamCode}`);
+
+    if (teamCode) {
+      const teamResult = await Team.findOneAndUpdate(
+        { code: teamCode },
+        { $set: { paymentStatus } },
+        { new: true }
+      );
+      if (teamResult) {
+        console.log(`[admin/registrations] Synced Team ${teamCode} paymentStatus → ${paymentStatus}`);
+      } else {
+        console.warn(`[admin/registrations] No Team found with code=${teamCode} to sync`);
+      }
+    } else {
+      console.warn(`[admin/registrations] Registration ${id} has no teamCode — cannot sync to Teams collection`);
+    }
 
     return res.status(200).json({ success: true, registration: reg });
   } catch (err) {
