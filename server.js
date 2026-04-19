@@ -61,6 +61,12 @@ import {
   generateCodesHandler,
 } from './api/admin/teams.js';
 import {
+  teamsViewHandler,
+  teamPaymentOverrideHandler,
+  teamMemberEditHandler,
+  teamMentorToggleHandler,
+} from './api/admin/teams-view.js';
+import {
   getWinnersHandler,
   saveWinnersHandler,
   publishWinnersHandler,
@@ -122,6 +128,7 @@ const cleanRoutes = {
   '/admin/ps-stats':           'admin/ps-stats.html',
   '/admin/winners':            'admin/winners.html',
   '/admin/submissions':        'admin/submissions.html',
+  '/admin/teams':              'admin/teams.html',
 };
 
 // ── Vercel-handler adapter ────────────────────────────────────────────────────
@@ -167,10 +174,15 @@ app.get   ('/api/admin/payments',      mountHandler(paymentsHandler));
 app.get   ('/api/admin/ps-stats',         mountHandler(psStatsHandler));
 
 // ── Admin Teams API ───────────────────────────────────────────────────────────
+// IMPORTANT: static paths (/import, /generate-codes, /view) must come BEFORE /:id
 app.get   ('/api/admin/teams',                mountHandler(teamsListHandler));
+app.get   ('/api/admin/teams/view',           mountHandler(teamsViewHandler));       // panel
 app.post  ('/api/admin/teams/import',         mountHandler(teamsImportHandler));
 app.post  ('/api/admin/teams/generate-codes', mountHandler(generateCodesHandler));
 app.post  ('/api/admin/teams',                mountHandler(teamsAddHandler));
+app.patch ('/api/admin/teams/:id/payment',    mountHandler(teamPaymentOverrideHandler)); // payment override
+app.patch ('/api/admin/teams/:id/member',     mountHandler(teamMemberEditHandler));       // member edit
+app.patch ('/api/admin/teams/:id/mentor',     mountHandler(teamMentorToggleHandler));     // mentor toggle
 app.patch ('/api/admin/teams/:id',            mountHandler(teamsUpdateHandler));
 app.delete('/api/admin/teams/:id',            mountHandler(teamsDeleteHandler));
 

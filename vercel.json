@@ -10,6 +10,8 @@
     { "source": "/admin/payments", "destination": "/admin/payments.html" },
     { "source": "/admin/ps-stats", "destination": "/admin/ps-stats.html" },
     { "source": "/admin/winners", "destination": "/admin/winners.html" },
+    { "source": "/admin/submissions", "destination": "/admin/submissions.html" },
+    { "source": "/admin/teams", "destination": "/admin/teams.html" },
     { "source": "/register", "destination": "/register.html" },
     { "source": "/(.*)", "destination": "/404.html" }
   ]

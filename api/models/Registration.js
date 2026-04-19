@@ -9,17 +9,17 @@ import mongoose from 'mongoose';
 
 const MemberSchema = new mongoose.Schema({
   name:  { type: String, required: true, trim: true },
-  email: { type: String, required: true, trim: true, lowercase: true },
-  phone: { type: String, required: true, trim: true },
+  email: { type: String, required: false, trim: true, lowercase: true, default: '' },
+  phone: { type: String, required: false, trim: true, default: '' },
 });
 
 const RegistrationSchema = new mongoose.Schema(
   {
     // ── Team Info ───────────────────────────────────────────────────────
     teamName:    { type: String, required: true, trim: true },
-    collegeName: { type: String, required: true, trim: true },
-    branch:      { type: String, required: true, trim: true },
-    yearOfStudy: { type: String, required: true },
+    collegeName: { type: String, required: false, trim: true, default: '' },
+    branch:      { type: String, required: false, trim: true, default: '' },
+    yearOfStudy: { type: String, required: false, default: 'N/A' },
 
     // ── Leader ──────────────────────────────────────────────────────────
     leader: { type: MemberSchema, required: true },
