@@ -70,7 +70,8 @@ export function initHeroBgShader(mountEl) {
 
   const renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
   renderer.setClearColor(0x000000, 0);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+  // Use pixelRatio 1.0 — this is an ambient background, higher res is wasted GPU
+  renderer.setPixelRatio(1.0);
 
   mountEl.appendChild(renderer.domElement);
 
@@ -78,7 +79,11 @@ export function initHeroBgShader(mountEl) {
   function resize() {
     const w = mountEl.clientWidth;
     const h = mountEl.clientHeight;
-    renderer.setSize(w, h);
+    // Render at half resolution — 1/4 pixel count, barely noticeable for ambient glow
+    const scale = 0.5;
+    renderer.setSize(Math.round(w * scale), Math.round(h * scale), false);
+    renderer.domElement.style.width  = w + 'px';
+    renderer.domElement.style.height = h + 'px';
     uniforms.resolution.value.set(
       renderer.domElement.width,
       renderer.domElement.height,

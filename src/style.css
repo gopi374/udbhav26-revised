@@ -85,7 +85,7 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 6;
-  /* just above canvas1, below hero content */
+  /* Positioned by JS via translate3d — no left/top animation (avoids layout) */
   left: 0;
   top: 0;
   margin-left: -280px;
@@ -95,7 +95,7 @@ body {
       rgba(255, 255, 255, 0.018) 35%,
       transparent 70%);
   will-change: transform;
-  /* position is set by JS via translate3d */
+  transform: translateZ(0); /* promote to GPU layer */
 }
 
 /* ── Navbar ────────────────────────────────────────────────────────────────── */
@@ -1417,11 +1417,17 @@ body {
   pointer-events: none;
   overflow: visible;
 }
+/* Ethereal hue-rotate — now CSS-only, was JS RAF mutating SVG attribute 60×/sec */
+@keyframes etherealHueRotate {
+  from { filter: url(#uaEtherFilter) blur(4px) hue-rotate(0deg); }
+  to   { filter: url(#uaEtherFilter) blur(4px) hue-rotate(360deg); }
+}
 .ua-ethereal-inner {
   position: absolute;
   inset: -100px;
   filter: url(#uaEtherFilter) blur(4px);
-  will-change: filter;
+  animation: etherealHueRotate 5.84s linear infinite;
+  /* Removed will-change: filter — CSS animation runs on compositor */
 }
 .ua-ethereal-shadow {
   width: 100%; height: 100%;
@@ -1450,13 +1456,15 @@ body {
 }
 
 .udbhav-about {
-
-
   position: relative;
   z-index: 15;
   background: #000;
   overflow: hidden;
   padding: 100px 0 80px;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+  contain: layout style paint;
 }
 
 
@@ -2341,6 +2349,10 @@ body {
   padding: 120px 0 80px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+  contain: layout style paint;
 }
 
 /* ── Background elements ── */
@@ -2966,6 +2978,10 @@ body {
   padding: 120px 0 100px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
+  contain: layout style paint;
 }
 
 /* ── Background ── */
@@ -3438,6 +3454,10 @@ body {
   padding: 120px 0 80px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+  contain: layout style paint;
 }
 
 /* ── Ambient glow blob ── */
@@ -4792,6 +4812,10 @@ body {
   padding: 120px 0 110px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+  contain: layout style paint;
 }
 .sponsors-bg-glow {
   position: absolute; inset: 0; pointer-events: none; z-index: 0;
@@ -7810,6 +7834,10 @@ body {
   overflow: hidden;
   padding: 100px 0 80px;
   min-height: 700px;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+  contain: layout style paint;
 }
 
 .prz-container {
