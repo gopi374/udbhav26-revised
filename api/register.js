@@ -126,6 +126,8 @@ export default async function handler(req, res) {
       { code: (body.teamCode || '').trim().toUpperCase() },
       { 
         $set: { 
+          'leader.email': (body.leader.email || '').trim().toLowerCase(),
+          'leader.phone': (body.leader.phone || '').trim(),
           members: members.map((m) => ({
             name:  (m.name  || '').trim(),
             phone: (m.phone || '').trim(),

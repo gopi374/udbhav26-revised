@@ -9,8 +9,8 @@ import mongoose from 'mongoose';
 
 const MemberSchema = new mongoose.Schema({
   name:  { type: String, required: true, trim: true },
-  email: { type: String, required: false, trim: true, lowercase: true, default: '' },
-  phone: { type: String, required: false, trim: true, default: '' },
+  email: { type: String, required: true, trim: true, lowercase: true },
+  phone: { type: String, required: true, trim: true },
 });
 
 const RegistrationSchema = new mongoose.Schema(
