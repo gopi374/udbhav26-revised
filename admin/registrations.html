@@ -791,8 +791,8 @@
             ? '<span style="font-family:monospace;color:#a855f7;font-weight:700;letter-spacing:0.08em;">' + t.code + '</span>'
             : '<span style="color:rgba(255,255,255,0.25);font-size:0.75rem;">— not assigned</span>';
           const payment = t.paymentStatus === 'paid'
-            ? '<span class="status-badge badge--approved">Paid</span>'
-            : '<span class="status-badge badge--pending">Pending</span>';
+            ? '<span class="status-badge badge--approved toggle-payment" data-id="' + t._id + '" data-status="paid" style="cursor:pointer;" title="Click to mark Pending">Paid</span>'
+            : '<span class="status-badge badge--pending toggle-payment" data-id="' + t._id + '" data-status="pending" style="cursor:pointer;" title="Click to mark Paid">Pending</span>';
           const memberCount = t.memberCount || ((t.members?.length || 0) + 1);
           return '<tr>' +
             '<td><input type="checkbox" class="row-check" data-id="' + t._id + '" ' + (selectedIds.has(t._id) ? 'checked' : '') + '></td>' +
@@ -856,6 +856,35 @@
           if (action === 'delete') { await deleteTeam(id); }
         });
       });
+      document.querySelectorAll('.toggle-payment').forEach(badge => {
+        badge.addEventListener('click', async () => {
+          const id = badge.dataset.id;
+          const currentStatus = badge.dataset.status;
+          const newStatus = currentStatus === 'paid' ? 'failed' : 'paid';
+          
+          const origText = badge.innerHTML;
+          badge.innerHTML = '...';
+          badge.style.opacity = '0.5';
+          badge.style.pointerEvents = 'none';
+
+          try {
+            const res = await fetch('/api/admin/teams/' + id + '/payment', {
+              method: 'PATCH',
+              headers: apiHeaders(),
+              body: JSON.stringify({ paymentStatus: newStatus })
+            });
+            if (!res.ok) throw new Error('Update failed');
+            
+            AdminUI.toast('Payment status updated', 'success');
+            render();
+          } catch(err) {
+            badge.innerHTML = origText;
+            badge.style.opacity = '1';
+            badge.style.pointerEvents = 'auto';
+            AdminUI.toast(err.message, 'error');
+          }
+        });
+      });
     }
 
     function updateBulkBar() {
@@ -905,7 +934,7 @@
       btn.innerHTML = originalText;
       btn.disabled = false;
       
-      AdminUI.toast(`Updated ${successCount} successfully${errorCount ? \`, failed \${errorCount}\` : ''}.`, successCount ? 'success' : 'error');
+      AdminUI.toast(`Updated ${successCount} successfully${errorCount ? `, failed ${errorCount}` : ''}.`, successCount ? 'success' : 'error');
       selectedIds.clear();
       updateBulkBar();
       render();
@@ -940,7 +969,7 @@
       btn.innerHTML = originalText;
       btn.disabled = false;
       
-      AdminUI.toast(`Rejected ${successCount} successfully${errorCount ? \`, failed \${errorCount}\` : ''}.`, successCount ? 'success' : 'error');
+      AdminUI.toast(`Rejected ${successCount} successfully${errorCount ? `, failed ${errorCount}` : ''}.`, successCount ? 'success' : 'error');
       selectedIds.clear();
       updateBulkBar();
       render();

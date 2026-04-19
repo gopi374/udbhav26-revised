@@ -765,8 +765,8 @@
           <td style="color:rgba(255,255,255,0.4);font-size:0.76rem;">${payDate}</td>
           <td style="color:rgba(255,255,255,0.4);font-size:0.76rem;">${p.memberCount || 1}</td>
           <td>
-            ${p.paymentStatus === 'pending' || p.paymentStatus === 'failed' ? \`<button class="btn btn--sm btn--green inline-approve-btn" data-id="\${p.id}" style="padding:0.25rem 0.5rem;font-size:0.7rem;margin-right:0.3rem;">Approve</button>\` : ''}
-            ${p.paymentStatus === 'pending' || p.paymentStatus === 'paid' ? \`<button class="btn btn--sm inline-reject-btn" data-id="\${p.id}" style="padding:0.25rem 0.5rem;font-size:0.7rem;background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2);">Reject</button>\` : ''}
+            ${p.paymentStatus === 'pending' || p.paymentStatus === 'failed' ? '<button class="btn btn--sm btn--green inline-approve-btn" data-id="' + p.id + '" style="padding:0.25rem 0.5rem;font-size:0.7rem;margin-right:0.3rem;">Approve</button>' : ''}
+            ${p.paymentStatus === 'pending' || p.paymentStatus === 'paid' ? '<button class="btn btn--sm inline-reject-btn" data-id="' + p.id + '" style="padding:0.25rem 0.5rem;font-size:0.7rem;background:rgba(248,113,113,0.1);color:#f87171;border:1px solid rgba(248,113,113,0.2);">Reject</button>' : ''}
           </td>
         </tr>`;
       }).join('');
@@ -782,7 +782,7 @@
           if (!confirm('Mark this payment as PAID?')) return;
           btn.disabled = true;
           try {
-            const res = await fetch(\`/api/admin/teams/\${btn.dataset.id}/payment\`, {
+            const res = await fetch(`/api/admin/teams/${btn.dataset.id}/payment`, {
               method: 'PATCH',
               headers: apiHeaders(),
               body: JSON.stringify({ paymentStatus: 'paid' })
@@ -803,7 +803,7 @@
           if (!confirm('Mark this payment as FAILED/REJECTED?')) return;
           btn.disabled = true;
           try {
-            const res = await fetch(\`/api/admin/teams/\${btn.dataset.id}/payment\`, {
+            const res = await fetch(`/api/admin/teams/${btn.dataset.id}/payment`, {
               method: 'PATCH',
               headers: apiHeaders(),
               body: JSON.stringify({ paymentStatus: 'failed' })

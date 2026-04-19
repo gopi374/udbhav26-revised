@@ -45,7 +45,7 @@ body {
 }
 
 /* ── Scroll container ──────────────────────────────────────────────────────── */
-.page-scroll-container { /* unwrapped */ }
+/* .page-scroll-container: unwrapped */
 
 
 /* ── Three.js canvas overlay ───────────────────────────────────────────────── */
@@ -377,6 +377,13 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Hide nav-menu-btn on desktop */
+@media (min-width: 1025px) {
+  .nav-menu-btn {
+    display: none;
+  }
 }
 
 /* ── MenuToggleIcon (ported from React component) ──────────────── */
@@ -2764,7 +2771,7 @@ body {
 @media (max-width: 900px) {
   .pd-scene { height: 440px; perspective: 850px; }
   .pd-card  { width: 185px; height: 240px; margin-top: -120px; margin-left: -92px; }
-  .pd-card:nth-child(n) { /* override with smaller radius */}
+  /* .pd-card:nth-child(n) override with smaller radius */
   .pd-card:nth-child(1) { transform: rotateY(0deg)   translateZ(300px); }
   .pd-card:nth-child(2) { transform: rotateY(45deg)  translateZ(300px); }
   .pd-card:nth-child(3) { transform: rotateY(90deg)  translateZ(300px); }
@@ -3329,12 +3336,7 @@ body {
 }
 
 /* All other variants: same neutral ghost look */
-.sch-badge--main,
-.sch-badge--build,
-.sch-badge--break,
-.sch-badge--submit,
-.sch-badge--fun,
-.sch-badge--finale { /* inherits .sch-badge */ }
+/* .sch-badge--main, .sch-badge--build, .sch-badge--break, .sch-badge--submit, .sch-badge--fun, .sch-badge--finale inherits .sch-badge */
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
@@ -4502,11 +4504,7 @@ body {
   border-color: rgba(239,68,68,0.3);
   background: rgba(239,68,68,0.08);
 }
-.sch-badge--main,
-.sch-badge--break,
-.sch-badge--submit,
-.sch-badge--fun,
-.sch-badge--finale { /* inherits .sch-badge */ }
+/* .sch-badge--main, .sch-badge--break, .sch-badge--submit, .sch-badge--fun, .sch-badge--finale inherits .sch-badge */
 
 @media (max-width: 768px) {
   .sch-phase-block { grid-template-columns: 1fr; gap: 1rem 0; padding: 2rem 0; }
@@ -6420,6 +6418,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -7098,7 +7097,6 @@ img, video, iframe { max-width: 100%; height: auto; }
   opacity: 1;
   transform: translate(0, 0) scale(1);
   pointer-events: none;
-  aria-hidden: false;
 }
 
 /* Glowing corner L-brackets */
@@ -7154,6 +7152,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   margin: 0 0 10px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -7213,17 +7212,13 @@ img, video, iframe { max-width: 100%; height: auto; }
 }
 
 /* Increase scroll travel so there's room for the pin effect */
-body {
-  /* nothing extra needed � sections are min-height:100vh already */
-}
+/* body { nothing extra needed } */
 
 
-/* Dissolve shader canvas � permanently hidden (effect replaced by CSS sticky reveal) */
+/* Dissolve shader canvas - permanently hidden (effect replaced by CSS sticky reveal) */
 .canvas1 {
   display: none !important;
-  pointer-events: none !important;
 }
-
 /* --------------------------------------------------------------
    ABOUT SECTION � MOBILE REWRITE  (= 768px only)
    --------------------------------------------------------------
