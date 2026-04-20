@@ -34,15 +34,8 @@ export default async function handler(req, res) {
       });
     }
 
-    // Restriction: Only allow 'paid' teams to enter the command center
-    if (team.paymentStatus !== 'paid') {
-      return res.status(403).json({
-        success: false,
-        error: 'Access Denied. Registration payment pending.',
-        code: team.teamCode,
-        status: team.paymentStatus
-      });
-    }
+    // Restriction: All registered teams can access the command center now
+    // Payment status check removed as requested
 
     // Success - Return team metadata
     return res.status(200).json({

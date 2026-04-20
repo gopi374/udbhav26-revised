@@ -51,12 +51,7 @@ export default async function handler(req, res) {
       });
     }
 
-    if (team.paymentStatus !== 'paid') {
-      return res.status(403).json({
-        error:   'payment_pending',
-        message: 'Payment not confirmed for this team.',
-      });
-    }
+    // Payment status check removed as requested
 
     // ── Secondary: Registration record (richer member data) ────────────────
     // Registration uses teamCode field; Team uses code field — same value
