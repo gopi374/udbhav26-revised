@@ -1,0 +1,91 @@
+# ── Cloud Build CI/CD Pipeline ─────────────────────────────────────────────────
+# Triggers on pushes to the `qa` branch.
+# Builds the Docker image, pushes to Artifact Registry, and deploys to Cloud Run.
+#
+# One-time setup (run these in your terminal after committing this file):
+#   1. Enable APIs:
+#      gcloud services enable cloudbuild.googleapis.com run.googleapis.com artifactregistry.googleapis.com
+#   2. Create the Artifact Registry repo (if not already created by Cloud Run source deploy):
+#      gcloud artifacts repositories create cloud-run-source-deploy \
+#        --repository-format=docker --location=asia-south1
+#   3. Grant Cloud Build SA permission to deploy to Cloud Run:
+#      PROJECT_NUMBER=$(gcloud projects describe mega-management-2024 --format="value(projectNumber)")
+#      gcloud projects add-iam-policy-binding mega-management-2024 \
+#        --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+#        --role="roles/run.admin"
+#      gcloud iam service-accounts add-iam-policy-binding \
+#        ${PROJECT_NUMBER}-compute@developer.gserviceaccount.com \
+#        --member="serviceAccount:${PROJECT_NUMBER}@cloudbuild.gserviceaccount.com" \
+#        --role="roles/iam.serviceAccountUser"
+#   4. Create the trigger in Cloud Build (GitHub → qa branch):
+#      gcloud builds triggers create github \
+#        --repo-name=udbhav2026 \
+#        --repo-owner=KRISHNASON1 \
+#        --branch-pattern=^qa$ \
+#        --build-config=cloudbuild.yaml \
+#        --name=udbhav2026-qa-to-prod \
+#        --description="Deploy qa branch to Cloud Run production"
+# ──────────────────────────────────────────────────────────────────────────────
+
+substitutions:
+  _SERVICE_NAME: udbhav2026
+  _REGION: asia-south1
+  _IMAGE: asia-south1-docker.pkg.dev/$PROJECT_ID/cloud-run-source-deploy/$_SERVICE_NAME
+
+steps:
+  # ── Step 1: Build the Docker image ─────────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    args:
+      - 'build'
+      - '--tag=$_IMAGE:$COMMIT_SHA'
+      - '--tag=$_IMAGE:latest'
+      - '--cache-from=$_IMAGE:latest'
+      - '.'
+
+  # ── Step 2: Push to Artifact Registry ──────────────────────────────────────
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    waitFor: ['build-image']
+    args:
+      - 'push'
+      - '--all-tags'
+      - '$_IMAGE'
+
+  # ── Step 3: Deploy to Cloud Run ─────────────────────────────────────────────
+  # Credentials are NOT stored here (GitHub push protection blocks secrets in YAML).
+  # They are already set on the Cloud Run service from the initial `gcloud run deploy`
+  # with --set-env-vars. This step deploys only a new image revision; Cloud Run
+  # preserves the existing env vars automatically via --update-env-vars for safe values.
+  #
+  # To update a secret value in future, run manually:
+  #   gcloud run services update udbhav2026 --region=asia-south1 \
+  #     --update-env-vars="VAR_NAME=new_value"
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    id: 'deploy'
+    waitFor: ['push-image']
+    entrypoint: bash
+    args:
+      - '-c'
+      - |
+        gcloud run deploy $_SERVICE_NAME \
+          --image=$_IMAGE:$COMMIT_SHA \
+          --region=$_REGION \
+          --platform=managed \
+          --allow-unauthenticated \
+          --memory=512Mi \
+          --cpu=1 \
+          --max-instances=20 \
+          --port=8080 \
+          --update-env-vars="NODE_ENV=production,CASHFREE_ENV=production,PUSHER_CLUSTER=ap2,APP_URL=https://udbhav26.in,PS_DROP_START=2026-04-25T10:45:00+05:30,PS_DROP_END=2026-04-26T11:00:00+05:30,ADMIN_USER=admin,ADMIN_ALERT_EMAIL=udbhav26byalta@gmail.com" \
+          --quiet
+
+images:
+  - '$_IMAGE:$COMMIT_SHA'
+  - '$_IMAGE:latest'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: 'E2_HIGHCPU_8'
+
+timeout: '1200s'

@@ -28,6 +28,8 @@ function cleanUrlPlugin() {
     '/admin/payments':        '/admin/payments.html',
     '/admin/ps-stats':        '/admin/ps-stats.html',
     '/admin/winners':         '/admin/winners.html',
+    '/admin/teams':           '/admin/team.html',
+    '/admin/team':            '/admin/team.html',
   };
 
   return {
@@ -91,7 +93,7 @@ export default defineConfig({
         adminPayments:      resolve(__dirname, 'admin/payments.html'),
         adminPSStats:       resolve(__dirname, 'admin/ps-stats.html'),
         adminWinners:       resolve(__dirname, 'admin/winners.html'),
-        adminTeams:         resolve(__dirname, 'admin/teams.html'),
+        adminTeams:         resolve(__dirname, 'admin/team.html'),
       },
       // mobile-perf.js is a legacy (non-module) script served statically
       external: ['/mobile-perf.js'],
