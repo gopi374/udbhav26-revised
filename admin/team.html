@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
   <style>
     /* ── Reset & Variables ── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -580,6 +582,8 @@
       fetchTeams();
     };
 
+    window.currentTeam = null;
+
     window.showTeamDetail = async (id) => {
       try {
         const res = await fetch(`/api/admin/teams/${id}`, { headers: apiHeaders() });
@@ -587,6 +591,8 @@
         if(!data.success) throw new Error(data.error);
         const t = data.team;
         if(!t) return;
+        
+        window.currentTeam = t;
 
         // Auto-highlight active sidebar link
         document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
@@ -597,11 +603,27 @@
         }
 
         const content = document.getElementById('detailContent');
+        
+        let paymentSelect = `
+          <select class="filter-select" style="background:#111; padding:0.2rem 0.5rem; width:120px;" onchange="updatePaymentStatus('${t._id}', this.value)">
+            <option value="pending" ${t.paymentStatus === 'pending' ? 'selected' : ''}>Pending</option>
+            <option value="paid" ${t.paymentStatus === 'paid' ? 'selected' : ''}>Paid (₹${t.totalAmount || 800})</option>
+            <option value="failed" ${t.paymentStatus === 'failed' ? 'selected' : ''}>Failed</option>
+          </select>
+        `;
+
+        let mentorSelect = `
+          <select class="filter-select" style="background:#111; padding:0.2rem 0.5rem; width:120px;" onchange="updateMentorSession('${t._id}', this.value === 'true')">
+            <option value="false" ${!t.mentorSession ? 'selected' : ''}>Not Opted</option>
+            <option value="true" ${t.mentorSession ? 'selected' : ''}>Opted In</option>
+          </select>
+        `;
+
         const membersHtml = (t.members || []).map(m => `
           <div class="member-item">
             <div class="member-info">
               <span class="member-name">${m.name}</span>
-              <span class="member-phone">${m.phone}</span>
+              <span class="member-phone">${m.phone} <span style="opacity:0.5; font-size:0.8em; margin-left:8px;">${m.email || ''}</span></span>
             </div>
           </div>
         `).join('') || '<div style="color:rgba(255,255,255,0.2); font-size:0.8rem; text-align:center;">No other members added</div>';
@@ -612,7 +634,7 @@
 
           <div class="section-title">Participation Status</div>
           <div class="detail-row"><span class="detail-label">Team Code</span><span class="detail-val" style="font-family:monospace; color:var(--clr-purple); font-weight:700;">${t.code || 'Not Assigned'}</span></div>
-          <div class="detail-row"><span class="detail-label">Payment</span><span class="detail-val">${t.paymentStatus === 'paid' ? '<span style="color:var(--clr-green)">Paid (₹'+t.totalAmount+')</span>' : '<span style="color:var(--clr-amber)">Pending</span>'}</span></div>
+          <div class="detail-row"><span class="detail-label">Payment</span><span class="detail-val">${paymentSelect}</span></div>
           <div class="detail-row"><span class="detail-label">Registered At</span><span class="detail-val">${new Date(t.createdAt).toLocaleDateString()}</span></div>
 
           <div class="section-title">Problem Statement</div>
@@ -626,7 +648,7 @@
           `}
 
           <div class="section-title">Mentorship</div>
-          <div class="detail-row"><span class="detail-label">Mentor Session</span><span class="detail-val">${t.mentorSession ? 'Opted In' : 'Not Opted'}</span></div>
+          <div class="detail-row"><span class="detail-label">Mentor Session</span><span class="detail-val">${mentorSelect}</span></div>
           ${t.mentorSession ? `
             <div class="detail-row"><span class="detail-label">Verification</span><span class="detail-val">
               ${t.mentorshipStatus === 'approved' ? '<span style="color:var(--clr-green)">Approved</span>' : t.mentorshipStatus === 'pending' ? '<span style="color:var(--clr-blue)">Pending Verification</span>' : 'Not Requested'}
@@ -646,22 +668,205 @@
             ` : ''}
           ` : ''}
 
-          <div class="section-title">Team Leader</div>
-          <div class="detail-row"><span class="detail-label">Name</span><span class="detail-val">${t.leader.name}</span></div>
-          <div class="detail-row"><span class="detail-label">Email</span><span class="detail-val">${t.leader.email}</span></div>
-          <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">${t.leader.phone}</span></div>
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2rem;">
+            <div class="section-title" style="margin:0; border:none; padding:0;">Team Members</div>
+            <button class="action-btn btn--outline" style="width:auto; padding:0.25rem 0.75rem; margin:0;" onclick="toggleEditMembersMode()">Edit</button>
+          </div>
+          <div style="border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 0.5rem; margin-bottom:1rem;"></div>
 
-          <div class="section-title">Members (${t.members?.length || 0})</div>
-          ${membersHtml}
+          <div id="membersViewMode">
+            <div class="detail-row"><span class="detail-label">Leader</span><span class="detail-val">${t.leader.name} <br><span style="font-size:0.8em;opacity:0.6">${t.leader.email} | ${t.leader.phone}</span></span></div>
+            ${membersHtml}
+          </div>
+
+          <div id="membersEditMode" style="display:none; background:rgba(255,255,255,0.02); padding:1rem; border-radius:12px; margin-bottom:1rem; margin-top:1rem;">
+            <div style="margin-bottom:1rem;">
+              <div style="font-size:0.75rem; color:var(--clr-blue); margin-bottom:0.5rem;">Leader</div>
+              <input type="text" id="editLeaderName" class="search-input" style="padding:0.5rem; margin-bottom:0.5rem;" value="${t.leader.name || ''}" placeholder="Name">
+              <input type="email" id="editLeaderEmail" class="search-input" style="padding:0.5rem; margin-bottom:0.5rem;" value="${t.leader.email || ''}" placeholder="Email">
+              <input type="text" id="editLeaderPhone" class="search-input" style="padding:0.5rem;" value="${t.leader.phone || ''}" placeholder="Phone">
+            </div>
+            <div id="editMembersList">
+              ${(t.members || []).map((m, i) => `
+                <div class="edit-member-row" style="margin-bottom:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1);">
+                  <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+                    <div style="font-size:0.75rem; color:var(--clr-grey);">Member</div>
+                    <button class="action-btn" style="width:auto; padding:0; background:none; color:var(--clr-red);" onclick="this.parentElement.parentElement.remove()">Remove</button>
+                  </div>
+                  <input type="text" class="search-input member-edit-name" style="padding:0.5rem; margin-bottom:0.5rem;" value="${m.name || ''}" placeholder="Name">
+                  <input type="text" class="search-input member-edit-email" style="padding:0.5rem; margin-bottom:0.5rem;" value="${m.email || ''}" placeholder="Email">
+                  <input type="text" class="search-input member-edit-phone" style="padding:0.5rem;" value="${m.phone || ''}" placeholder="Phone">
+                </div>
+              `).join('')}
+            </div>
+            <button class="action-btn btn--outline" style="margin-bottom:1rem; color:var(--clr-green); border-color:rgba(74,222,128,0.3);" onclick="addMemberRow()">+ Add Member</button>
+            <button class="action-btn btn--primary" onclick="saveMembers('${t._id}')">Save Members</button>
+          </div>
 
           <div style="margin-top:3rem; display:flex; gap:1rem;">
-            <button class="action-btn btn--outline" style="flex:1;" onclick="AdminUI.toast('Exporting team report...')">Export Report</button>
+            <button class="action-btn btn--outline" style="flex:1;" onclick="exportTeamReport()">Export Report</button>
             <button class="action-btn btn--outline" style="flex:1; color:var(--clr-red); border-color:rgba(248,113,113,0.2);" onclick="deleteTeam('${t._id}')">Delete Team</button>
           </div>
         `;
 
         document.getElementById('detailOverlay').classList.add('is-active');
       } catch(err) { AdminUI.toast('Error loading detail', 'error'); }
+    };
+
+    window.updatePaymentStatus = async (id, status) => {
+      try {
+        const res = await fetch(`/api/admin/teams/${id}/payment`, {
+          method: 'PATCH',
+          headers: apiHeaders(),
+          body: JSON.stringify({ paymentStatus: status })
+        });
+        const data = await res.json();
+        if(data.success) {
+          AdminUI.toast('Payment status updated', 'success');
+          fetchTeams();
+        } else { throw new Error(data.error); }
+      } catch(err) { AdminUI.toast(err.message, 'error'); showTeamDetail(id); }
+    };
+
+    window.updateMentorSession = async (id, opted) => {
+      try {
+        const res = await fetch(`/api/admin/teams/${id}/mentor`, {
+          method: 'PATCH',
+          headers: apiHeaders(),
+          body: JSON.stringify({ mentorSession: opted })
+        });
+        const data = await res.json();
+        if(data.success) {
+          AdminUI.toast('Mentor session updated', 'success');
+          showTeamDetail(id);
+          fetchTeams();
+        } else { throw new Error(data.error); }
+      } catch(err) { AdminUI.toast(err.message, 'error'); showTeamDetail(id); }
+    };
+
+    window.toggleEditMembersMode = () => {
+      const view = document.getElementById('membersViewMode');
+      const edit = document.getElementById('membersEditMode');
+      if (view.style.display === 'none') {
+        view.style.display = 'block';
+        edit.style.display = 'none';
+      } else {
+        view.style.display = 'none';
+        edit.style.display = 'block';
+      }
+    };
+
+    window.addMemberRow = () => {
+      const list = document.getElementById('editMembersList');
+      const div = document.createElement('div');
+      div.className = 'edit-member-row';
+      div.style.cssText = 'margin-bottom:1rem; padding-top:1rem; border-top:1px solid rgba(255,255,255,0.1);';
+      div.innerHTML = `
+        <div style="display:flex; justify-content:space-between; margin-bottom:0.5rem;">
+          <div style="font-size:0.75rem; color:var(--clr-grey);">New Member</div>
+          <button class="action-btn" style="width:auto; padding:0; background:none; color:var(--clr-red);" onclick="this.parentElement.parentElement.remove()">Remove</button>
+        </div>
+        <input type="text" class="search-input member-edit-name" style="padding:0.5rem; margin-bottom:0.5rem;" placeholder="Name">
+        <input type="text" class="search-input member-edit-email" style="padding:0.5rem; margin-bottom:0.5rem;" placeholder="Email">
+        <input type="text" class="search-input member-edit-phone" style="padding:0.5rem;" placeholder="Phone">
+      `;
+      list.appendChild(div);
+    };
+
+    window.exportTeamReport = () => {
+      const t = window.currentTeam;
+      if (!t) return AdminUI.toast('No team data loaded', 'error');
+
+      if (!window.jspdf) {
+         AdminUI.toast('PDF generation library is still loading, please wait...', 'warn');
+         return;
+      }
+
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+      
+      doc.setFontSize(22);
+      doc.text(`Team Report: ${t.teamName}`, 14, 22);
+      
+      doc.setFontSize(11);
+      doc.setTextColor(100);
+      doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 14, 30);
+
+      const tableData = [
+        ['Team Code', t.code || 'N/A'],
+        ['College & Branch', `${t.collegeName} - ${t.branch}`],
+        ['Payment Status', (t.paymentStatus || '').toUpperCase()],
+        ['Total Amount', `Rs. ${t.totalAmount || 800}`],
+        ['Mentor Session', t.mentorSession ? 'Opted In' : 'Not Opted'],
+        ['Problem Statement', t.psSelectionId?.title ? `${t.psSelectionId.title} (${t.psSelectionId.domain})` : 'Not Selected'],
+      ];
+
+      doc.autoTable({
+        startY: 38,
+        head: [['Field', 'Details']],
+        body: tableData,
+        theme: 'grid',
+        headStyles: { fillColor: [168, 85, 247] }
+      });
+
+      let finalY = doc.lastAutoTable.finalY + 14;
+      doc.setFontSize(16);
+      doc.setTextColor(0);
+      doc.text('Team Roster', 14, finalY);
+
+      const memberData = [];
+      memberData.push(['Leader', t.leader?.name || '', t.leader?.phone || '', t.leader?.email || '']);
+      (t.members || []).forEach((m, i) => {
+        memberData.push([`Member ${i+1}`, m.name, m.phone, m.email || '']);
+      });
+
+      doc.autoTable({
+        startY: finalY + 6,
+        head: [['Role', 'Name', 'Phone', 'Email']],
+        body: memberData,
+        theme: 'striped',
+        headStyles: { fillColor: [96, 165, 250] }
+      });
+
+      doc.save(`${t.teamName.replace(/\s+/g, '_')}_Report.pdf`);
+      AdminUI.toast('PDF generated & downloaded', 'success');
+    };
+
+    window.saveMembers = async (id) => {
+      const leaderName = document.getElementById('editLeaderName').value.trim();
+      const leaderEmail = document.getElementById('editLeaderEmail').value.trim();
+      const leaderPhone = document.getElementById('editLeaderPhone').value.trim();
+
+      if (!leaderName || !leaderEmail || !leaderPhone) {
+        return AdminUI.toast('Leader fields cannot be empty', 'error');
+      }
+
+      const rows = document.querySelectorAll('.edit-member-row');
+      const members = [];
+      for (const row of rows) {
+        const n = row.querySelector('.member-edit-name').value.trim();
+        const e = row.querySelector('.member-edit-email').value.trim();
+        const p = row.querySelector('.member-edit-phone').value.trim();
+        if (n) members.push({ name: n, email: e, phone: p });
+      }
+
+      try {
+        const res = await fetch(`/api/admin/teams/${id}`, {
+          method: 'PATCH',
+          headers: apiHeaders(),
+          body: JSON.stringify({ 
+            leader: { name: leaderName, email: leaderEmail, phone: leaderPhone },
+            members: members,
+            memberCount: members.length + 1
+          })
+        });
+        const data = await res.json();
+        if(data.success) {
+          AdminUI.toast('Members updated successfully', 'success');
+          showTeamDetail(id);
+          fetchTeams();
+        } else { throw new Error(data.error); }
+      } catch(err) { AdminUI.toast(err.message, 'error'); }
     };
 
     window.approveMentorship = async (id) => {

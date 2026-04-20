@@ -378,9 +378,9 @@
     }
 
     .modal-panel {
-      width: 90%;
-      max-width: 560px;
-      max-height: 85vh;
+      width: 95%;
+      max-width: 700px;
+      max-height: 90vh;
       overflow-y: auto;
       background: rgba(16,16,16,0.98);
       border: 1px solid rgba(255,255,255,0.08);
@@ -389,6 +389,35 @@
       transform: translateY(20px) scale(0.96);
       transition: transform 0.3s cubic-bezier(0.16,1,0.3,1);
     }
+
+    /* Payment screenshot */
+    .screenshot-box {
+      margin-top: 0.75rem;
+      border-radius: 12px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .screenshot-box img {
+      display: block;
+      width: 100%;
+      max-height: 340px;
+      object-fit: contain;
+      cursor: zoom-in;
+      transition: opacity 0.2s;
+    }
+    .screenshot-box img:hover { opacity: 0.9; }
+    .screenshot-open-btn {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      margin-top: 0.6rem; margin-bottom: 0.75rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px; border: 1px solid rgba(96,165,250,0.3);
+      background: rgba(96,165,250,0.08); color: #60a5fa;
+      font-size: 0.75rem; font-weight: 600; cursor: pointer; text-decoration: none;
+      transition: background 0.15s;
+    }
+    .screenshot-open-btn:hover { background: rgba(96,165,250,0.18); }
 
     .modal-overlay.is-open .modal-panel {
       transform: translateY(0) scale(1);
@@ -923,6 +952,65 @@
           '<div class="modal-row"><span class="modal-row-label">Code</span><span class="modal-row-value" style="font-family:monospace;color:#a855f7;">' + (r.code ? r.code : '<span style="color:rgba(255,255,255,0.25);font-size:0.8rem;">— not assigned yet</span>') + '</span></div>' +
           '<div class="modal-row"><span class="modal-row-label">Payment</span><span class="modal-row-value">' + (r.paymentStatus==='paid' ? '<span style="color:#4ade80;">Paid</span>' : '<span style="color:#fbbf24;">Pending</span>') + '</span></div>' +
           '<div class="modal-row"><span class="modal-row-label">Amount</span><span class="modal-row-value">' + (r.totalAmount ? '&#8377;'+r.totalAmount : '-') + '</span></div>' +
+          '<div class="modal-section"><div class="modal-section-title">Registration</div>' +
+          '<div class="modal-row"><span class="modal-row-label">Team Code</span>' +
+            '<span class="modal-row-value" style="font-family:monospace;color:#a855f7;">' + (r.teamCode||'—') + '</span></div>' +
+          '<div class="modal-row"><span class="modal-row-label">Payment</span>' +
+            '<span class="modal-row-value">' + (r.paymentStatus==='paid' ? '<span style="color:#4ade80;">✓ Paid</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</span></div>' +
+          '<div class="modal-row"><span class="modal-row-label">Amount</span>' +
+            '<span class="modal-row-value">&#8377;' + (r.totalAmount||'—') + (r.mentorSession ? ' <small style="color:#a855f7;">(+Mentor)</small>' : '') + '</span></div>' +
+          '</div>' +
+
+          // ── Payment Screenshot Section ────────────────────────────────────
+          '<div class="modal-section">' +
+            '<div class="modal-section-title">Payment Screenshot</div>' +
+            (r.paymentScreenshotUrl
+              ? '<div class="screenshot-box">' +
+                  '<img src="' + r.paymentScreenshotUrl + '" alt="Payment Screenshot" ' +
+                       'onclick="window.open(this.src,\'_blank\')" />' +
+                '</div>' +
+                '<div style="text-align:center">' +
+                  '<a class="screenshot-open-btn" href="' + r.paymentScreenshotUrl + '" target="_blank" rel="noopener">' +
+                    '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' +
+                    'Open full image' +
+                  '</a>' +
+                '</div>'
+              : '<div style="display:flex;align-items:center;gap:0.5rem;padding:1rem;background:rgba(255,255,255,0.02);border-radius:10px;border:1px dashed rgba(255,255,255,0.07);">' +
+                  '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>' +
+                  '<span style="color:rgba(255,255,255,0.3);font-size:0.82rem;">No payment screenshot uploaded by this team.</span>' +
+                '</div>') +
+          '</div>' +
+          
+          // Mentorship Section
+          '<div class="modal-section"><div class="modal-section-title">Mentorship</div>' +
+          '<div class="modal-row"><span class="modal-row-label">Status</span><span class="modal-row-value">' + 
+            (r.mentorshipStatus === 'approved' ? '<span style="color:#4ade80;">Approved</span>' : 
+             r.mentorshipStatus === 'pending'  ? '<span style="color:#60a5fa;">Pending Verification</span>' : 
+                                                 '<span style="color:rgba(255,255,255,0.25);">Not Requested</span>') + 
+          '</span></div>' +
+          
+          // Show Receipt if Pending or Approved
+          (r.mentorshipReceiptUrl ? 
+            '<div style="margin-top:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.05);">' +
+            '<p class="modal-row-label" style="display:block;margin-bottom:0.5rem;">Payment Receipt</p>' +
+            '<img src="' + r.mentorshipReceiptUrl + '" style="width:100%;max-height:200px;object-contain:cover;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" onclick="window.open(this.src)">' +
+            '</div>' : '') +
+
+          // Action Buttons
+          (r.mentorshipStatus === 'pending' ? 
+            '<div style="margin-top:1rem;display:flex;gap:0.5rem;">' +
+            '<button id="approveMentorshipBtn" data-id="' + r._id + '" style="flex:2;background:#60a5fa;color:#000;border:none;padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;">Approve Payment</button>' +
+            '<button id="rejectMentorshipBtn" data-id="' + r._id + '" style="flex:1;background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;">Reject</button>' +
+            '</div>' : '') +
+
+          (r.mentorSession || r.mentorshipStatus === 'approved' ? 
+            '<div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.75rem;padding-top:1.5rem;border-top:1px dashed rgba(255,255,255,0.1);">' +
+            '<p class="modal-row-label" style="display:block;">Assign Mentor Details</p>' +
+            '<input type="text" id="mentorName" placeholder="Mentor Name" value="' + (r.mentor?.name || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<input type="text" id="mentorContact" placeholder="Mentor Contact" value="' + (r.mentor?.contact || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<input type="text" id="mentorLinkedin" placeholder="Mentor LinkedIn Profile" value="' + (r.mentor?.linkedin || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<button id="saveMentorBtn" data-id="' + r._id + '" style="background:#4ade80;color:#000;border:none;padding:0.6rem;border-radius:8px;font-weight:700;cursor:pointer;margin-top:0.5rem;">Save Mentor Details</button>' +
+            '</div>' : '') +
           '</div>' +
           '<div class="modal-section"><div class="modal-section-title">Members (' + (r.members?.length||0) + ')</div>' + membersHtml + '</div>';
 

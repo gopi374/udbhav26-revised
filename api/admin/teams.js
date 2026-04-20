@@ -194,15 +194,8 @@ export async function teamsUpdateHandler(req, res) {
       return res.status(403).json({ success: false, error: 'Team code is immutable once generated.' });
     }
 
-    // Block editing core fields once paid
-    const lockedIfPaid = ['teamName', 'collegeName', 'branch', 'leader'];
-    if (team.paymentStatus === 'paid') {
-      for (const field of lockedIfPaid) {
-        if (updates[field] !== undefined) {
-          return res.status(403).json({ success: false, error: `Cannot edit '${field}' after payment is completed.` });
-        }
-      }
-    }
+    // Admin has full control, no locked fields even if paid
+
 
     // Apply allowed updates
     const allowed = ['teamName', 'collegeName', 'branch', 'memberCount', 'leader', 'mentorSession', 'totalAmount', 'paymentStatus', 'members', 'mentor', 'mentorshipStatus', 'mentorshipReceiptUrl'];
@@ -249,6 +242,40 @@ export async function teamsDeleteHandler(req, res) {
     return res.status(200).json({ success: true, message: 'Team deleted.' });
   } catch (err) {
     console.error('[admin/teams] delete error:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+// ── GET ONE  GET /api/admin/teams/:id ────────────────────────────────────────
+export async function teamsGetByIdHandler(req, res) {
+  if (!authGuard(req, res)) return;
+  try {
+    await connectDB();
+    const { id } = req.params;
+    const team = await Team.findById(id);
+    if (!team) return res.status(404).json({ success: false, error: 'Team not found.' });
+    return res.status(200).json({ success: true, team });
+  } catch (err) {
+    console.error('[admin/teams] get error:', err);
+    return res.status(500).json({ success: false, error: err.message });
+  }
+}
+
+// ── APPROVE MENTORSHIP POST /api/admin/teams/:id/approve-mentorship ──────────
+export async function approveMentorshipHandler(req, res) {
+  if (!authGuard(req, res)) return;
+  try {
+    await connectDB();
+    const { id } = req.params;
+    const team = await Team.findById(id);
+    if (!team) return res.status(404).json({ success: false, error: 'Team not found.' });
+    
+    team.mentorshipStatus = 'approved';
+    await team.save();
+    
+    return res.status(200).json({ success: true, team });
+  } catch (err) {
+    console.error('[admin/teams] approve-mentorship error:', err);
     return res.status(500).json({ success: false, error: err.message });
   }
 }
