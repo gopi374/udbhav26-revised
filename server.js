@@ -82,6 +82,10 @@ import {
   unpublishWinnersHandler,
   publicWinnersHandler,
 } from './api/admin/winners.js';
+import {
+  getPendingEmailsHandler,
+  sendBulkEmailsHandler,
+} from './api/admin/emails.js';
 
 // ── Import Submissions handlers ───────────────────────────────────────
 import submitHandler           from './api/submissions/submit.js';
@@ -188,6 +192,7 @@ const cleanRoutes = {
   '/admin/submissions':        'admin/submissions.html',
   '/admin/teams':              'admin/team.html',
   '/admin/team':               'admin/team.html',
+  '/admin/emails':             'admin/emails.html',
 };
 
 // ── Vercel-handler adapter ────────────────────────────────────────────────────
@@ -236,6 +241,10 @@ app.get   ('/api/admin/ps-stats',         mountHandler(psStatsHandler));
 app.get   ('/api/admin/registrations',        mountHandler(registrationsListHandler));
 app.patch ('/api/admin/registrations/:id',    mountHandler(registrationUpdateHandler));
 app.delete('/api/admin/registrations/:id',    mountHandler(registrationDeleteHandler));
+
+// ── Admin Bulk Emails API ─────────────────────────────────────────────────────
+app.get ('/api/admin/emails/pending',   mountHandler(getPendingEmailsHandler));
+app.post('/api/admin/emails/send-bulk', mountHandler(sendBulkEmailsHandler));
 
 // ── Admin Teams API ───────────────────────────────────────────────────────────
 // IMPORTANT: static paths (/import, /generate-codes, /view) must come BEFORE /:id
