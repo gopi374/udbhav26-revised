@@ -596,6 +596,10 @@
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
         Registrations
       </a>
+      <a href="/admin/team.html" class="sidebar-link" id="navTeams">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Teams
+      </a>
 
       <a href="/admin/submissions.html" class="sidebar-link">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
@@ -618,10 +622,7 @@
         Winners
       </a>
       <span class="sidebar-nav-label" style="margin-top:0.5rem;">Coming Soon</span>
-      <a href="#" class="sidebar-link" onclick="event.preventDefault();">
-        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
-        Teams <span class="coming-tag">Soon</span>
-      </a>
+      
       <a href="#" class="sidebar-link" onclick="event.preventDefault();">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         Schedule <span class="coming-tag">Soon</span>
@@ -710,6 +711,7 @@
                 <th>College</th>
                 <th>Team Code</th>
                 <th>Members</th>
+                <th>Mentorship</th>
                 <th>Payment</th>
                 <th>Actions</th>
               </tr>
@@ -819,6 +821,11 @@
             '<td class="td-college" title="' + (r.collegeName || '') + '">' + (r.collegeName || '-') + '</td>' +
             '<td>' + code + '</td>' +
             '<td style="text-align:center;">' + memberCount + '</td>' +
+            '<td>' + 
+              (t.mentorshipStatus === 'approved' ? '<span class="status-badge badge--approved">Approved</span>' : 
+               t.mentorshipStatus === 'pending' ? '<span class="status-badge badge--pending" style="background:rgba(96,165,250,0.1);color:#60a5fa;border-color:rgba(96,165,250,0.2);">Pending</span>' : 
+               '<span style="color:rgba(255,255,255,0.2);font-size:0.75rem;">None</span>') + 
+            '</td>' +
             '<td>' + payment + '</td>' +
             '<td>' +
               '<button class="action-btn" data-id="' + r._id + '" data-action="view" title="View details">View</button>' +
@@ -1008,8 +1015,112 @@
           '<div class="modal-row"><span class="modal-row-label">Amount</span>' +
             '<span class="modal-row-value">&#8377;' + (r.totalAmount||'—') + (r.mentorSession ? ' <small style="color:#a855f7;">(+Mentor)</small>' : '') + '</span></div>' +
           '</div>' +
-          '<div class="modal-section"><div class="modal-section-title">Payment Screenshot</div>' + screenshotHtml + '</div>' +
-          '<div class="modal-section"><div class="modal-section-title">Members (' + (r.members?.length||0) + ' additional)</div>' + membersHtml + '</div>';
+          
+          // Mentorship Section
+          '<div class="modal-section"><div class="modal-section-title">Mentorship</div>' +
+          '<div class="modal-row"><span class="modal-row-label">Status</span><span class="modal-row-value">' + 
+            (r.mentorshipStatus === 'approved' ? '<span style="color:#4ade80;">Approved</span>' : 
+             r.mentorshipStatus === 'pending'  ? '<span style="color:#60a5fa;">Pending Verification</span>' : 
+                                                 '<span style="color:rgba(255,255,255,0.25);">Not Requested</span>') + 
+          '</span></div>' +
+          
+          // Show Receipt if Pending or Approved
+          (r.mentorshipReceiptUrl ? 
+            '<div style="margin-top:1rem;padding:0.75rem;background:rgba(255,255,255,0.03);border-radius:12px;border:1px solid rgba(255,255,255,0.05);">' +
+            '<p class="modal-row-label" style="display:block;margin-bottom:0.5rem;">Payment Receipt</p>' +
+            '<img src="' + r.mentorshipReceiptUrl + '" style="width:100%;max-height:200px;object-contain:cover;border-radius:8px;cursor:pointer;border:1px solid rgba(255,255,255,0.1);" onclick="window.open(this.src)">' +
+            '</div>' : '') +
+
+          // Action Buttons
+          (r.mentorshipStatus === 'pending' ? 
+            '<div style="margin-top:1rem;display:flex;gap:0.5rem;">' +
+            '<button id="approveMentorshipBtn" data-id="' + r._id + '" style="flex:2;background:#60a5fa;color:#000;border:none;padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;">Approve Payment</button>' +
+            '<button id="rejectMentorshipBtn" data-id="' + r._id + '" style="flex:1;background:rgba(248,113,113,0.15);color:#f87171;border:1px solid rgba(248,113,113,0.3);padding:0.7rem;border-radius:8px;font-weight:700;cursor:pointer;">Reject</button>' +
+            '</div>' : '') +
+
+          (r.mentorSession || r.mentorshipStatus === 'approved' ? 
+            '<div style="margin-top:1.5rem;display:flex;flex-direction:column;gap:0.75rem;padding-top:1.5rem;border-top:1px dashed rgba(255,255,255,0.1);">' +
+            '<p class="modal-row-label" style="display:block;">Assign Mentor Details</p>' +
+            '<input type="text" id="mentorName" placeholder="Mentor Name" value="' + (r.mentor?.name || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<input type="text" id="mentorContact" placeholder="Mentor Contact" value="' + (r.mentor?.contact || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<input type="text" id="mentorLinkedin" placeholder="Mentor LinkedIn Profile" value="' + (r.mentor?.linkedin || '') + '" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);padding:0.6rem;border-radius:8px;color:#fff;font-size:0.8rem;">' +
+            '<button id="saveMentorBtn" data-id="' + r._id + '" style="background:#4ade80;color:#000;border:none;padding:0.6rem;border-radius:8px;font-weight:700;cursor:pointer;margin-top:0.5rem;">Save Mentor Details</button>' +
+            '</div>' : '') +
+          '</div>' +
+
+          '<div class="modal-section"><div class="modal-section-title">Members (' + (r.members?.length||0) + ')</div>' + membersHtml + '</div>';
+
+        // Add event listeners
+        setTimeout(() => {
+          // Approve Button
+          document.getElementById('approveMentorshipBtn')?.addEventListener('click', async (e) => {
+            if (!confirm('Approve this payment and enable mentorship for this team?')) return;
+            const id = e.target.dataset.id;
+            const btn = e.target;
+            btn.disabled = true; btn.textContent = 'Approving...';
+            try {
+              const res = await fetch('/api/admin/teams/' + id, {
+                method: 'PATCH',
+                headers: apiHeaders(),
+                body: JSON.stringify({ mentorshipStatus: 'approved', mentorSession: true })
+              });
+              if (!res.ok) throw new Error('Failed to approve');
+              AdminUI.toast('Mentorship approved!', 'success');
+              showDetailModal(id); // Reload modal
+              render(); 
+            } catch(err) { AdminUI.toast(err.message, 'error'); }
+          });
+
+          // Reject Button
+          document.getElementById('rejectMentorshipBtn')?.addEventListener('click', async (e) => {
+            if (!confirm('Reject this mentorship request? The team will be able to re-upload their receipt.')) return;
+            const id = e.target.dataset.id;
+            const btn = e.target;
+            btn.disabled = true; btn.textContent = 'Rejecting...';
+            try {
+              const res = await fetch('/api/admin/teams/' + id, {
+                method: 'PATCH',
+                headers: apiHeaders(),
+                body: JSON.stringify({ mentorshipStatus: 'not_requested', mentorshipReceiptUrl: null })
+              });
+              if (!res.ok) throw new Error('Failed to reject');
+              AdminUI.toast('Mentorship request rejected.', 'info');
+              showDetailModal(id);
+              render();
+            } catch(err) { AdminUI.toast(err.message, 'error'); }
+          });
+
+          // Save Mentor Button
+          document.getElementById('saveMentorBtn')?.addEventListener('click', async (e) => {
+            const id = e.target.dataset.id;
+            const btn = e.target;
+            const originalText = btn.textContent;
+            btn.disabled = true; btn.textContent = 'Saving...';
+            
+            try {
+              const mentor = {
+                name: document.getElementById('mentorName').value,
+                contact: document.getElementById('mentorContact').value,
+                linkedin: document.getElementById('mentorLinkedin').value
+              };
+              
+              const res = await fetch('/api/admin/teams/' + id, {
+                method: 'PATCH',
+                headers: apiHeaders(),
+                body: JSON.stringify({ mentor })
+              });
+              
+              const data = await res.json();
+              if (!res.ok) throw new Error(data.error || 'Failed to save');
+              AdminUI.toast('Mentor details updated!', 'success');
+              render(); // Refresh table
+            } catch(err) {
+              AdminUI.toast(err.message, 'error');
+            } finally {
+              btn.disabled = false; btn.textContent = originalText;
+            }
+          });
+        }, 10);
 
         modal?.classList.add('is-open');
       } catch(err) { AdminUI.toast('Failed to load details: ' + err.message, 'error'); console.error(err); }

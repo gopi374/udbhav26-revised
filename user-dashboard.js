@@ -215,6 +215,18 @@ const Dashboard = {
 
         this.updateTimeline();
         setInterval(() => this.updateTimeline(), 60000);
+
+        // Auto Refresh Protocol
+        let refreshSeconds = 60;
+        const refreshEl = document.getElementById('refresh-timer');
+        setInterval(() => {
+            refreshSeconds--;
+            if (refreshSeconds <= 0) {
+                window.location.reload();
+            } else if (refreshEl) {
+                refreshEl.textContent = refreshSeconds.toString().padStart(2, '0');
+            }
+        }, 2000);
     },
 
     updateCountdown() {
@@ -352,10 +364,54 @@ const Dashboard = {
                 }
             } else {
                 el.classList.add('hidden');
+                
+                // 5 minutes before popup logic
+                const diffMs = visibleTime - now;
+                if (diffMs > 0 && diffMs <= 5 * 60 * 1000) {
+                    const actionId = el.getAttribute('data-action') || visibleTime.toString();
+                    if (!this.notifiedUpcoming) this.notifiedUpcoming = new Set();
+                    if (!this.notifiedUpcoming.has(actionId)) {
+                        this.notifiedUpcoming.add(actionId);
+                        
+                        let title = el.querySelector('h4') ? el.querySelector('h4').textContent.trim() : 'A new feature';
+                        this.showToast(`Heads up! ${title} opens in 5 minutes!`);
+                    }
+                }
             }
         });
 
         this.initializeIcons();
+    },
+
+    showToast(message, type = 'info') {
+        let container = document.getElementById('local-toast-container');
+        if (!container) return; // Fallback if missing
+        
+        const toast = document.createElement('div');
+        toast.className = `glass-dark border border-primary/20 bg-primary/10 px-6 py-3 rounded-xl flex items-center gap-3 transform -translate-y-4 opacity-0 transition-all duration-300 shadow-[0_0_15px_rgba(139,92,246,0.15)]`;
+        
+        toast.innerHTML = `
+            <div class="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center border border-primary/30 shrink-0">
+                <i data-lucide="bell" class="w-4 h-4 text-primary animate-pulse"></i>
+            </div>
+            <p class="text-sm font-bold text-white">${message}</p>
+        `;
+        
+        container.appendChild(toast);
+        this.initializeIcons();
+        
+        // entry animation
+        requestAnimationFrame(() => {
+            toast.style.transform = 'translateY(0)';
+            toast.style.opacity = '1';
+        });
+        
+        // auto remove
+        setTimeout(() => {
+            toast.style.transform = '-translateY(4px)';
+            toast.style.opacity = '0';
+            setTimeout(() => toast.remove(), 300);
+        }, 300000);
     },
 
     async handleSubmit(form) {
@@ -396,6 +452,77 @@ const Dashboard = {
         }
     },
 
+    async fetchStats(id) {
+        try {
+            const res = await fetch(`/api/team-dashboard?code=${id}`);
+            const data = await res.json();
+            if (data.success) {
+                this.currentTeamData = data.team;
+                console.log("Team data synchronized:", this.currentTeamData);
+            }
+        } catch (err) {
+            console.error("Failed to fetch team stats:", err);
+        }
+    },
+
+    async handleOptMentorship(file) {
+        if (!this.teamId || !file) return;
+        
+        const btn = document.getElementById('submitReceiptBtn');
+        if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Uploading Receipt...';
+        }
+
+        try {
+            // 1. Upload to Cloudinary (using unsigned preset)
+            // USER: Replace with your actual credentials
+            // const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dimq4wo1i/image/upload';
+            // const UPLOAD_PRESET = 'udbhav_receipts';
+            const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
+            const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+
+            const uploadRes = await fetch(CLOUDINARY_URL, {
+                method: 'POST',
+                body: formData
+            });
+            const uploadData = await uploadRes.json();
+
+            if (!uploadData.secure_url) {
+                throw new Error('Cloudinary upload failed. Please check your credentials.');
+            }
+
+            const receiptUrl = uploadData.secure_url;
+
+            // 2. Submit to backend
+            const res = await fetch('/api/mentorship/opt', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ teamCode: this.teamId, receiptUrl })
+            });
+            const data = await res.json();
+            if (data.success) {
+                this.showToast('Payment receipt submitted! Verification in progress.');
+                await this.fetchStats(this.teamId); // Refresh data
+                this.openModal('mentorship'); // Re-render modal
+            } else {
+                throw new Error(data.error || 'Submission failed');
+            }
+        } catch (err) {
+            alert('Error: ' + err.message);
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.textContent = 'Submit Receipt';
+            }
+        }
+    },
+
     openModal(action) {
         if (action === 'resources') {
             alert('Resource Center: Downloads will be available shortly after PS Selection is confirmed.');
@@ -408,27 +535,119 @@ const Dashboard = {
 
         const id = action.includes('submission') ? 'submission-modal' :
             action === 'mentorship' ? 'mentor-modal' : null;
+        
         if (id) {
             const m = document.getElementById(id);
             m.style.display = 'flex';
             m.classList.remove('hidden');
+            
             if (id === 'submission-modal') {
-                document.getElementById('modal-title').textContent = action.replace('-', ' ').toUpperCase();
+                document.getElementById('modal-title').textContent = action.replace(/-/g, ' ').toUpperCase();
+            }
+
+            if (action === 'mentorship') {
+                const content = document.getElementById('mentor-modal-content');
+                if (!content) return;
+
+                const team = this.currentTeamData || {};
+                
+                if (team.mentorSession) {
+                    if (team.mentor && team.mentor.name) {
+                        content.innerHTML = `
+                            <div class="space-y-4">
+                                <div class="w-20 h-20 rounded-full bg-orange-500/10 flex items-center justify-center mx-auto border border-orange-500/20 mb-4">
+                                    <i data-lucide="user" class="w-10 h-10 text-orange-500"></i>
+                                </div>
+                                <h4 class="text-xl font-bold text-white">${team.mentor.name}</h4>
+                                <p class="text-white/40 text-xs uppercase tracking-widest">Your Assigned Mentor</p>
+                                <div class="flex flex-col gap-2 mt-6">
+                                    ${team.mentor.linkedin ? `
+                                        <a href="${team.mentor.linkedin}" target="_blank" class="flex items-center justify-center gap-2 bg-[#0077b5]/10 text-[#0077b5] border border-[#0077b5]/20 px-4 py-2 rounded-xl text-xs font-bold hover:bg-[#0077b5]/20 transition-all">
+                                            <i data-lucide="linkedin" class="w-4 h-4"></i> LinkedIn Profile
+                                        </a>
+                                    ` : ''}
+                                    ${team.mentor.contact ? `
+                                        <div class="flex items-center justify-center gap-2 bg-white/5 text-white/60 border border-white/10 px-4 py-2 rounded-xl text-xs font-bold">
+                                            <i data-lucide="phone" class="w-4 h-4"></i> ${team.mentor.contact}
+                                        </div>
+                                    ` : ''}
+                                </div>
+                                <p class="text-[10px] text-white/20 mt-4 italic">Direct coordination starts April 25.</p>
+                            </div>
+                        `;
+                    } else {
+                        content.innerHTML = `
+                            <div class="py-6">
+                                <i data-lucide="clock" class="w-16 h-16 text-orange-500/40 mx-auto mb-4 animate-pulse"></i>
+                                <h3 class="text-lg font-bold text-white mb-2 uppercase">Assignment Pending</h3>
+                                <p class="text-white/40 text-sm">Your mentor is being assigned. Check back shortly!</p>
+                            </div>
+                        `;
+                    }
+                } else if (team.mentorshipStatus === 'pending') {
+                    content.innerHTML = `
+                        <div class="py-6 space-y-4">
+                            <div class="w-20 h-20 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto border border-blue-500/20 mb-4">
+                                <i data-lucide="shield-check" class="w-10 h-10 text-blue-500 animate-pulse"></i>
+                            </div>
+                            <h3 class="text-xl font-bold text-white uppercase tracking-tight">Verification In Progress</h3>
+                            <p class="text-white/40 text-sm">Our admins are verifying your ₹300 payment receipt. This usually takes 2-4 hours.</p>
+                            ${team.mentorshipReceiptUrl ? `
+                                <div class="mt-4 pt-4 border-t border-white/5">
+                                    <p class="text-[9px] text-white/20 uppercase font-black tracking-widest mb-2">Submitted Receipt</p>
+                                    <img src="${team.mentorshipReceiptUrl}" class="w-full h-32 object-cover rounded-xl border border-white/10 opacity-50 gray-scale hover:opacity-100 transition-all cursor-pointer" onclick="window.open(this.src)">
+                                </div>
+                            ` : ''}
+                        </div>
+                    `;
+                } else {
+                    content.innerHTML = `
+                        <div class="py-2">
+                             <div class="flex flex-col items-center gap-4">
+                                <div class="w-full aspect-square max-w-[200px] bg-white p-3 rounded-2xl shadow-2xl">
+                                    <img src="/mentor-opt.jpeg" alt="Mentorship QR Code" class="w-full h-full object-contain">
+                                </div>
+                                <div class="text-center">
+                                    <p class="text-white/40 text-xs uppercase tracking-widest mb-1">Fee: <span class="text-white font-black text-sm">₹300</span></p>
+                                    <p class="text-[10px] text-white/20">Scan to pay via any UPI app</p>
+                                </div>
+                            </div>
+                            
+                            <div class="mt-8 space-y-4">
+                                <div class="relative group">
+                                    <input type="file" id="receiptInput" accept="image/*" class="hidden">
+                                    <button onclick="document.getElementById('receiptInput').click()" class="w-full py-3 bg-white/5 border border-white/10 text-white/60 hover:text-white hover:bg-white/10 rounded-xl transition-all text-xs font-bold uppercase flex items-center justify-center gap-2">
+                                        <i data-lucide="upload-cloud" class="w-4 h-4"></i>
+                                        <span id="fileLabel">Upload Payment Receipt</span>
+                                    </button>
+                                </div>
+                                <button id="submitReceiptBtn" disabled class="w-full py-4 bg-primary text-white font-black rounded-xl uppercase hover:scale-102 transition-all opacity-50 cursor-not-allowed">Submit Request</button>
+                            </div>
+                        </div>
+                    `;
+                    
+                    const receiptInput = document.getElementById('receiptInput');
+                    const fileLabel = document.getElementById('fileLabel');
+                    const submitBtn = document.getElementById('submitReceiptBtn');
+                    
+                    receiptInput?.addEventListener('change', (e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                            fileLabel.textContent = file.name;
+                            submitBtn.disabled = false;
+                            submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                        }
+                    });
+
+                    submitBtn?.addEventListener('click', () => {
+                        const file = receiptInput.files[0];
+                        if (file) this.handleOptMentorship(file);
+                    });
+                }
+                this.initializeIcons();
             }
         }
     },
-
-    closeActiveModal() {
-        document.querySelectorAll('.modal-overlay').forEach(m => {
-            m.style.display = 'none';
-            m.classList.add('hidden');
-        });
-    },
-
-    fetchStats(id) {
-        // Simplified fetch
-        console.log(`Fetching stats for ${id}...`);
-    }
 };
 
 document.addEventListener('DOMContentLoaded', () => Dashboard.init());

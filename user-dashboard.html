@@ -33,8 +33,8 @@
         }
     </script>
     
-    <!-- Global and Dashboard Styles -->
-    <link rel="stylesheet" href="userdash-styles.css">
+    <!-- Consolidated Dashboard Styles -->
+    <link rel="stylesheet" href="user-dashboard.css">
     
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -84,9 +84,10 @@
                             <input
                                 type="text"
                                 id="teamId-input"
+                                name="teamCode"
                                 class="login-input"
-                                placeholder="e.g. UDB-00XX-XXXX"
-                                autocomplete="username"
+                                placeholder="E.g. UDB-PXZA"
+                                autocomplete="off"
                                 required
                             />
                         </div>
@@ -120,6 +121,12 @@
                 </div>
 
                 <nav class="flex items-center gap-2 md:gap-6">
+                    <!-- Auto-refresh Indicator -->
+                    <div id="auto-refresh-container" class="hidden md:flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-lg border border-white/10">
+                        <i data-lucide="refresh-cw" class="w-3 h-3 text-secondary animate-spin-slow"></i>
+                        <span class="text-[10px] font-bold text-white/50 uppercase tracking-widest">AUTO-Refresh: <span id="refresh-timer" class="text-white">60</span>s</span>
+                    </div>
+
                     <div class="w-px h-6 bg-white/10 mx-2 hidden md:block"></div>
                     <div class="flex items-center gap-3">
                         <button class="btn-logout flex items-center gap-2 bg-white/5 hover:bg-red-500/10 text-white/40 hover:text-red-500 border border-white/10 hover:border-red-500/20 px-4 py-2.5 rounded-xl transition-all text-[10px] font-bold uppercase tracking-widest">
@@ -223,6 +230,7 @@
                     <h2 class="text-2xl font-black font-heading tracking-widest flex items-center gap-4 uppercase">
                         <span class="w-12 h-[2px] bg-white/20"></span> Command Center
                     </h2>
+                    <div id="local-toast-container" class="flex flex-col gap-2 empty:hidden"></div>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-5">
                         <!-- Resources -->
                         <div class="group login-card !p-6 rounded-2xl cursor-pointer !opacity-100 !transform-none border-white/5 hover:border-white/20 transition-all hidden" 
@@ -238,7 +246,7 @@
 
                         <!-- Mentorship -->
                         <div class="group login-card !p-6 rounded-2xl cursor-pointer !opacity-100 !transform-none border-white/5 hover:border-white/20 transition-all hidden" 
-                             data-action="mentorship" data-visible-after="2026-04-25T11:00:00">
+                             data-action="mentorship" data-visible-after="2026-04-19T11:00:00">
                             <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 transition-transform group-hover:scale-110 border border-white/5">
                                 <i data-lucide="users" class="w-5 h-5 text-white/60"></i>
                             </div>
@@ -258,7 +266,7 @@
 
                         <!--ppt submission -->
                          <div class="group login-card !p-6 rounded-2xl cursor-pointer !opacity-100 !transform-none border-white/5 hover:border-white/20 transition-all hidden" 
-                             data-action="ppt-submission" data-visible-after="2026-04-26T07:00:00">
+                             data-action="ppt-submission" data-visible-after="2026-04-6T07:00:00">
                             <div class="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center mb-5 transition-transform group-hover:scale-110 border border-white/5">
                                 <i data-lucide="users" class="w-5 h-5 text-white/60"></i>
                             </div>
@@ -326,14 +334,16 @@
     <div id="mentor-modal" class="modal-overlay fixed inset-0 flex items-center justify-center p-4 hidden">
         <div class="absolute inset-0 modal-close"></div>
         <div class="relative w-full max-w-sm glass-dark border-white/10 rounded-3xl p-8 text-center shadow-2xl">
-            <i data-lucide="users" class="w-16 h-16 text-orange-500 mx-auto mb-4"></i>
-            <h3 class="text-2xl font-black font-heading uppercase mb-2">Mentoring</h3>
-            <p class="text-white/40 text-sm mb-6">Direct access starts April 25.</p>
-            <button class="modal-close px-8 py-3 bg-white text-black font-bold rounded-xl uppercase">Ok</button>
+            <div id="mentor-modal-content">
+                <i data-lucide="users" class="w-16 h-16 text-orange-500 mx-auto mb-4"></i>
+                <h3 class="text-2xl font-black font-heading uppercase mb-2">Mentoring</h3>
+                <p class="text-white/40 text-sm mb-6">Direct access starts April 25.</p>
+                <button class="modal-close px-8 py-3 bg-white text-black font-bold rounded-xl uppercase">Ok</button>
+            </div>
         </div>
     </div>
 
     <!-- Scripts -->
-    <script src="user-dashboard.js"></script>
+    <script type="module" src="user-dashboard.js"></script>
 </body>
 </html>

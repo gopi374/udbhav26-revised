@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UDBHAV'26 | Mission Control Dashboard</title>
+
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --background: #0a0a0f;
+      --foreground: #ffffff;
+      --accent: #ff00ff;
+      --primary: #8b5cf6;
+      --secondary: #06b6d4;
+      transition: --background 2s ease, --accent 2s ease, --primary 2s ease, --secondary 2s ease;
+    }
+
+    body {
+      background: var(--background);
+      color: var(--foreground);
+      overflow: hidden;
+      transition: background 2s ease;
+    }
+
+    .kiosk-btn { position: fixed; bottom: 24px; right: 24px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); padding: 10px 20px; border-radius: 12px; cursor: pointer; font-size: 1rem; z-index: 100; transition: all 0.3s ease; backdrop-filter: blur(10px); font-family: var(--font-body); font-weight: 600;}
+    .kiosk-btn:hover { background: rgba(255,255,255,0.1); color: #fff; border-color: rgba(255,255,255,0.3); transform: translateY(-2px); }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
+
+    @keyframes sirenPulse {
+      0%, 100% { box-shadow: 0 0 20px rgba(239, 68, 68, 0.2); border-color: rgba(239, 68, 68, 0.3); }
+      50% { box-shadow: 0 0 60px rgba(239, 68, 68, 0.8); border-color: rgba(239, 68, 68, 1); }
+    }
+    @keyframes sirenUrgentPulse {
+      0%, 100% { box-shadow: 0 0 30px rgba(255, 0, 0, 0.5); border-color: rgba(255, 0, 0, 0.6); transform: scale(1); }
+      50% { box-shadow: 0 0 80px rgba(255, 0, 0, 1); border-color: rgba(255, 0, 0, 1); transform: scale(1.02); }
+    }
+    .siren-active { animation: sirenPulse 1.5s infinite; box-shadow: 0 0 60px rgba(239, 68, 68, 0.8) !important; border-color: rgba(239, 68, 68, 1) !important; }
+    .siren-urgent { animation: sirenUrgentPulse 0.8s infinite; box-shadow: 0 0 80px rgba(255, 0, 0, 1) !important; border-color: rgba(255, 0, 0, 1) !important; color: #ffcccc !important; }
+
+    /* Modals & Overlays */
+    .challenge-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; opacity: 0; pointer-events: none; backdrop-filter: blur(8px); transition: all 0.3s ease;
+    }
+    .challenge-overlay.active { opacity: 1; pointer-events: auto; }
+    .challenge-modal {
+      position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.9); z-index: 1001; opacity: 0; pointer-events: none; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .challenge-modal.active { opacity: 1; pointer-events: auto; transform: translate(-50%, -50%) scale(1); }
+    
+    .break-toast {
+      position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); z-index: 1002; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .break-toast.active { bottom: 40px; }
+
+  </style>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+      tailwind.config = {
+          theme: {
+              extend: {
+                  colors: { background: 'var(--background)', foreground: 'var(--foreground)', accent: 'var(--accent)', primary: 'var(--primary)', secondary: 'var(--secondary)' },
+                  fontFamily: { heading: ['Space Grotesk', 'sans-serif'], body: ['Inter', 'sans-serif'], mono: ['JetBrains Mono', 'monospace'] }
+              }
+          }
+      }
+  </script>
+  
+  <link rel="stylesheet" href="userdash-styles.css">
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+</head>
+<body class="bg-[#030303] text-foreground font-body antialiased min-h-screen overflow-x-hidden relative">
+
+  <!-- Background Filters -->
+  <div id="ethereal-bg" class="ethereal-root visible transition-colors duration-1000" aria-hidden="true" style="background: var(--background);">
+      <svg class="ethereal-filter-svg" aria-hidden="true">
+          <defs>
+              <filter id="etherFilter" x="-20%" y="-20%" width="140%" height="140%">
+                  <feTurbulence id="etherTurb" result="undulation" numOctaves="2" baseFrequency="0.0005,0.002" seed="3" type="turbulence" />
+                  <feColorMatrix id="etherHueRotate" in="undulation" type="hueRotate" values="0" />
+                  <feColorMatrix in="dist" result="circulation" type="matrix" values="4 0 0 0 1  4 0 0 0 1  4 0 0 0 1  1 0 0 0 0" />
+                  <feDisplacementMap in="SourceGraphic" in2="circulation" scale="100" result="dist" />
+                  <feDisplacementMap in="dist" in2="undulation" scale="100" result="output" />
+              </filter>
+          </defs>
+      </svg>
+      <div class="ethereal-inner"><div class="ethereal-shadow"></div></div>
+      <div class="ethereal-noise"></div>
+      <div class="ethereal-vignette"></div>
+      <div class="grain-overlay"></div>
+  </div>
+
+  <div class="relative z-10 w-full h-full max-w-[1440px] mx-auto p-4 md:p-6 flex flex-col gap-5 h-screen">
+    
+    <!-- Urgent Submission Reminder -->
+    <!-- <div id="submission-reminder" class="hidden absolute top-8 left-1/2 transform -translate-x-1/2 z-50 bg-red-600 border-2 border-red-400 text-white px-8 py-4 rounded-2xl flex items-center gap-5 shadow-[0_0_60px_rgba(239,68,68,0.8)] backdrop-blur-xl animate-bounce">
+      <i data-lucide="alert-triangle" class="w-8 h-8 animate-pulse text-white"></i>
+      <div class="flex flex-col uppercase tracking-widest leading-none">
+        <span class="text-[11px] font-black tracking-[0.3em] text-white/90 mb-1">Incoming Drop Detected</span>
+        <span class="text-lg font-black" id="reminder-text">Submissions opening in <span id="reminder-mins" class="text-3xl text-yellow-300 font-mono align-middle mx-1">10</span> mins!</span>
+      </div>
+    </div> -->
+
+    <!-- Announcement & Phase -->
+    <header id="main-header" class="login-card !opacity-100 !transform-none flex flex-col md:flex-row items-center justify-between p-4 px-6 md:px-8 rounded-2xl border-white/5 w-full transition-all duration-500 shrink-0">
+      <div class="flex items-center gap-4 w-full md:w-auto overflow-hidden">
+        <i data-lucide="megaphone" class="w-5 h-5 text-accent animate-pulse shrink-0" id="header-icon"></i>
+        <div class="flex flex-col whitespace-nowrap overflow-hidden text-ellipsis w-full">
+            <h2 class="text-[10px] font-bold text-white/40 tracking-[0.2em] uppercase">SYSTEM BROADCAST</h2>
+            <p id="announcement" class="text-sm text-white/90 font-medium truncate">UDBHAV'26. Stay motivated!</p>
+        </div>
+      </div>
+      <div class="mt-4 md:mt-0 shrink-0 self-end md:self-center">
+        <div class="bg-white/5 border border-white/10 px-4 py-2 rounded-xl flex items-center gap-3 w-max">
+           <i data-lucide="target" class="w-4 h-4 text-primary transition-colors duration-1000"></i>
+           <div class="flex flex-col">
+             <span class="text-[8px] text-white/40 uppercase tracking-widest leading-none mb-0.5">Current Phase</span>
+             <span id="currentPhase" class="text-xs font-bold text-white/80 uppercase leading-none">Loading...</span>
+           </div>
+        </div>
+      </div>
+    </header>
+
+    <div class="flex flex-col lg:flex-row gap-5 h-[calc(100%-80px)] overflow-hidden">
+      <!-- Left Column -->
+      <div class="w-full lg:w-8/12 flex flex-col gap-5 h-full relative">
+        
+        <!-- Timer Card -->
+        <div class="login-card !opacity-100 !transform-none border-white/5 relative overflow-hidden flex-1 flex flex-col justify-center items-center">
+          <div class="absolute top-0 right-0 w-64 h-64 blur-[100px] -mr-32 -mt-32 rounded-full opacity-20 transition-colors duration-1000 bg-primary z-0"></div>
+          
+          <div class="flex flex-col items-center justify-center relative z-10 w-full">
+            <div class="flex items-center gap-2 mb-2 text-white/40 uppercase">
+                <i data-lucide="clock" class="w-4 h-4 animate-pulse text-secondary"></i>
+                <span class="text-[10px] font-bold tracking-[0.4em]">Hackathon Endurance</span>
+            </div>
+            <div class="text-[4.5rem] sm:text-[6rem] lg:text-[8rem] font-heading font-black text-transparent bg-clip-text bg-gradient-to-r from-primary via-white to-secondary tracking-tighter leading-none text-center transition-colors duration-1000" id="timer">
+              00:00:00
+            </div>
+            
+            <!-- Secondary Round Timer -->
+            <div class="mt-6 bg-white/5 border border-white/10 px-6 py-3 rounded-full flex items-center gap-4">
+               <span class="text-[10px] uppercase tracking-widest text-white/50 font-bold" id="roundTimerLabel">Round Ends In</span>
+               <span id="roundTimer" class="font-mono text-xl md:text-2xl font-bold text-accent tracking-wider">00:00:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-Column Mid Section: Quotes, Nudges, Team Spotlight -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 shrink-0">
+            <!-- Nudges -->
+            <div class="login-card !opacity-100 !transform-none !p-5 border-white/5 flex flex-col justify-center items-center relative overflow-hidden transition-all duration-500 hover:border-white/10 group">
+              <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/10 blur-[50px] rounded-full group-hover:bg-primary/20 transition-all"></div>
+              <span class="text-[8px] bg-primary/20 text-primary border border-primary/30 px-2 py-1 rounded-full uppercase tracking-widest absolute top-4 left-4">Pro Tip</span>
+              <div class="text-3xl mb-2 mt-4" id="nudgeIcon">💡</div>
+              <p id="nudgeText" class="text-sm font-medium text-white/80 text-center italic transition-opacity duration-500 min-h-[40px] flex items-center">Deploy early, deploy often.</p>
+            </div>
+            
+            <!-- Dynamic Hinglish Quotes -->
+            <div class="login-card !opacity-100 !transform-none !p-5 border-white/5 flex flex-col justify-center relative overflow-hidden transition-all duration-500 hover:border-white/10 h-full col-span-1 md:col-span-2 group">
+              <div class="absolute top-4 right-4"><i data-lucide="quote" class="w-8 h-8 text-secondary/20 group-hover:text-secondary/40 transition-colors"></i></div>
+              <span class="text-[8px] bg-secondary/20 text-secondary border border-secondary/30 px-2 py-1 rounded-full w-max uppercase tracking-widest mb-3">#Relatable</span>
+              <p id="quoteText" class="text-base md:text-lg text-white/90 font-medium italic min-h-[60px] transition-opacity duration-500 leading-snug flex items-center">"Code compiles. I don't know why, but I'm not touching it."</p>
+              <p id="quoteAuthor" class="text-[10px] font-bold text-white/40 uppercase tracking-widest text-right mt-2">— The Core Mechanic</p>
+            </div>
+        </div>
+
+        <!-- Stats & Energy -->
+        <div class="flex flex-col md:flex-row gap-5 shrink-0">
+          <div class="grid grid-cols-3 gap-5 w-full md:w-1/2">
+            <div class="login-card !opacity-100 !transform-none !p-4 border-white/5 text-center transition-transform hover:scale-[1.02] flex flex-col justify-center">
+               <div class="text-2xl md:text-3xl font-heading font-black text-white" id="statTeams">50</div>
+               <div class="text-[9px] text-white/40 uppercase tracking-widest mt-1">Teams</div>
+            </div>
+            <div class="login-card !opacity-100 !transform-none !p-4 border-white/5 text-center transition-transform hover:scale-[1.02] flex flex-col justify-center">
+               <div class="text-2xl md:text-3xl font-heading font-black text-white" id="statCommits">0</div>
+               <div class="text-[9px] text-white/40 uppercase tracking-widest mt-1">Commits</div>
+            </div>
+            <div class="login-card !opacity-100 !transform-none !p-4 border-white/5 text-center transition-transform hover:scale-[1.02] flex flex-col justify-center">
+               <div class="text-2xl md:text-3xl font-heading font-black text-white scale-110" id="statCoffee">0</div>
+               <div class="text-[9px] text-white/40 uppercase tracking-widest mt-1">Coffees</div>
+            </div>
+          </div>
+          
+          <div class="login-card !opacity-100 !transform-none !p-5 border-white/5 w-full md:w-1/2 flex flex-col justify-center">
+              <div class="flex justify-between items-center mb-3">
+                <div class="flex items-center gap-2">
+                  <span id="energyBadge" class="bg-gradient-to-r from-primary to-accent px-2 py-0.5 rounded text-[9px] font-bold tracking-wider uppercase text-white shadow-[0_0_10px_var(--primary)]">⚡ HUSTLE MODE</span>
+                </div>
+                <span id="energyTip" class="text-[9px] text-white/40 uppercase tracking-widest">Power Flow Optimal</span>
+              </div>
+              <div class="w-full h-3 bg-white/5 rounded-full overflow-hidden border border-white/10 relative">
+                  <div id="energyFill" class="h-full bg-gradient-to-r from-primary to-accent transition-all duration-1000 w-[85%] rounded-full shadow-[0_0_15px_var(--accent)] relative overflow-hidden">
+                    <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_2s_infinite]"></div>
+                  </div>
+              </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column: Spotlight & Timeline -->
+      <div class="w-full lg:w-4/12 flex flex-col gap-5 h-full">
+        
+        <!-- Team Spotlight -->
+        <div class="login-card !opacity-100 !transform-none !p-5 border-white/5 shrink-0 bg-gradient-to-br from-white/[0.03] to-primary/[0.05] relative overflow-hidden group">
+            <div class="absolute -right-4 -top-4 w-20 h-20 bg-accent/20 rounded-full blur-[30px] group-hover:bg-accent/30 transition-colors"></div>
+            <h3 class="text-[10px] font-bold text-white/50 tracking-[0.2em] uppercase mb-4 flex items-center gap-2">
+              <i data-lucide="crosshair" class="w-3 h-3 text-accent"></i> Target Spotlight
+            </h3>
+            <div id="spotlightContainer" class="transition-all duration-500">
+               <div class="flex justify-between items-end mb-1">
+                 <h4 id="spotlightName" class="text-xl font-heading font-bold text-white leading-none">Team Alpha</h4>
+                 <span id="spotlightPS" class="text-[9px] uppercase tracking-widest text-primary font-bold border border-primary/30 px-2 py-0.5 rounded-sm">FinTech</span>
+               </div>
+               <p id="spotlightIdea" class="text-xs text-white/70 italic leading-snug mt-2">"Decentralized micro-loans leveraging L2 rollup tech."</p>
+            </div>
+        </div>
+
+        <!-- Timeline -->
+        <div class="login-card !opacity-100 !transform-none !p-5 md:!p-6 border-white/5 flex-1 flex flex-col overflow-hidden relative">
+            <h3 class="text-lg font-bold font-heading mb-5 flex items-center gap-3 shrink-0 uppercase tracking-tighter text-white">
+                <i data-lucide="list-ordered" class="w-5 h-5 text-secondary"></i> Live Operations
+            </h3>
+            <div class="relative overflow-y-auto pr-2 flex-1 custom-scrollbar text-white/60 space-y-5" id="timelineList">
+                <!-- JS populated -->
+            </div>
+            <!-- Fade out gradient at bottom of timeline -->
+            <div class="absolute bottom-0 left-0 right-0 h-10 bg-gradient-to-t from-[#15151f] to-transparent pointer-events-none rounded-b-2xl"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popups & Modals -->
+  <!-- <div class="challenge-overlay" id="challengeOverlay"></div>
+  <div class="challenge-modal login-card !opacity-100 !transform-none !p-8 border-accent/50 bg-[#0a0a0f]" id="challengeModal">
+    <div class="absolute inset-0 bg-accent/10 rounded-2xl blur-xl -z-10"></div>
+    <div class="flex flex-col items-center text-center">
+      <div id="challengeIcon" class="text-5xl mb-4 animate-bounce">🎲</div>
+      <h2 class="text-2xl font-black font-heading tracking-tight mb-2 uppercase text-white">Random Challenge</h2>
+      <p id="challengeText" class="text-sm text-white/80 mb-6 max-w-sm">Write 3 UI tests for your core feature in the next 15 mins!</p>
+      <div class="flex items-center gap-4">
+        <span class="text-xs tracking-widest uppercase font-bold text-accent bg-accent/10 px-3 py-1.5 rounded" id="challengeTimer">⏱ 15:00 MINS</span>
+        <button onclick="dismissChallenge()" class="bg-white text-black font-bold uppercase tracking-widest text-[10px] px-6 py-2.5 rounded hover:bg-white/90 transition-colors">Accept</button>
+      </div>
+    </div>
+  </div> -->
+
+  <div class="break-toast login-card !opacity-100 !transform-none !p-4 px-6 border-secondary border flex items-center gap-4 bg-[#050508] shadow-[0_0_30px_rgba(6,182,212,0.3)]" id="breakToast">
+    <div class="text-2xl animate-pulse">🧘</div>
+    <div class="flex flex-col mr-4">
+      <span class="text-[10px] text-secondary font-black uppercase tracking-widest">Mandatory Wellness Protocol</span>
+      <span id="breakText" class="text-sm text-white/90 font-medium">Stand up, drink water, stretch!</span>
+    </div>
+    <button onclick="dismissBreak()" class="text-white/40 hover:text-white"><i data-lucide="x" class="w-4 h-4"></i></button>
+  </div>
+
+  <button id="kiosk-btn" class="kiosk-btn" onclick="toggleFullscreen()">⛶ Fullscreen Kiosk</button>
+  
+  <script>
+    lucide.createIcons();
+
+    /* ─── DATA STORES ─── */
+    const THEMES = [
+      { name: "Neon Cyber", bg: "#09090b", primary: "#8b5cf6", secondary: "#06b6d4", accent: "#ff00ff", mode: "HUSTLE MODE" },
+      { name: "Hacker Matrix", bg: "#020617", primary: "#10b981", secondary: "#34d399", accent: "#059669", mode: "BUILD MODE" },
+      { name: "Sunset Orange", bg: "#0f0700", primary: "#f97316", secondary: "#f59e0b", accent: "#ef4444", mode: "PRESSURE COOKER" },
+      { name: "Deep Ocean", bg: "#001e36", primary: "#3b82f6", secondary: "#60a5fa", accent: "#2563eb", mode: "DEEP FOCUS" },
+      { name: "Royal Gold", bg: "#171003", primary: "#eab308", secondary: "#fef08a", accent: "#ca8a04", mode: "WINNER MINDSET" },
+      { name: "Blood Moon", bg: "#1a0505", primary: "#ef4444", secondary: "#f87171", accent: "#991b1b", mode: "LAST SPRINT" },
+      { name: "Void Purple", bg: "#10002b", primary: "#a855f7", secondary: "#c084fc", accent: "#7e22ce", mode: "ANTI-SLEEP" },
+      { name: "Toxic Glow", bg: "#06150e", primary: "#84cc16", secondary: "#bef264", accent: "#4d7c0f", mode: "BUG CRUSHER" },
+      { name: "Ice White", bg: "#111827", primary: "#e2e8f0", secondary: "#cbd5e1", accent: "#94a3b8", mode: "BIG BRAIN" },
+      { name: "Synthwave", bg: "#0f0518", primary: "#ec4899", secondary: "#f472b6", accent: "#d946ef", mode: "MEME MODE" }
+    ];
+
+    const QUOTES = [
+      { text: "Bhai pehle production pe daal de, bug fix baad mein sochenge.", author: "Startup Culture" },
+      { text: "It's not a bug, it's a completely undocumented feature.", author: "Senior Dev" },
+      { text: "Zinda pakadna hai error ko! Line by line console logs lag gaye hain.", author: "Debugging 101" },
+      { text: "Raat bhar code kiya, subah dekha toh ek semicolon ki galti thi.", author: "Syntax Reality" },
+      { text: "Git push force -- kyunki darr ke aage jeet hai.", author: "Version Control" },
+      { text: "Chai nahi, codebase ka dhuaan nikal raha hai mere bhai.", author: "Coder's Fuel" },
+      { text: "Pushing on a Friday? Aap purush hi nahi, mahapurush hain!", author: "Deployment Fear" },
+      { text: "Kaam aaisa karo ki 4 log bole: 'Bhai tera server fat gaya'.", author: "Backend Devs" },
+      { text: "Ctrl+C, Ctrl+V is not just a shortcut, it's a religion.", author: "StackOverflow Guru" },
+      { text: "Bhaiya ek cutting chai aur ek merge conflict resolve kar do.", author: "Chai Tapri" },
+      { text: "Idea bada nahi, execution fast hona chahiye.", author: "Visionary" },
+      { text: "Perfect mat banao, working banao!", author: "Hackathon Rule #1" },
+      { text: "Neend kal mil jayegi, repo ka commit aaj zaroori hai.", author: "Midnight Push" },
+      { text: "Wifi slow hai, par patience high hona chahiye.", author: "Latency" },
+      { text: "Jugaad is just agile development in stealth mode.", author: "Innovator" },
+      { text: "Sone aaye ho ya jeetne? Get back to the editor!", author: "Wakeup Call" },
+      { text: "Judges ko confuse nahi... impress karo.", author: "Pitching 101" },
+      { text: "The first bug was literally a moth. Now it's just my own code.", author: "History" },
+      { text: "No noise, just code.", author: "Zone Defense" },
+      { text: "Yeh 30 minutes hi game changer hain bhai.", author: "Clutch Moment" },
+      { text: "Idea sahi hai? Ya bas confidence high hai?", author: "Reality Check" },
+      { text: "Documentation kaun padhta hai? Wait, judging mein uske points hain?", author: "Panic" },
+      { text: "Teamwork: 1 person codes, 3 people stare at the screen.", author: "Dynamic" },
+      { text: "Sleep is for the weak, compilers are for the strong.", author: "Binary" },
+      { text: "If it works on localhost, ship the whole localhost.", author: "Docker Logic" }
+    ];
+
+    const NUDGES = [
+      { text: "Prototype ready? Test it with a real human NOW! 🧪", icon: "🧪" },
+      { text: "Don't overthink—ship something! 🚢", icon: "🚢" },
+      { text: "Keep UI simple. Function over fashion right now. 🎨", icon: "🎨" },
+      { text: "Focus on the core feature. Ignore the fluff! 🎯", icon: "🎯" },
+      { text: "Demo ready? Practice your pitch out loud! 🎤", icon: "🎤" },
+      { text: "Commit your code. History is written by victors! 📝", icon: "📝" },
+      { text: "Team sync! Is everyone still on the same page? 🤝", icon: "🤝" },
+      { text: "Edge cases thought of? Happy path is too easy 🧠", icon: "🧠" },
+      { text: "README matters! Judges actually read it! 📖", icon: "📖" },
+      { text: "Take UI screenshots now before you break it! 📸", icon: "📸" },
+      { text: "Does it actually work, or are you just hoping? 🤔", icon: "🤔" },
+      { text: "PPT should have minimal text. Let the product speak! 🖼️", icon: "🖼️" },
+      { text: "Grab a mentor! Ask for ruthless feedback. 🙋", icon: "🙋" },
+      { text: "Hydrate. Your brain cells need water to compile. 💧", icon: "💧" },
+      { text: "Remove 1 feature to make the remaining 3 perfect. ✂️", icon: "✂️" }
+    ];
+
+    const TEAMS = [
+      { name: "Team Alpha", ps: "FinTech / Web3", idea: "Decentralized micro-loans leveraging L2 rollups." },
+      { name: "CodeVoyagers", ps: "HealthTech", idea: "Offline-first AI symptom checker for rural clinics." },
+      { name: "GreenPulse", ps: "Sustainability", idea: "ML cameras identifying non-recyclables dynamically." },
+      { name: "NexusDev", ps: "EdTech", idea: "AR lab simulation modules via low-end smartphones." },
+      { name: "CipherCrew", ps: "Smart Cities", idea: "Predictive traffic optimization using computer vision." },
+      { name: "ByteBloom", ps: "Accessibility", idea: "Voice-driven IDE extensions for neurodivergent devs." },
+      { name: "HackSquad", ps: "FinTech", idea: "AI budget planner with gamified student savings goals." },
+      { name: "TechTitans", ps: "HealthTech", idea: "Mental wellness chatbot with real-time crisis escalation." }
+    ];
+
+    const CHALLENGES = [
+      { t: "UI Polish", m: "Redesign the ugliest screen in your app right now.", icon: "💅" },
+      { t: "Bug Hunt", m: "Find and fix 1 low-priority bug you've been ignoring.", icon: "🐛" },
+      { t: "Elevator Pitch", m: "Explain your app to the team next to you in 30s.", icon: "⏳" },
+      { t: "Doc Sprint", m: "Write a bulletproof README for 15 minutes.", icon: "📝" },
+      { t: "Screenshot Setup", m: "Take 4 crisp screenshots of your working flow.", icon: "📸" },
+      { t: "Refactor", m: "Clean up one 100-line messy function.", icon: "🧹" }
+    ];
+
+    const BREAKS = [
+      "Stand up and stretch for 2 minutes!",
+      "Hydrate! Go drink a glass of water.",
+      "Look 20 feet away for 20 seconds. Save your eyes!",
+      "Shake out your hands. Prevent tunnel syndrome!",
+      "Take 5 deep breaths. Oxygenate the brain."
+    ];
+
+    /* ─── SETUP CONFIG ─── */
+    const baseDate = new Date("2026-04-25T00:00:00");
+    const mockTMRW = new Date("2026-04-26T11:00:00");
+
+    const EVENT_START = new Date("2026-04-25T08:00:00");
+    const EVENT_END = new Date("2026-04-26T11:00:00");
+
+    const PHASES = [
+        { name: "Doors Open", time: new Date("2026-04-25T08:00:00"), end: new Date("2026-04-25T10:00:00"), desc: "Check-in & On-boarding" },
+        { name: "Kickoff", time: new Date("2026-04-25T10:00:00"), end: new Date("2026-04-25T10:45:00"), desc: "Orientation Session" },
+        { name: "PS Drop", time: new Date("2026-04-25T10:45:00"), end: new Date("2026-04-25T11:00:00"), desc: "Problem Statement Live" },
+        { name: "Build Sprint 1", time: new Date("2026-04-25T11:00:00"), end: new Date("2026-04-25T13:00:00"), desc: "Thinking & Planning Phase" },
+        { name: "Lunch Break", time: new Date("2026-04-25T13:00:00"), end: new Date("2026-04-25T14:00:00"), desc: "Meal Break" },
+        { name: "Build Sprint 2", time: new Date("2026-04-25T14:00:00"), end: new Date("2026-04-25T17:00:00"), desc: "Deep Work Mode" },
+        { name: "Strategy Pivot", time: new Date("2026-04-25T17:00:00"), end: new Date("2026-04-25T18:00:00"), desc: "Mentor Interaction" },
+        { name: "Build Sprint 3", time: new Date("2026-04-25T18:00:00"), end: new Date("2026-04-25T20:00:00"), desc: "Grind Mode" },
+        { name: "Power Dinner", time: new Date("2026-04-25T20:00:00"), end: new Date("2026-04-25T21:00:00"), desc: "Dinner Break" },
+        { name: "Build Sprint 4", time: new Date("2026-04-25T21:00:00"), end: new Date("2026-04-26T02:00:00"), desc: "Midnight Push" },
+        { name: "Demo Pitch", time: new Date("2026-04-26T02:00:00"), end: new Date("2026-04-26T03:00:00"), desc: "Pitch Round & GitHub Submission Deadline" },
+        { name: "Final Sprint", time: new Date("2026-04-26T03:00:00"), end: new Date("2026-04-26T07:00:00"), desc: "Last Stand — Final Build Phase" },
+        { name: "Final Pitch", time: new Date("2026-04-26T07:00:00"), end: new Date("2026-04-26T08:00:00"), desc: "GitHub + Deck + Live Link Submission" },
+        { name: "Breakfast", time: new Date("2026-04-26T08:00:00"), end: new Date("2026-04-26T08:30:00"), desc: "Recharge" },
+        { name: "Results Drop", time: new Date("2026-04-26T08:30:00"), end: new Date("2026-04-26T09:00:00"), desc: "Results Announced" },
+        { name: "Grand Presentation", time: new Date("2026-04-26T09:00:00"), end: new Date("2026-04-26T10:30:00"), desc: "Final PPT Presentation" },
+        { name: "Closing Ceremony", time: new Date("2026-04-26T10:30:00"), end: new Date("2026-04-26T11:00:00"), desc: "Prize Distribution" }
+    ];
+    PHASES.sort((a, b) => a.time - b.time);
+
+    let currentThemeIndex = 0;
+    let quoteIndex = 0;
+    let nudgeIndex = 0;
+    let teamIndex = 0;
+    
+    // Core Functions
+    const now = () => new Date();
+    
+    function applyTheme(theme) {
+      document.documentElement.style.setProperty('--background', theme.bg);
+      document.documentElement.style.setProperty('--primary', theme.primary);
+      document.documentElement.style.setProperty('--secondary', theme.secondary);
+      document.documentElement.style.setProperty('--accent', theme.accent);
+      document.getElementById('ethereal-bg').style.background = theme.bg;
+      document.getElementById('energyBadge').textContent = `⚡ ${theme.mode}`;
+    }
+
+    function initTimeline() {
+        const tl = document.getElementById('timelineList');
+        tl.innerHTML = PHASES.map((p, idx) => `
+            <div class="relative pl-6 pb-6 border-l border-white/10 last:border-0 last:pb-0 transition-all duration-500 timeline-item group" id="tl-${idx}">
+                <div class="absolute -left-[7px] top-1 flex items-center justify-center w-3.5 h-3.5 rounded-full border border-white/20 bg-[#030303] tl-icon-wrap z-10 transition-all duration-500">
+                  <span class="tl-icon text-[8px]"></span>
+                </div>
+                <div class="text-[9px] font-bold tracking-widest text-primary uppercase mb-1 tl-time transition-colors duration-500">
+                    ${p.time.getHours().toString().padStart(2, '0')}:${p.time.getMinutes().toString().padStart(2, '0')}
+                </div>
+                <h4 class="text-sm font-bold text-white tl-name">${p.name}</h4>
+                <p class="text-xs text-white/40 mt-1">${p.desc}</p>
+            </div>
+        `).join('');
+    }
+
+    function updateTimer() {
+      const currentTime = now();
+      const diff = EVENT_END - currentTime;
+      if (diff <= 0) { document.getElementById('timer').textContent = '00:00:00'; return; }
+      
+      const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+      const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+      const s = Math.floor((diff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+      document.getElementById('timer').innerHTML = `${h} <span class="text-white/20 opacity-50">:</span> ${m} <span class="text-white/20 opacity-50">:</span> ${s}`;
+
+      // Current Phase & Round Timer
+      let currentPhase = PHASES.find(p => currentTime >= p.time && currentTime < p.end);
+      if (!currentPhase) currentPhase = PHASES[PHASES.length - 1];
+      document.getElementById('currentPhase').textContent = `${currentPhase.name}`;
+      
+      const roundDiff = currentPhase.end - currentTime;
+      if (roundDiff > 0) {
+         const rh = Math.floor((roundDiff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)).toString().padStart(2, '0');
+         const rm = Math.floor((roundDiff % (1000 * 60 * 60)) / (1000 * 60)).toString().padStart(2, '0');
+         const rs = Math.floor((roundDiff % (1000 * 60)) / 1000).toString().padStart(2, '0');
+         document.getElementById('roundTimer').textContent = `${rh}:${rm}:${rs}`;
+         document.getElementById('roundTimerLabel').textContent = `${currentPhase.name} Ends In`;
+      } else {
+         document.getElementById('roundTimer').textContent = `00:00:00`;
+         document.getElementById('roundTimerLabel').textContent = `${currentPhase.name} Ended`;
+      }
+
+      // Live Timeline Processing
+      PHASES.forEach((p, idx) => {
+          const el = document.getElementById(`tl-${idx}`);
+          const iconWrap = el.querySelector('.tl-icon-wrap');
+          const icon = el.querySelector('.tl-icon');
+          const name = el.querySelector('.tl-name');
+          
+          if (currentTime > p.end) {
+              // Completed
+              iconWrap.className = "absolute -left-[7px] top-1 flex items-center justify-center w-3.5 h-3.5 rounded-full border border-green-500/50 bg-[#030303] tl-icon-wrap z-10";
+              icon.innerText = "✓";
+              icon.className = "tl-icon text-[8px] text-green-500";
+              name.className = "text-sm font-medium text-white/30 tl-name line-through";
+              el.classList.replace('border-primary/50', 'border-white/10');
+          } else if (currentTime >= p.time && currentTime < p.end) {
+              // Live
+              iconWrap.className = "absolute -left-2 top-1 flex items-center justify-center w-4 h-4 rounded-full border border-primary bg-primary/20 tl-icon-wrap z-10 shadow-[0_0_10px_var(--primary)]";
+              icon.innerText = "●";
+              icon.className = "tl-icon text-[6px] text-primary animate-pulse";
+              name.className = "text-sm font-bold text-white tl-name";
+              el.classList.replace('border-white/10', 'border-primary/50');
+          } else {
+              // Upcoming
+              iconWrap.className = "absolute -left-[7px] top-1 flex items-center justify-center w-3.5 h-3.5 rounded-full border border-white/20 bg-[#030303] tl-icon-wrap z-10";
+              icon.innerText = "";
+              name.className = "text-sm font-medium text-white/50 tl-name";
+              el.classList.replace('border-primary/50', 'border-white/10');
+          }
+      });
+
+      // ─── SMART 10 MIN ALERT (URGENT < 3 MIN) ───
+      let showReminder = false;
+      let reminderMins = 0;
+      let isUrgent = false;
+      let msg = "opens in";
+      for (const p of PHASES) {
+        if (p.name.toLowerCase().includes("submission") || p.desc.toLowerCase().includes("submission")) {
+           let t = p.time.getTime() - currentTime.getTime();
+           let ms = Math.ceil(t / 60000);
+           if (ms > 0 && ms <= 10) {
+              showReminder = true;
+              reminderMins = ms;
+              isUrgent = ms <= 3;
+              msg = `${p.name} opens in`;
+              break;
+           }
+        }
+      }
+
+      const reminderEl = document.getElementById('submission-reminder');
+      const headerEl = document.getElementById('main-header');
+      if (showReminder) {
+         if (reminderEl) reminderEl.classList.remove('hidden');
+         const rMins = document.getElementById('reminder-mins');
+         if (rMins) rMins.textContent = reminderMins;
+         
+         if(isUrgent) {
+            const icon = document.getElementById('header-icon');
+            if (icon) icon.classList.replace('text-accent', 'text-red-500');
+         } else {
+            const icon = document.getElementById('header-icon');
+            if (icon) icon.classList.replace('text-accent', 'text-red-500');
+         }
+      } else {
+         if (reminderEl) reminderEl.classList.add('hidden');
+         const icon = document.getElementById('header-icon');
+         if (icon) icon.classList.replace('text-red-500', 'text-accent');
+      }
+
+      // Energy
+      const totalDur = EVENT_END - EVENT_START;
+      const elap = currentTime - EVENT_START;
+      const pct = Math.min(100, Math.max(0, (elap / totalDur) * 100));
+      let en = 100 - (pct * 0.6);
+      if (currentPhase.name.includes("Break") || currentPhase.name.includes("Lunch")) en = Math.min(100, en + 30);
+      document.getElementById('energyFill').style.width = `${en}%`;
+    }
+
+    // Rotators
+    function rotateQuote() {
+      const q = document.getElementById('quoteText');
+      const a = document.getElementById('quoteAuthor');
+      q.style.opacity = 0;
+      setTimeout(() => {
+        quoteIndex = (quoteIndex + 1) % QUOTES.length;
+        q.textContent = `"${QUOTES[quoteIndex].text}"`;
+        a.textContent = `— ${QUOTES[quoteIndex].author}`;
+        q.style.opacity = 1;
+      }, 500);
+    }
+
+    function rotateNudge() {
+      const n = document.getElementById('nudgeText');
+      const i = document.getElementById('nudgeIcon');
+      n.style.opacity = 0;
+      setTimeout(() => {
+        nudgeIndex = (nudgeIndex + 1) % NUDGES.length;
+        n.textContent = NUDGES[nudgeIndex].text;
+        i.textContent = NUDGES[nudgeIndex].icon;
+        n.style.opacity = 1;
+      }, 500);
+    }
+
+    function rotateTeam() {
+      const c = document.getElementById('spotlightContainer');
+      if (!c) return;
+      c.style.opacity = 0;
+      c.style.transform = "translateY(5px)";
+      setTimeout(() => {
+        teamIndex = (teamIndex + 1) % TEAMS.length;
+        document.getElementById('spotlightName').textContent = TEAMS[teamIndex].name;
+        document.getElementById('spotlightPS').textContent = TEAMS[teamIndex].ps;
+        document.getElementById('spotlightIdea').textContent = `"${TEAMS[teamIndex].idea}"`;
+        c.style.opacity = 1;
+        c.style.transform = "translateY(0)";
+      }, 500);
+    }
+
+    // Modal / Toasts
+    function triggerChallenge() {
+      const ch = CHALLENGES[Math.floor(Math.random() * CHALLENGES.length)];
+      document.getElementById('challengeIcon').textContent = ch.icon;
+      document.getElementById('challengeText').textContent = `${ch.t}: ${ch.m}`;
+      document.getElementById('challengeOverlay').classList.add('active');
+      document.getElementById('challengeModal').classList.add('active');
+    }
+    function dismissChallenge() {
+      document.getElementById('challengeOverlay').classList.remove('active');
+      document.getElementById('challengeModal').classList.remove('active');
+    }
+
+    function triggerBreak() {
+      document.getElementById('breakText').textContent = BREAKS[Math.floor(Math.random() * BREAKS.length)];
+      document.getElementById('breakToast').classList.add('active');
+      setTimeout(() => dismissBreak(), 15000); // Auto close after 15s
+    }
+    function dismissBreak() {
+      document.getElementById('breakToast').classList.remove('active');
+    }
+
+    // Number Anim
+    function animateValue(id, start, end, duration) {
+      const obj = document.getElementById(id);
+      let startTimestamp = null;
+      const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const prog = Math.min((timestamp - startTimestamp) / duration, 1);
+        obj.textContent = Math.floor(prog * (end - start) + start);
+        if (prog < 1) window.requestAnimationFrame(step);
+      };
+      window.requestAnimationFrame(step);
+    }
+
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        if (document.documentElement.requestFullscreen) {
+          document.documentElement.requestFullscreen();
+        }
+      } else {
+        if (document.exitFullscreen) {
+          document.exitFullscreen();
+        }
+      }
+    }
+
+    document.addEventListener('fullscreenchange', () => {
+      const btn = document.getElementById('kiosk-btn');
+      if (document.fullscreenElement) {
+        btn.style.display = 'none';
+      } else {
+        btn.style.display = 'block'; // Or however it was originally displayed
+      }
+    });
+
+    // Global Hotkeys
+    window.addEventListener('keydown', (e) => {
+      // F11 naturally fullscreens in most browsers, but mapping 'F' as a fallback
+      if(e.key.toLowerCase() === 'f') { e.preventDefault(); toggleFullscreen(); }
+      // Test trigger modals:
+      if(e.key.toLowerCase() === 'c') { triggerChallenge(); }
+      if(e.key.toLowerCase() === 'b') { triggerBreak(); }
+      if(e.key === 'Escape') { dismissChallenge(); dismissBreak(); }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      applyTheme(THEMES[0]);
+      initTimeline();
+      
+      animateValue('statTeams', 0, 50, 2000);
+      animateValue('statCommits', 0, 1024, 2500);
+      animateValue('statCoffee', 0, 301, 1800);
+
+      setInterval(updateTimer, 200);
+      updateTimer();
+
+      // Timers
+      setInterval(rotateQuote, 10000);          // Quotes every 10s
+      setInterval(rotateNudge, 20000);          // Nudges every 20s
+      setInterval(rotateTeam, 15000);           // Spotlight every 15s
+      setInterval(() => {
+        currentThemeIndex = (currentThemeIndex + 1) % THEMES.length;
+        applyTheme(THEMES[currentThemeIndex]);
+      }, 60000); // Themes exactly every 10 mins (600,000 ms)
+
+      // Random Modals
+      setInterval(() => { if(Math.random() > 0.4) triggerChallenge(); }, 1800000); // 30 min probability check
+      setInterval(triggerBreak, 2700000); // 45 min interval
+    });
+  </script>
+</body>
+</html>
