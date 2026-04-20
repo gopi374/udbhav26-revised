@@ -34,7 +34,7 @@ const RECOMMENDED = [
   // Admin auth
   'ADMIN_SECRET',
   'ADMIN_USER',
-  'ADMIN_PASS',
+  // Note: ADMIN_PASS removed — password is stored as bcrypt hash in MongoDB Atlas
 ];
 
 /**

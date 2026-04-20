@@ -3,17 +3,36 @@
  * ─────────────────────────────────────────────────────────────────────────────
  * POST /api/admin/login
  *
- * Validates admin credentials server-side (env vars).
+ * Validates admin credentials against MongoDB Atlas.
+ * Passwords are stored as bcrypt hashes — never in plaintext.
+ *
  * On success, returns the ADMIN_SECRET token which the client stores in
  * localStorage and sends as X-Admin-Secret on all subsequent admin API calls.
- *
- * This removes hardcoded credentials from client-side JS entirely.
  *
  * Body:    { username: string, password: string }
  * Returns: { success: true, token }  |  { success: false, error }
  */
 
+import bcrypt from 'bcryptjs';
+import mongoose from 'mongoose';
 import { rateLimit, getIP } from '../lib/rateLimiter.js';
+
+// ── Inline AdminUser model (avoids issues with model re-registration) ─────────
+let AdminUser;
+const getAdminUserModel = () => {
+  if (AdminUser) return AdminUser;
+  const schema = new mongoose.Schema(
+    {
+      username:     { type: String, required: true, unique: true, lowercase: true, trim: true },
+      passwordHash: { type: String, required: true },
+      role:         { type: String, default: 'admin' },
+      lastLogin:    { type: Date },
+    },
+    { collection: 'adminusers' }
+  );
+  AdminUser = mongoose.models.AdminUser || mongoose.model('AdminUser', schema);
+  return AdminUser;
+};
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
@@ -37,21 +56,40 @@ export default async function handler(req, res) {
     return res.status(400).json({ success: false, error: 'Username and password required.' });
   }
 
-  const ADMIN_USER = process.env.ADMIN_USER;
-  const ADMIN_PASS = process.env.ADMIN_PASS;
   const ADMIN_SECRET = process.env.ADMIN_SECRET;
-
-  if (!ADMIN_USER || !ADMIN_PASS || !ADMIN_SECRET) {
-    console.error('[admin/login] ADMIN_USER, ADMIN_PASS, or ADMIN_SECRET not set in env');
+  if (!ADMIN_SECRET) {
+    console.error('[admin/login] ADMIN_SECRET not set in env');
     return res.status(500).json({ success: false, error: 'Server not configured.' });
   }
 
-  if (username === ADMIN_USER && password === ADMIN_PASS) {
-    console.log(`[admin/login] ✅ Admin login: ${ip} at ${new Date().toISOString()}`);
-    return res.status(200).json({ success: true, token: ADMIN_SECRET });
-  }
+  // ── Look up admin user from MongoDB ──────────────────────────────────────────
+  try {
+    const Model = getAdminUserModel();
+    const adminUser = await Model.findOne({ username: username.toLowerCase().trim() });
 
-  // Generic error — don't reveal which field was wrong
-  console.warn(`[admin/login] ❌ Failed attempt: ${ip} user="${username}"`);
-  return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+    if (!adminUser) {
+      // Use a fake compare to prevent timing attacks (don't reveal user doesn't exist)
+      await bcrypt.compare(password, '$2a$12$invalidhashtopreventtimingattacksonuserlookup');
+      console.warn(`[admin/login] ❌ No such user: "${username}" from ${ip}`);
+      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+    }
+
+    const passwordMatch = await bcrypt.compare(password, adminUser.passwordHash);
+
+    if (!passwordMatch) {
+      console.warn(`[admin/login] ❌ Wrong password for "${username}" from ${ip}`);
+      return res.status(401).json({ success: false, error: 'Invalid username or password.' });
+    }
+
+    // ── Success ───────────────────────────────────────────────────────────────
+    // Update lastLogin timestamp (non-blocking)
+    Model.findByIdAndUpdate(adminUser._id, { lastLogin: new Date() }).catch(() => {});
+
+    console.log(`[admin/login] ✅ Admin login: ${username} from ${ip} at ${new Date().toISOString()}`);
+    return res.status(200).json({ success: true, token: ADMIN_SECRET });
+
+  } catch (err) {
+    console.error(`[admin/login] DB error: ${err.message}`);
+    return res.status(500).json({ success: false, error: 'Server error. Please try again.' });
+  }
 }

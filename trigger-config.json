@@ -1,0 +1,13 @@
+{
+  "name": "udbhav2026-qa-to-prod",
+  "description": "Auto-deploy qa branch to Cloud Run production on every push",
+  "github": {
+    "owner": "KRISHNASON1",
+    "name": "udbhav2026",
+    "push": {
+      "branch": "^qa$"
+    }
+  },
+  "filename": "cloudbuild.yaml",
+  "serviceAccount": "projects/mega-management-2024/serviceAccounts/411708517030-compute@developer.gserviceaccount.com"
+}
