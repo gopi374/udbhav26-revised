@@ -80,6 +80,7 @@ export default async function handler(req, res) {
         message: 'Access denied for this status: ' + team.paymentStatus,
       });
     }
+    // Payment status check removed as requested
 
     // Prefer Registration members (has email), fall back to Team.members
     let leader  = team.leader;

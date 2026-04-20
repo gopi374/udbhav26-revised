@@ -48,6 +48,8 @@ export default async function handler(req, res) {
         status: status
       });
     }
+    // Restriction: All registered teams can access the command center now
+    // Payment status check removed as requested
 
     // Success - Return team metadata
     return res.status(200).json({

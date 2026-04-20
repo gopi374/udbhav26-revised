@@ -59,11 +59,17 @@ export async function registrationsListHandler(req, res) {
       Registration.countDocuments(filter),
     ]);
 
-    const [totalAll, paid, pending] = await Promise.all([
+    const [totalAll, paid, pending, membersAgg] = await Promise.all([
       Registration.countDocuments(),
       Registration.countDocuments({ paymentStatus: 'paid' }),
       Registration.countDocuments({ paymentStatus: 'pending' }),
+      Registration.aggregate([
+        { $project: { memberCount: { $add: [{ $size: { $ifNull: ["$members", []] } }, 1] } } },
+        { $group: { _id: null, totalMembers: { $sum: "$memberCount" } } }
+      ])
     ]);
+
+    const totalMembers = membersAgg.length > 0 ? membersAgg[0].totalMembers : 0;
 
     console.log(`[admin/registrations] List: total=${total}, page=${page}, status=${status}, q="${q}"`);
 
@@ -71,7 +77,7 @@ export async function registrationsListHandler(req, res) {
       success: true,
       registrations,
       pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
-      stats: { total: totalAll, paid, pending },
+      stats: { total: totalAll, paid, pending, totalMembers },
     });
   } catch (err) {
     console.error('[admin/registrations] list error:', err);

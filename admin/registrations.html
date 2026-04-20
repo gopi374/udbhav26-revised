@@ -235,6 +235,11 @@
       overflow: hidden;
     }
 
+    .admin-table-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .admin-table { width: 100%; border-collapse: collapse; }
 
     .admin-table th {
@@ -265,6 +270,13 @@
     .admin-table tr:hover td { background: rgba(255,255,255,0.02); }
     .admin-table tr:last-child td { border-bottom: none; }
     .td-team { color: var(--clr-white) !important; font-weight: 600 !important; }
+
+    .td-college {
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
 
     .td-checkbox {
       width: 36px;
@@ -826,7 +838,7 @@
             '<td><input type="checkbox" class="row-check" data-id="' + r._id + '" ' + (selectedIds.has(r._id) ? 'checked' : '') + '></td>' +
             '<td class="td-team">' + (r.teamName || '-') + '</td>' +
             '<td>' + (r.leader?.name || '-') + '<br><small style="color:rgba(255,255,255,0.3);font-size:0.7rem;">' + (r.leader?.email||'') + '</small></td>' +
-            '<td>' + (r.collegeName || '-') + '</td>' +
+            '<td class="td-college" title="' + (r.collegeName || '') + '">' + (r.collegeName || '-') + '</td>' +
             '<td>' + code + '</td>' +
             '<td style="text-align:center;">' + memberCount + '</td>' +
             '<td>' + 

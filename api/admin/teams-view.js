@@ -15,6 +15,7 @@ import { connectDB }        from '../lib/mongodb.js';
 import { Team }             from '../models/Team.js';
 import { ProblemStatement } from '../models/ProblemStatement.js';
 import { Submission }       from '../models/Submission.js';
+import { Registration }     from '../models/Registration.js';
 
 function authGuard(req, res) {
   const secret = req.headers['x-admin-secret'] || req.headers['authorization']?.replace('Bearer ', '');
@@ -151,6 +152,15 @@ export async function teamPaymentOverrideHandler(req, res) {
 
     await team.save();
     console.log(`[admin/teams] Payment override: ${team.teamName} → ${paymentStatus} (was: ${prev})`);
+
+    // Sync to Registration collection
+    if (team.code) {
+      await Registration.findOneAndUpdate(
+        { teamCode: team.code },
+        { $set: { paymentStatus } }
+      );
+    }
+
     return res.status(200).json({ success: true, team: { _id: team._id, paymentStatus: team.paymentStatus, paymentDate: team.paymentDate } });
 
   } catch (err) {
