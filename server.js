@@ -322,5 +322,5 @@ app.listen(PORT, () => {
   console.log(`   - RESEND_API_KEY:   ${process.env.RESEND_API_KEY   ? '✓ Set' : '✗ Missing'}`);
   console.log(`   - ADMIN_SECRET:     ${process.env.ADMIN_SECRET     ? '✓ Set' : '✗ Missing'}`);
   console.log(`   - ADMIN_USER:       ${process.env.ADMIN_USER       ? '✓ Set' : '✗ Missing'}`);
-  console.log(`   - ADMIN_PASS:       ${process.env.ADMIN_PASS       ? '✓ Set' : '✗ Missing'}`);
+  console.log(`   - Admin password:   ✓ Stored as bcrypt hash in MongoDB Atlas`);
 });

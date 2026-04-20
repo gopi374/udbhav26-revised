@@ -147,6 +147,13 @@ const Dashboard = {
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('loginError');
         const loginBtn = document.getElementById('loginBtn');
+        const teamIdInput = document.getElementById('teamId-input');
+
+        if (teamIdInput) {
+            teamIdInput.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
+            });
+        }
 
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {

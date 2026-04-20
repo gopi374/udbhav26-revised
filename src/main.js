@@ -600,14 +600,14 @@ document.querySelectorAll('.nav-link').forEach(link => {
     dropdown.classList.remove('closing');
     dropdown.classList.add('open');
     trigger.setAttribute('aria-expanded', 'true');
-    dropdown.querySelectorAll('.dropdown-item').forEach(i => i.setAttribute('tabindex', '0'));
+    dropdown.querySelectorAll('.md-item, .md-feature').forEach(i => i.setAttribute('tabindex', '0'));
   }
 
   function closeDropdown() {
     if (!dropdown.classList.contains('open')) return;
     dropdown.classList.add('closing');
     trigger.setAttribute('aria-expanded', 'false');
-    dropdown.querySelectorAll('.dropdown-item').forEach(i => i.setAttribute('tabindex', '-1'));
+    dropdown.querySelectorAll('.md-item, .md-feature').forEach(i => i.setAttribute('tabindex', '-1'));
     closeTimer = setTimeout(() => {
       dropdown.classList.remove('open', 'closing');
     }, 160);
@@ -622,10 +622,10 @@ document.querySelectorAll('.nav-link').forEach(link => {
   trigger.addEventListener('click', toggleDropdown);
 
   // Radio selection: mark chosen item, close dropdown
-  dropdown.querySelectorAll('.dropdown-item').forEach(item => {
+  dropdown.querySelectorAll('.md-item, .md-feature').forEach(item => {
     item.addEventListener('click', (e) => {
-      e.preventDefault();
-      dropdown.querySelectorAll('.dropdown-item').forEach(i => i.setAttribute('aria-checked', 'false'));
+      // Do not prevent default so that the link actually navigates
+      dropdown.querySelectorAll('.md-item, .md-feature').forEach(i => i.setAttribute('aria-checked', 'false'));
       item.setAttribute('aria-checked', 'true');
       closeDropdown();
     });
@@ -646,7 +646,7 @@ document.querySelectorAll('.nav-link').forEach(link => {
 
   // Keyboard navigation inside dropdown
   dropdown.addEventListener('keydown', (e) => {
-    const items = [...dropdown.querySelectorAll('.dropdown-item')];
+    const items = [...dropdown.querySelectorAll('.md-item, .md-feature')];
     const idx   = items.indexOf(document.activeElement);
     if (e.key === 'ArrowDown') { e.preventDefault(); items[(idx + 1) % items.length]?.focus(); }
     if (e.key === 'ArrowUp')   { e.preventDefault(); items[(idx - 1 + items.length) % items.length]?.focus(); }

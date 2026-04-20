@@ -1,0 +1,47 @@
+name: Deploy QA to Cloud Run
+
+on:
+  push:
+    branches:
+      - qa
+
+env:
+  PROJECT_ID: udbhav26-prod
+  REGION: asia-southeast1
+  SERVICE: udbhav26-qa
+
+jobs:
+  deploy:
+    name: Build & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
+
+      - name: Set up Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
+      - name: Deploy to Cloud Run (Source)
+        run: |
+          gcloud run deploy ${{ env.SERVICE }} \
+            --source . \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }} \
+            --allow-unauthenticated \
+            --max-instances 2 \
+            --memory 512Mi \
+            --quiet
+
+      - name: Show URL
+        run: |
+          echo "Deployment successful!"
+          gcloud run services describe ${{ env.SERVICE }} \
+            --region ${{ env.REGION }} \
+            --project ${{ env.PROJECT_ID }} \
+            --format="value(status.url)"
