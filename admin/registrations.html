@@ -746,7 +746,7 @@
     const perPage    = 20;
     let searchQuery  = '';
     let statusFilter = 'all';
-    let totalTeams   = 0;
+    let totalRegs    = 0;
     let selectedIds  = new Set();
 
     const searchInput  = document.getElementById('searchInput');
@@ -756,17 +756,18 @@
     const paginationEl = document.getElementById('pagination');
     const countEl      = document.getElementById('registrationCount');
 
-    // -- FETCH FROM MONGODB
-    async function fetchTeams() {
+    // -- FETCH FROM MONGODB (registrations collection)
+    async function fetchRegistrations() {
       const params = new URLSearchParams({
         page:   currentPage,
         limit:  perPage,
         status: statusFilter,
         q:      searchQuery,
       });
-      const res  = await fetch('/api/admin/teams?' + params, { headers: apiHeaders() });
+      const res  = await fetch('/api/admin/registrations?' + params, { headers: apiHeaders() });
+      if (res.status === 401) { window.location.href = '/admin/login.html'; return; }
       const data = await res.json();
-      if (!res.ok || !data.success) throw new Error(data.error || 'API error');
+      if (!res.ok || !data.success) throw new Error(data.error ? `Server error: ${data.error}` : `HTTP ${res.status}`);
       return data;
     }
 
@@ -774,37 +775,42 @@
     async function render() {
       tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:rgba(255,255,255,0.3);">Loading...</td></tr>';
       try {
-        const data  = await fetchTeams();
-        const teams = data.teams || [];
-        totalTeams  = data.pagination?.total || 0;
+        const data  = await fetchRegistrations();
+        const regs  = data.registrations || [];
+        totalRegs   = data.pagination?.total || 0;
 
-        if (countEl) countEl.textContent = totalTeams + ' total';
+        if (countEl) countEl.textContent = totalRegs + ' total';
 
-        if (teams.length === 0) {
-          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:rgba(255,255,255,0.25);">No teams found. Import teams from the button above.</td></tr>';
+        if (regs.length === 0) {
+          const msg = (searchQuery || statusFilter !== 'all')
+            ? 'No registrations match your current filters.'
+            : 'No registrations yet. Teams will appear here after they submit the registration form.';
+          tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:rgba(255,255,255,0.25);">' + msg + '</td></tr>';
           renderPagination(data.pagination);
           return;
         }
 
-        tbody.innerHTML = teams.map(t => {
-          const code = t.code
-            ? '<span style="font-family:monospace;color:#a855f7;font-weight:700;letter-spacing:0.08em;">' + t.code + '</span>'
-            : '<span style="color:rgba(255,255,255,0.25);font-size:0.75rem;">— not assigned</span>';
-          const payment = t.paymentStatus === 'paid'
-            ? '<span class="status-badge badge--approved">Paid</span>'
-            : '<span class="status-badge badge--pending">Pending</span>';
-          const memberCount = t.memberCount || ((t.members?.length || 0) + 1);
+        tbody.innerHTML = regs.map(r => {
+          // registrations collection uses `teamCode` (not `code`)
+          const code = r.teamCode
+            ? '<span style="font-family:monospace;color:#a855f7;font-weight:700;letter-spacing:0.08em;">' + r.teamCode + '</span>'
+            : '<span style="color:rgba(255,255,255,0.25);font-size:0.75rem;">— no code</span>';
+          const payment = r.paymentStatus === 'paid'
+            ? '<span class="status-badge badge--approved toggle-payment" data-id="' + r._id + '" data-status="paid" style="cursor:pointer;" title="Click to mark Pending">Paid</span>'
+            : '<span class="status-badge badge--pending toggle-payment" data-id="' + r._id + '" data-status="pending" style="cursor:pointer;" title="Click to mark Paid">Pending</span>';
+          // member count: leader + members array
+          const memberCount = (r.members?.length || 0) + 1;
           return '<tr>' +
-            '<td><input type="checkbox" class="row-check" data-id="' + t._id + '" ' + (selectedIds.has(t._id) ? 'checked' : '') + '></td>' +
-            '<td class="td-team">' + (t.teamName || '-') + '</td>' +
-            '<td>' + (t.leader?.name || '-') + '<br><small style="color:rgba(255,255,255,0.3);font-size:0.7rem;">' + (t.leader?.email||'') + '</small></td>' +
-            '<td>' + (t.collegeName || '-') + '</td>' +
+            '<td><input type="checkbox" class="row-check" data-id="' + r._id + '" ' + (selectedIds.has(r._id) ? 'checked' : '') + '></td>' +
+            '<td class="td-team">' + (r.teamName || '-') + '</td>' +
+            '<td>' + (r.leader?.name || '-') + '<br><small style="color:rgba(255,255,255,0.3);font-size:0.7rem;">' + (r.leader?.email||'') + '</small></td>' +
+            '<td>' + (r.collegeName || '-') + '</td>' +
             '<td>' + code + '</td>' +
             '<td style="text-align:center;">' + memberCount + '</td>' +
             '<td>' + payment + '</td>' +
             '<td>' +
-              '<button class="action-btn" data-id="' + t._id + '" data-action="view" title="View details">View</button>' +
-              '<button class="action-btn" data-id="' + t._id + '" data-action="delete" title="Delete" style="color:#f87171;">Del</button>' +
+              '<button class="action-btn" data-id="' + r._id + '" data-action="view" title="View details">View</button>' +
+              '<button class="action-btn" data-id="' + r._id + '" data-action="delete" title="Delete" style="color:#f87171;">Del</button>' +
             '</td>' +
           '</tr>';
         }).join('');
@@ -812,13 +818,13 @@
         bindActions();
         renderPagination(data.pagination);
 
-        // Update stats
-        const s = data.stats || {};
+        // Update stats cards
+        const s  = data.stats || {};
         const el = id => document.getElementById(id);
-        if (el('statTotal'))    el('statTotal').textContent    = s.total    || 0;
-        if (el('statApproved')) el('statApproved').textContent = s.paid     || 0;
-        if (el('statPending'))  el('statPending').textContent  = s.pending  || 0;
-        if (el('statMembers'))  el('statMembers').textContent  = s.codedCount || 0;
+        if (el('statTotal'))    el('statTotal').textContent    = s.total   || 0;
+        if (el('statApproved')) el('statApproved').textContent = s.paid    || 0;
+        if (el('statPending'))  el('statPending').textContent  = s.pending || 0;
+        if (el('statMembers'))  el('statMembers').textContent  = totalRegs || 0;
 
       } catch(err) {
         tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:2rem;color:#f87171;">Error: ' + err.message + '</td></tr>';
@@ -853,17 +859,46 @@
         btn.addEventListener('click', async () => {
           const id = btn.dataset.id, action = btn.dataset.action;
           if (action === 'view')   { showDetailModal(id); }
-          if (action === 'delete') { await deleteTeam(id); }
+          if (action === 'delete') { await deleteRegistration(id); }
+        });
+      });
+      // Toggle payment status (click badge)
+      document.querySelectorAll('.toggle-payment').forEach(badge => {
+        badge.addEventListener('click', async () => {
+          const id = badge.dataset.id;
+          const currentStatus = badge.dataset.status;
+          const newStatus = currentStatus === 'paid' ? 'pending' : 'paid';
+
+          const origHTML = badge.innerHTML;
+          badge.innerHTML = '...';
+          badge.style.opacity = '0.5';
+          badge.style.pointerEvents = 'none';
+
+          try {
+            const res = await fetch('/api/admin/registrations/' + id, {
+              method: 'PATCH',
+              headers: apiHeaders(),
+              body: JSON.stringify({ paymentStatus: newStatus }),
+            });
+            if (!res.ok) { const d = await res.json(); throw new Error(d.error || 'Update failed'); }
+            AdminUI.toast('Payment status updated to ' + newStatus, 'success');
+            render();
+          } catch(err) {
+            badge.innerHTML = origHTML;
+            badge.style.opacity = '1';
+            badge.style.pointerEvents = 'auto';
+            AdminUI.toast(err.message, 'error');
+          }
         });
       });
     }
 
     function updateBulkBar() {
       const count = selectedIds.size;
-      const bar   = document.getElementById('bulkActionBar');
-      if (bar) bar.style.display = count > 0 ? 'flex' : 'none';
-      const countEl = document.getElementById('selectedCount');
-      if (countEl) countEl.textContent = count;
+      const bar   = document.getElementById('bulkBar');
+      if (bar) { bar.style.display = count > 0 ? 'flex' : 'none'; bar.classList.toggle('is-visible', count > 0); }
+      const barText = document.getElementById('bulkBarText');
+      if (barText) barText.textContent = count + ' selected';
     }
 
     selectAllCb?.addEventListener('change', () => {
@@ -876,38 +911,74 @@
 
     document.getElementById('bulkDeselect')?.addEventListener('click', () => { selectedIds.clear(); updateBulkBar(); render(); });
 
-    // -- DELETE TEAM
-    async function deleteTeam(id) {
-      if (!confirm('Delete this team? This cannot be undone.')) return;
+    async function bulkUpdateStatus(newStatus, label) {
+      if (!selectedIds.size) return;
+      if (!confirm(`Mark ${selectedIds.size} registration(s) as ${label.toUpperCase()}?`)) return;
+      let ok = 0, fail = 0;
+      for (const id of selectedIds) {
+        try {
+          const res = await fetch('/api/admin/registrations/' + id, {
+            method: 'PATCH', headers: apiHeaders(),
+            body: JSON.stringify({ paymentStatus: newStatus }),
+          });
+          if (res.ok) ok++; else fail++;
+        } catch { fail++; }
+      }
+      AdminUI.toast(`Updated ${ok}${fail ? `, failed ${fail}` : ''}.`, ok ? 'success' : 'error');
+      selectedIds.clear();
+      updateBulkBar();
+      render();
+    }
+
+    document.getElementById('bulkApprove')?.addEventListener('click', () => bulkUpdateStatus('paid',    'Paid'));
+    document.getElementById('bulkReject')?.addEventListener('click',  () => bulkUpdateStatus('pending', 'Pending'));
+
+    // -- DELETE REGISTRATION
+    async function deleteRegistration(id) {
+      if (!confirm('Delete this registration? This cannot be undone.')) return;
       try {
-        const res = await fetch('/api/admin/teams/' + id, { method: 'DELETE', headers: apiHeaders() });
+        const res = await fetch('/api/admin/registrations/' + id, { method: 'DELETE', headers: apiHeaders() });
         const d   = await res.json();
         if (!res.ok) throw new Error(d.error || 'Delete failed');
-        AdminUI.toast('Team deleted.', 'success');
+        AdminUI.toast('Registration deleted.', 'success');
         render();
       } catch(err) { AdminUI.toast(err.message, 'error'); }
     }
 
-    // -- DETAIL MODAL
+    // -- DETAIL MODAL (reads from in-memory rendered data)
     const modal        = document.getElementById('detailModal');
     const modalClose   = document.getElementById('modalClose');
     const modalContent = document.getElementById('modalContent');
+    let _cachedRegs    = [];
 
     async function showDetailModal(id) {
       try {
-        const res  = await fetch('/api/admin/teams?q=' + id, { headers: apiHeaders() });
-        const data = await res.json();
-        // find by id
-        const r = (data.teams || []).find(t => t._id === id) || data.teams?.[0];
-        if (!r) { AdminUI.toast('Team not found', 'error'); return; }
+        // Try to find in cached data first, then re-fetch
+        let r = _cachedRegs.find(x => x._id === id);
+        if (!r) {
+          const res  = await fetch('/api/admin/registrations?page=1&limit=200', { headers: apiHeaders() });
+          const data = await res.json();
+          _cachedRegs = data.registrations || [];
+          r = _cachedRegs.find(x => x._id === id);
+        }
+        if (!r) { AdminUI.toast('Registration not found', 'error'); return; }
 
         if (document.getElementById('modalTeamName')) document.getElementById('modalTeamName').textContent = r.teamName || '-';
-        if (document.getElementById('modalSubtitle')) document.getElementById('modalSubtitle').textContent = 'Registered ' + AdminUI.formatDate(r.createdAt);
+        if (document.getElementById('modalSubtitle')) document.getElementById('modalSubtitle').textContent = 'Submitted ' + AdminUI.formatDate(r.createdAt);
 
         const membersHtml = (r.members || []).length
-          ? (r.members).map((m, i) => '<div class="modal-member-card"><div class="modal-member-name">Member ' + (i+1) + ': ' + (m.name||'-') + '</div>' +
-              '<div class="modal-member-detail">' + (m.phone||'') + '</div></div>').join('')
-          : '<div style="color:rgba(255,255,255,0.25);font-size:0.82rem;">No members added yet</div>';
+          ? r.members.map((m, i) =>
+              '<div class="modal-member-card">' +
+              '<div class="modal-member-name">Member ' + (i+2) + ': ' + (m.name||'-') + '</div>' +
+              '<div class="modal-member-detail">' + (m.email||'') + (m.phone ? ' · ' + m.phone : '') + '</div>' +
+              '</div>').join('')
+          : '<div style="color:rgba(255,255,255,0.25);font-size:0.82rem;">No additional members.</div>';
+
+        const screenshotHtml = r.paymentScreenshotUrl
+          ? '<a href="' + r.paymentScreenshotUrl + '" target="_blank" rel="noopener">' +
+            '<img src="' + r.paymentScreenshotUrl + '" alt="Payment Screenshot" style="max-width:100%;max-height:220px;border-radius:10px;border:1px solid rgba(255,255,255,0.1);margin-top:0.5rem;" />' +
+            '</a>'
+          : '<span style="color:rgba(255,255,255,0.3);font-size:0.8rem;">No screenshot uploaded.</span>';
 
         modalContent.innerHTML =
           '<div class="modal-section"><div class="modal-section-title">Team Leader</div>' +
@@ -917,18 +988,19 @@
           '<div class="modal-row"><span class="modal-row-label">College</span><span class="modal-row-value">' + (r.collegeName||'-') + '</span></div>' +
           '<div class="modal-row"><span class="modal-row-label">Branch</span><span class="modal-row-value">' + (r.branch||'-') + '</span></div>' +
           '</div>' +
-          '<div class="modal-section"><div class="modal-section-title">Team Code</div>' +
-          '<div class="modal-row"><span class="modal-row-label">Code</span><span class="modal-row-value" style="font-family:monospace;color:#a855f7;">' + (r.code ? r.code : '<span style="color:rgba(255,255,255,0.25);font-size:0.8rem;">— not assigned yet</span>') + '</span></div>' +
-          '<div class="modal-row"><span class="modal-row-label">Payment</span><span class="modal-row-value">' + (r.paymentStatus==='paid' ? '<span style="color:#4ade80;">Paid</span>' : '<span style="color:#fbbf24;">Pending</span>') + '</span></div>' +
-          '<div class="modal-row"><span class="modal-row-label">Amount</span><span class="modal-row-value">' + (r.totalAmount ? '&#8377;'+r.totalAmount : '-') + '</span></div>' +
-          '<div class="modal-row" style="margin-top:0.8rem; flex-direction: column; align-items: flex-start;"><span class="modal-row-label" style="margin-bottom:0.5rem;">Payment Screenshot</span>' + 
-          (r.paymentScreenshotUrl ? '<a href="'+r.paymentScreenshotUrl+'" target="_blank"><img src="'+r.paymentScreenshotUrl+'" alt="Screenshot" style="max-width:100%; max-height:200px; border-radius:8px; border:1px solid rgba(255,255,255,0.1);" /></a>' : '<span style="color:rgba(255,255,255,0.3); font-size:0.8rem;">No screenshot uploaded.</span>') +
+          '<div class="modal-section"><div class="modal-section-title">Registration</div>' +
+          '<div class="modal-row"><span class="modal-row-label">Team Code</span>' +
+            '<span class="modal-row-value" style="font-family:monospace;color:#a855f7;">' + (r.teamCode||'—') + '</span></div>' +
+          '<div class="modal-row"><span class="modal-row-label">Payment</span>' +
+            '<span class="modal-row-value">' + (r.paymentStatus==='paid' ? '<span style="color:#4ade80;">✓ Paid</span>' : '<span style="color:#fbbf24;">⏳ Pending</span>') + '</span></div>' +
+          '<div class="modal-row"><span class="modal-row-label">Amount</span>' +
+            '<span class="modal-row-value">&#8377;' + (r.totalAmount||'—') + (r.mentorSession ? ' <small style="color:#a855f7;">(+Mentor)</small>' : '') + '</span></div>' +
           '</div>' +
-          '</div>' +
-          '<div class="modal-section"><div class="modal-section-title">Members (' + (r.members?.length||0) + ')</div>' + membersHtml + '</div>';
+          '<div class="modal-section"><div class="modal-section-title">Payment Screenshot</div>' + screenshotHtml + '</div>' +
+          '<div class="modal-section"><div class="modal-section-title">Members (' + (r.members?.length||0) + ' additional)</div>' + membersHtml + '</div>';
 
         modal?.classList.add('is-open');
-      } catch(err) { AdminUI.toast('Failed to load team details', 'error'); }
+      } catch(err) { AdminUI.toast('Failed to load details: ' + err.message, 'error'); console.error(err); }
     }
 
     function closeModal() { modal?.classList.remove('is-open'); }
@@ -936,28 +1008,31 @@
     modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
     document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal?.classList.contains('is-open')) closeModal(); });
 
-    // -- BUTTON LISTENERS (buttons are now in HTML directly)
+    // -- GENERATE CODES button (still useful for teams collection)
     document.getElementById('generateCodesBtn')?.addEventListener('click', async () => {
-        if (!confirm('Generate team codes for ALL teams without one?\n\nCodes are PERMANENT and cannot be changed after generation.')) return;
-        const genBtn = document.getElementById('generateCodesBtn'); genBtn.disabled = true; genBtn.textContent = 'Generating...';
-        try {
-          const res  = await fetch('/api/admin/teams/generate-codes', { method: 'POST', headers: apiHeaders() });
-          const data = await res.json();
-          if (!res.ok) throw new Error(data.error);
-          AdminUI.toast('Generated ' + data.generated + ' team codes!', 'success');
-          render();
-        } catch(err) { AdminUI.toast('Failed: ' + err.message, 'error'); }
-        finally { genBtn.disabled = false; genBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Generate Team Codes'; }
-      });
+      if (!confirm('Generate team codes for all teams in the Teams collection that don\'t have one?')) return;
+      const genBtn = document.getElementById('generateCodesBtn');
+      genBtn.disabled = true; genBtn.textContent = 'Generating...';
+      try {
+        const res  = await fetch('/api/admin/teams/generate-codes', { method: 'POST', headers: apiHeaders() });
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+        AdminUI.toast('Generated ' + data.generated + ' codes. Synced ' + (data.synced||0) + ' existing.', 'success');
+        render();
+      } catch(err) { AdminUI.toast('Failed: ' + err.message, 'error'); }
+      finally {
+        genBtn.disabled = false;
+        genBtn.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Generate Codes';
+      }
+    });
 
     document.getElementById('importTeamsBtn')?.addEventListener('click', showImportModal);
 
-    // -- IMPORT MODAL (file upload: .csv or .xlsx via SheetJS)
+    // -- IMPORT MODAL (imports into teams collection for future code verification)
     function showImportModal() {
       const existing = document.getElementById('importModal');
       if (existing) { existing.style.display = 'flex'; return; }
 
-      // Load SheetJS on demand
       if (!window.XLSX) {
         const s = document.createElement('script');
         s.src   = 'https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js';
@@ -970,16 +1045,13 @@
       el.innerHTML =
         '<div style="background:#0f0f1a;border:1px solid rgba(168,85,247,0.25);border-radius:16px;padding:2rem;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;">' +
         '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem;">' +
-        '<h3 style="color:#fff;font-size:1.1rem;font-weight:700;">Import Teams</h3>' +
+        '<h3 style="color:#fff;font-size:1.1rem;font-weight:700;">Import Shortlisted Teams</h3>' +
         '<button id="importModalClose" style="background:none;border:none;color:rgba(255,255,255,0.4);cursor:pointer;font-size:1.5rem;">&times;</button></div>' +
         '<p style="color:rgba(255,255,255,0.5);font-size:0.82rem;line-height:1.6;margin-bottom:1rem;">' +
-        'Upload a <strong style="color:#fff;">.xlsx</strong> or <strong style="color:#fff;">.csv</strong> file.<br>' +
+        'Upload <strong style="color:#fff;">.xlsx</strong> or <strong style="color:#fff;">.csv</strong>.<br>' +
         'Required columns: <code style="color:#a855f7;">Team Name, College Name, Branch, Leader Name, Leader Email, Leader Phone</code><br>' +
         'Optional: <code style="color:#a855f7;">Member Count, Mentor Session (true/false)</code></p>' +
-        '<label style="display:flex;flex-direction:column;gap:0.5rem;">' +
-        '<span style="font-size:0.8rem;color:rgba(255,255,255,0.4);font-family:monospace;">SELECT FILE</span>' +
         '<input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" style="background:#080808;border:1px solid rgba(255,255,255,0.12);border-radius:8px;padding:0.75rem;color:#fff;font-size:0.85rem;width:100%;cursor:pointer;" />' +
-        '</label>' +
         '<div id="importPreview" style="margin-top:1rem;display:none;">' +
         '<div id="importPreviewText" style="font-size:0.8rem;color:rgba(255,255,255,0.5);margin-bottom:0.4rem;"></div>' +
         '<div id="importPreviewTable" style="overflow-x:auto;max-height:200px;"></div>' +
@@ -996,7 +1068,6 @@
       document.getElementById('importCancelBtn')?.addEventListener('click', closeEl);
 
       let parsedTeams = [];
-
       const colMap = {
         'teamname': 'teamName', 'team name': 'teamName',
         'collegename': 'collegeName', 'college name': 'collegeName', 'college': 'collegeName',
@@ -1013,68 +1084,45 @@
         const header = rows[0].map(h => String(h||'').toLowerCase().trim());
         const teams  = [];
         for (let i = 1; i < rows.length; i++) {
-          const row   = rows[i];
+          const row = rows[i];
           if (row.every(c => !c)) continue;
-          const obj   = {};
-          header.forEach((h, j) => {
-            const mapped = colMap[h];
-            if (mapped) obj[mapped] = String(row[j]||'').trim();
-          });
+          const obj = {};
+          header.forEach((h, j) => { const mapped = colMap[h]; if (mapped) obj[mapped] = String(row[j]||'').trim(); });
           if (!obj.teamName || !obj.leaderEmail) continue;
           teams.push({
-            teamName:    obj.teamName,
-            collegeName: obj.collegeName || '',
-            branch:      obj.branch      || '',
-            memberCount: parseInt(obj.memberCount || '4') || 4,
+            teamName: obj.teamName, collegeName: obj.collegeName||'', branch: obj.branch||'',
+            memberCount: parseInt(obj.memberCount||'4')||4,
             mentorSession: (obj.mentorSession||'').toLowerCase() === 'true',
-            leader: {
-              name:  obj.leaderName  || '',
-              email: obj.leaderEmail || '',
-              phone: obj.leaderPhone || '',
-            },
+            leader: { name: obj.leaderName||'', email: obj.leaderEmail||'', phone: obj.leaderPhone||'' },
           });
         }
         return teams;
       }
 
       document.getElementById('importFileInput')?.addEventListener('change', async (e) => {
-        const file = e.target.files[0];
-        if (!file) return;
+        const file = e.target.files[0]; if (!file) return;
         const msg = document.getElementById('importMsg');
         msg.style.color = '#fbbf24'; msg.textContent = 'Parsing file...';
-
-        const waitXLSX = () => new Promise(res => {
-          if (window.XLSX) return res();
-          const t = setInterval(() => { if (window.XLSX) { clearInterval(t); res(); } }, 100);
-        });
+        const waitXLSX = () => new Promise(r => { if (window.XLSX) return r(); const t = setInterval(() => { if (window.XLSX) { clearInterval(t); r(); } }, 100); });
         await waitXLSX();
-
-        const buf  = await file.arrayBuffer();
-        const wb   = XLSX.read(buf, { type: 'array' });
-        const ws   = wb.Sheets[wb.SheetNames[0]];
+        const buf = await file.arrayBuffer();
+        const wb  = XLSX.read(buf, { type: 'array' });
+        const ws  = wb.Sheets[wb.SheetNames[0]];
         const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
-
         parsedTeams = parseRows(rows);
         msg.textContent = '';
-
         const preview = document.getElementById('importPreview');
-        const prevTxt = document.getElementById('importPreviewText');
-        const prevTbl = document.getElementById('importPreviewTable');
-        prevTxt.textContent = 'Preview: ' + parsedTeams.length + ' teams found (showing first 5)';
-        prevTbl.innerHTML =
+        document.getElementById('importPreviewText').textContent = 'Preview: ' + parsedTeams.length + ' teams (first 5 shown)';
+        document.getElementById('importPreviewTable').innerHTML =
           '<table style="width:100%;border-collapse:collapse;font-size:0.75rem;">' +
           '<tr style="color:rgba(255,255,255,0.3);">' +
-          ['Team Name','College','Branch','Leader','Email'].map(h => '<th style="padding:4px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">' + h + '</th>').join('') +
+          ['Team','College','Branch','Leader','Email'].map(h => '<th style="padding:4px 8px;text-align:left;border-bottom:1px solid rgba(255,255,255,0.06);">' + h + '</th>').join('') +
           '</tr>' +
-          parsedTeams.slice(0, 5).map(t =>
-            '<tr>' +
-            [t.teamName, t.collegeName, t.branch, t.leader.name, t.leader.email]
-              .map(v => '<td style="padding:4px 8px;color:rgba(255,255,255,0.65);border-bottom:1px solid rgba(255,255,255,0.04);">' + (v||'—') + '</td>').join('') +
-            '</tr>'
-          ).join('') +
-          '</table>';
+          parsedTeams.slice(0,5).map(t =>
+            '<tr>' + [t.teamName,t.collegeName,t.branch,t.leader.name,t.leader.email]
+              .map(v => '<td style="padding:4px 8px;color:rgba(255,255,255,0.65);border-bottom:1px solid rgba(255,255,255,0.04);">' + (v||'—') + '</td>').join('') + '</tr>'
+          ).join('') + '</table>';
         preview.style.display = 'block';
-
         const btn = document.getElementById('importSubmitBtn');
         btn.disabled = parsedTeams.length === 0;
         btn.style.opacity = parsedTeams.length > 0 ? '1' : '0.5';
@@ -1090,11 +1138,12 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Import failed');
           msg.style.color = '#4ade80';
-          msg.textContent = 'Imported ' + data.imported + ' teams' + (data.skipped ? ', skipped ' + data.skipped : '') + '!';
+          msg.textContent = '✓ Imported ' + data.imported + ' teams' + (data.skipped ? ', skipped ' + data.skipped : '') + '!';
           setTimeout(() => { closeEl(); render(); }, 1500);
         } catch(err) { msg.style.color = '#f87171'; msg.textContent = 'Error: ' + err.message; }
       });
     }
+
     // -- SEARCH & FILTER
     let debounceTimer;
     searchInput?.addEventListener('input', () => {
@@ -1103,29 +1152,32 @@
     });
     statusSelect?.addEventListener('change', () => { statusFilter = statusSelect.value; currentPage = 1; render(); });
 
-    // -- EXPORT
+    // -- EXPORT CSV (from registrations collection)
     document.getElementById('exportBtn')?.addEventListener('click', async () => {
       try {
-        const res  = await fetch('/api/admin/teams?page=1&limit=1000', { headers: apiHeaders() });
+        const res  = await fetch('/api/admin/registrations?page=1&limit=1000', { headers: apiHeaders() });
         const data = await res.json();
-        const teams = data.teams || [];
-        const hdrs  = ['Team Name','College','Branch','Leader Name','Email','Phone','Team Code','Members','Payment','Amount','Date'];
-        const csv   = [hdrs, ...teams.map(t => [
-          t.teamName||'', t.collegeName||'', t.branch||'',
-          t.leader?.name||'', t.leader?.email||'', t.leader?.phone||'',
-          t.code||'', (t.members?.length||0)+1,
-          t.paymentStatus||'', t.totalAmount||'',
-          t.createdAt ? new Date(t.createdAt).toLocaleDateString('en-IN') : ''
-        ])].map(r => r.map(v => '"' + String(v||'').replace(/"/g,'""') + '"').join(',')).join('\n');
-        const url = URL.createObjectURL(new Blob([csv],{type:'text/csv'}));
-        Object.assign(document.createElement('a'), {href:url, download:'udbhav26_teams.csv'}).click();
+        const regs  = data.registrations || [];
+        const hdrs  = ['Team Name','College','Branch','Leader Name','Email','Phone','Team Code','Members','Payment','Amount','Mentor','Date'];
+        const csv   = [hdrs, ...regs.map(r => [
+          r.teamName||'', r.collegeName||'', r.branch||'',
+          r.leader?.name||'', r.leader?.email||'', r.leader?.phone||'',
+          r.teamCode||'', (r.members?.length||0)+1,
+          r.paymentStatus||'', r.totalAmount||'',
+          r.mentorSession ? 'Yes' : 'No',
+          r.createdAt ? new Date(r.createdAt).toLocaleDateString('en-IN') : '',
+        ])].map(row => row.map(v => '"' + String(v||'').replace(/"/g,'""') + '"').join(',')).join('\n');
+        const url = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+        Object.assign(document.createElement('a'), { href: url, download: 'udbhav26_registrations.csv' }).click();
         URL.revokeObjectURL(url);
         AdminUI.toast('CSV exported!', 'success');
-      } catch(err) { AdminUI.toast('Export failed', 'error'); }
+      } catch(err) { AdminUI.toast('Export failed: ' + err.message, 'error'); }
     });
 
     // Initial render
     render();
+
+  
   </script>
 </body>
 </html>

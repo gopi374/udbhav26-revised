@@ -27,6 +27,7 @@
 import { connectDB } from './lib/mongodb.js';
 import { Registration } from './models/Registration.js';
 import { Team } from './models/Team.js';
+import { sanitizeText, sanitizeEmail, sanitizePhone, sanitizeCode } from './lib/sanitize.js';
 
 // ── Handler ─────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
@@ -73,7 +74,7 @@ export default async function handler(req, res) {
     await connectDB();
 
     // ── 3. Duplicate check (Upsert pending, block paid) ──────────────────────
-    const teamCodeStr = (body.teamCode || '').trim().toUpperCase();
+    const teamCodeStr = sanitizeCode(body.teamCode);
     const existing = await Registration.findOne({ teamCode: teamCodeStr });
 
     if (existing && existing.paymentStatus === 'paid') {
@@ -84,21 +85,22 @@ export default async function handler(req, res) {
     }
 
     // ── 4. Save or Update Registration ───────────────────────────────────────
+    // teamCodeStr is already sanitized and declared above
     const payload = {
       teamCode:    teamCodeStr,
-      teamName:    (body.teamName || '').trim(),
-      collegeName: (body.collegeName || '').trim(),
-      branch:      (body.branch || '').trim(),
-      yearOfStudy: (body.yearOfStudy || '').toString().trim() || 'N/A',
+      teamName:    sanitizeText(body.teamName),
+      collegeName: sanitizeText(body.collegeName),
+      branch:      sanitizeText(body.branch),
+      yearOfStudy: sanitizeText(body.yearOfStudy, 20) || 'N/A',
       leader: {
-        name:  (body.leader.name  || '').trim(),
-        email: (body.leader.email || '').trim().toLowerCase(),
-        phone: (body.leader.phone || '').trim(),
+        name:  sanitizeText(body.leader.name),
+        email: sanitizeEmail(body.leader.email),
+        phone: sanitizePhone(body.leader.phone),
       },
       members: members.map((m) => ({
-        name:  (m.name  || '').trim(),
-        email: (m.email || '').trim().toLowerCase(),
-        phone: (m.phone || '').trim(),
+        name:  sanitizeText(m.name),
+        email: sanitizeEmail(m.email),
+        phone: sanitizePhone(m.phone),
       })),
       mentorSession: Boolean(body.mentorSession),
       totalAmount,
@@ -123,12 +125,16 @@ export default async function handler(req, res) {
     // The admin dashboard reads from the 'teams' collection.
     // We update the team document with the members and mentor selection immediately.
     await Team.findOneAndUpdate(
-      { code: (body.teamCode || '').trim().toUpperCase() },
+      { code: teamCodeStr },
       { 
         $set: { 
+          'leader.name': sanitizeText(body.leader.name),
+          'leader.email': sanitizeEmail(body.leader.email),
+          'leader.phone': sanitizePhone(body.leader.phone),
           members: members.map((m) => ({
-            name:  (m.name  || '').trim(),
-            phone: (m.phone || '').trim(),
+            name:  sanitizeText(m.name),
+            phone: sanitizePhone(m.phone),
+            email: sanitizeEmail(m.email),
           })),
           memberCount: members.length + 1, // leader + members
           mentorSession: Boolean(body.mentorSession),

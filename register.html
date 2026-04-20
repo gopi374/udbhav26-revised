@@ -84,13 +84,35 @@
       background-size: 200px 200px; mix-blend-mode: overlay;
     }
 
-    /* ── Purple ambient background ─────────────────────────────────────────── */
+    /* ── Premium Animated Ambient Background ─────────────────────────────── */
     .reg-ambient {
       position: fixed; inset: 0; z-index: 0; pointer-events: none;
-      background:
-        radial-gradient(ellipse 60% 50% at 15% 50%, rgba(139,92,246,0.07) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 40% at 85% 20%, rgba(139,92,246,0.05) 0%, transparent 60%),
-        var(--clr-bg);
+      background: var(--clr-bg);
+      overflow: hidden;
+    }
+    .reg-ambient::before, .reg-ambient::after {
+      content: ''; position: absolute;
+      width: 100vw; height: 100vh;
+      filter: blur(100px); opacity: 0.25;
+      animation: ambientDrift 20s ease-in-out infinite alternate;
+      border-radius: 50%;
+    }
+    .reg-ambient::before {
+      background: radial-gradient(circle at center, #8b5cf6 0%, transparent 60%);
+      top: -20%; left: -10%;
+      width: 80vw; height: 80vh;
+    }
+    .reg-ambient::after {
+      background: radial-gradient(circle at center, #ec4899 0%, transparent 60%);
+      bottom: -20%; right: -10%;
+      width: 70vw; height: 70vh;
+      animation-delay: -10s;
+      opacity: 0.15;
+    }
+    @keyframes ambientDrift {
+      0% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(5%, 10%) scale(1.1); }
+      100% { transform: translate(-5%, -5%) scale(0.95); }
     }
 
 
@@ -628,66 +650,242 @@
     .add-member-btn:hover { background: rgba(139,92,246,0.08); border-color: rgba(139,92,246,0.7); box-shadow: 0 0 18px rgba(139,92,246,0.15); }
     .add-member-btn[style*="display: none"] { display: none; }
 
-    /* ── MENTOR CHECKBOX ───────────────────────────────────────────── */
-    .mentor-check-wrap {
-      display: flex;
-      align-items: flex-start;
-      gap: 0.85rem;
-      padding: 1.1rem 1.25rem;
-      background: rgba(139,92,246,0.06);
-      border: 1px solid rgba(139,92,246,0.2);
-      border-radius: 14px;
+    /* ── MENTOR PROMO CARD ─────────────────────────────────────────── */
+    .mentor-promo-card {
+      position: relative;
+      padding: 1.75rem 1.5rem;
+      background: linear-gradient(135deg, rgba(139,92,246,0.12) 0%, rgba(168,85,247,0.06) 50%, rgba(236,72,153,0.08) 100%);
+      border: 1.5px solid rgba(139,92,246,0.3);
+      border-radius: 20px;
       cursor: pointer;
-      transition: background 0.2s, border-color 0.2s;
+      transition: all 0.35s cubic-bezier(0.16,1,0.3,1);
       margin-bottom: 0.75rem;
+      overflow: hidden;
     }
-    .mentor-check-wrap:hover { background: rgba(139,92,246,0.1); border-color: rgba(139,92,246,0.35); }
-
-    .custom-checkbox {
-      width: 20px; height: 20px;
+    .mentor-promo-card::before {
+      content: '';
+      position: absolute;
+      top: -1px; left: 15%; right: 15%;
+      height: 2px;
+      background: linear-gradient(to right, transparent, #a855f7, #ec4899, transparent);
+      border-radius: 2px;
+    }
+    .mentor-promo-card::after {
+      content: '';
+      position: absolute;
+      top: 0; left: -100%;
+      width: 50%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.04), transparent);
+      animation: mentorShine 4s ease-in-out infinite;
+    }
+    @keyframes mentorShine {
+      0% { left: -100%; }
+      50%, 100% { left: 200%; }
+    }
+    .mentor-promo-card:hover {
+      border-color: rgba(168,85,247,0.55);
+      background: linear-gradient(135deg, rgba(139,92,246,0.18) 0%, rgba(168,85,247,0.1) 50%, rgba(236,72,153,0.12) 100%);
+      box-shadow: 0 0 40px rgba(139,92,246,0.15), 0 0 80px rgba(168,85,247,0.06);
+      transform: translateY(-2px);
+    }
+    .mentor-promo-card.is-selected {
+      border-color: rgba(74,222,128,0.6);
+      background: linear-gradient(135deg, rgba(74,222,128,0.15) 0%, rgba(34,197,94,0.1) 50%, rgba(21,128,61,0.08) 100%);
+      box-shadow: 0 0 50px rgba(74,222,128,0.15), inset 0 0 30px rgba(74,222,128,0.05);
+    }
+    .mentor-promo-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.28rem 0.75rem;
+      background: linear-gradient(135deg, rgba(236,72,153,0.2), rgba(168,85,247,0.2));
+      border: 1px solid rgba(236,72,153,0.3);
+      border-radius: 999px;
+      font-family: var(--font-mono);
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #f472b6;
+      margin-bottom: 0.85rem;
+    }
+    .mentor-promo-heading {
+      font-family: var(--font-display);
+      font-size: clamp(1.8rem, 3vw, 2.4rem);
+      line-height: 0.95;
+      color: #fff;
+      letter-spacing: 0.02em;
+      margin-bottom: 0.5rem;
+    }
+    .mentor-promo-heading .gradient-text {
+      background: linear-gradient(135deg, #a855f7, #ec4899);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .mentor-promo-desc {
+      font-family: var(--font-ui);
+      font-size: 0.82rem;
+      color: rgba(255,255,255,0.55);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    .mentor-promo-bottom {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    .mentor-promo-price {
+      display: flex;
+      align-items: baseline;
+      gap: 0.35rem;
+    }
+    .mentor-promo-price .price-big {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      color: #a855f7;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .mentor-promo-price .price-label {
+      font-family: var(--font-ui);
+      font-size: 0.72rem;
+      color: rgba(255,255,255,0.35);
+      font-weight: 500;
+    }
+    .mentor-promo-toggle {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: 12px;
+      border: 1.5px solid rgba(139,92,246,0.3);
+      background: rgba(139,92,246,0.08);
+      font-family: var(--font-ui);
+      font-size: 0.78rem;
+      font-weight: 700;
+      color: rgba(255,255,255,0.65);
+      transition: all 0.25s;
+    }
+    .mentor-promo-card.is-selected .mentor-promo-toggle {
+      background: linear-gradient(135deg, #16a34a, #4ade80);
+      border-color: rgba(74,222,128,0.5);
+      color: #fff;
+      box-shadow: 0 4px 16px rgba(74,222,128,0.25);
+    }
+    .mentor-toggle-dot {
+      width: 18px; height: 18px;
       border-radius: 5px;
       border: 1.5px solid rgba(139,92,246,0.4);
       background: transparent;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      display: flex; align-items: center; justify-content: center;
       transition: all 0.2s;
-      margin-top: 1px;
       position: relative;
+      flex-shrink: 0;
     }
-    .custom-checkbox.checked {
-      background: var(--clr-purple);
-      border-color: var(--clr-purple);
+    .mentor-promo-card.is-selected .mentor-toggle-dot {
+      background: #fff;
+      border-color: #fff;
     }
-    .custom-checkbox.checked::after {
+    .mentor-promo-card.is-selected .mentor-toggle-dot::after {
       content: '';
       position: absolute;
       width: 5px; height: 9px;
-      border: 2px solid #fff;
+      border: 2px solid #16a34a;
       border-top: none;
       border-left: none;
       transform: rotate(45deg) translate(-1px, -1px);
     }
 
-    .mentor-check-text {}
-    .mentor-check-title {
+    /* ── CUSTOM FILE UPLOAD ────────────────────────────────────────── */
+    .file-upload-zone {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1.5rem 1.25rem;
+      background: rgba(139,92,246,0.04);
+      border: 2px dashed rgba(139,92,246,0.3);
+      border-radius: 16px;
+      cursor: pointer;
+      transition: all 0.25s;
+      min-height: 110px;
+    }
+    .file-upload-zone:hover {
+      background: rgba(139,92,246,0.08);
+      border-color: rgba(139,92,246,0.5);
+      box-shadow: 0 0 24px rgba(139,92,246,0.08);
+    }
+    .file-upload-zone.has-file {
+      border-style: solid;
+      border-color: rgba(74,222,128,0.4);
+      background: rgba(74,222,128,0.04);
+    }
+    .file-upload-zone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      cursor: pointer;
+    }
+    .file-upload-icon {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      background: rgba(139,92,246,0.12);
+      border: 1px solid rgba(139,92,246,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: #a78bfa;
+    }
+    .file-upload-zone.has-file .file-upload-icon {
+      background: rgba(74,222,128,0.12);
+      border-color: rgba(74,222,128,0.25);
+      color: #4ade80;
+    }
+    .file-upload-text {
       font-family: var(--font-ui);
-      font-size: 0.88rem;
+      font-size: 0.82rem;
       font-weight: 600;
-      color: #fff;
-      line-height: 1.3;
+      color: rgba(255,255,255,0.6);
+      text-align: center;
     }
-    .mentor-check-desc {
+    .file-upload-text strong { color: #a78bfa; }
+    .file-upload-zone.has-file .file-upload-text strong { color: #4ade80; }
+    .file-upload-hint {
       font-family: var(--font-ui);
-      font-size: 0.75rem;
-      color: var(--clr-white-muted);
-      margin-top: 0.2rem;
-      line-height: 1.5;
+      font-size: 0.68rem;
+      color: rgba(255,255,255,0.3);
     }
-    .mentor-check-desc .price-tag {
-      color: rgba(167,139,250,0.9);
-      font-weight: 700;
+    .file-upload-filename {
+      font-family: var(--font-mono);
+      font-size: 0.72rem;
+      color: #4ade80;
+      font-weight: 600;
+      display: none;
+    }
+    .file-upload-zone.has-file .file-upload-filename { display: block; }
+
+    /* ── EDITABLE FIELD HIGHLIGHT ──────────────────────────────────── */
+    .form-input.is-editable {
+      opacity: 1 !important;
+      cursor: text !important;
+      border-color: rgba(168,85,247,0.35) !important;
+      background: rgba(139,92,246,0.04) !important;
+    }
+    .form-input.is-editable:focus {
+      border-color: rgba(139,92,246,0.5) !important;
+      background: rgba(139,92,246,0.06) !important;
+      box-shadow: 0 0 0 3px rgba(139,92,246,0.1) !important;
+    }
+    .editable-hint {
+      font-family: var(--font-ui);
+      font-size: 0.62rem;
+      color: rgba(168,85,247,0.6);
+      font-weight: 500;
+      letter-spacing: 0.04em;
     }
 
     /* ── TOTAL DISPLAY ─────────────────────────────────────────────── */
@@ -1095,12 +1293,6 @@
     <!-- LEFT: logo + tagline -->
     <div class="nav-logo">
       <img src="/logo.png" alt="UDBHAV'26 logo" class="nav-logo-img" id="logoImg" />
-      <div class="logo-divider" aria-hidden="true"></div>
-      <span class="tagline-dot" aria-hidden="true"></span>
-      <div class="logo-tagline">
-        <span class="tagline-role">Alta School of Technology</span>
-        <span class="tagline-motto">Grand Hackathon 2026</span>
-      </div>
     </div>
 
     <!-- RIGHT: floating pill + circle menu button -->
@@ -1156,7 +1348,7 @@
                       <span class="md-item__desc">Our partners &amp; supporters</span>
                     </div>
                   </a>
-                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/user-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
                     </div>
@@ -1372,6 +1564,7 @@
                 <div style="display:flex;gap:0.75rem;align-items:stretch;width:100%;">
                   <input type="text" id="teamCodeInput" name="teamCodeInput" class="form-input"
                          placeholder="e.g., UDB-ABCD" autocomplete="off" autocapitalize="characters"
+                         oninput="this.value = this.value.toUpperCase().replace(/[^A-Z0-9-]/g, '')"
                          style="font-family:'JetBrains Mono',monospace;letter-spacing:0.12em;text-transform:uppercase;flex:1;min-width:0;font-size:1rem;font-weight:700;" />
                   <button type="button" id="verifyCodeBtn" class="verify-code-btn">
                     Verify →
@@ -1429,31 +1622,33 @@
               </div>
             </div>
 
-            <!-- ── LOCKED LEADER ───────────────────────────────────────── -->
+            <!-- ── LEADER (name locked, email/phone editable) ──────────── -->
             <div class="form-section-sep">
               <div class="form-section-sep__line"></div>
-              <span class="form-section-sep__label">Team Leader <span style="font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">🔒 READ-ONLY</span></span>
+              <span class="form-section-sep__label">Team Leader <span style="font-size:0.6rem;color:#a855f7;letter-spacing:0.1em;">✏ EMAIL & PHONE EDITABLE</span></span>
               <div class="form-section-sep__line"></div>
             </div>
 
             <div class="member-block" style="margin-bottom:1rem;">
               <div class="form-row single">
                 <div class="form-field">
-                  <label class="form-label">Leader Name</label>
+                  <label class="form-label">Leader Name <span style="font-size:0.6rem;color:rgba(255,255,255,0.3);letter-spacing:0.1em;">🔒</span></label>
                   <input type="text" id="leaderName" class="form-input" readonly
                          style="opacity:0.6;cursor:not-allowed;border-color:rgba(168,85,247,0.15);" />
                 </div>
               </div>
               <div class="form-row">
                 <div class="form-field">
-                  <label class="form-label">Leader Email</label>
-                  <input type="email" id="leaderEmail" class="form-input" readonly
-                         style="opacity:0.6;cursor:not-allowed;border-color:rgba(168,85,247,0.15);" />
+                  <label class="form-label">Leader Email <span class="editable-hint">✏ editable</span></label>
+                  <input type="email" id="leaderEmail" class="form-input is-editable"
+                         placeholder="leader@email.com"
+                         oninput="this.value = this.value.replace(/[^a-zA-Z0-9.@_-]/g, '')" />
                 </div>
                 <div class="form-field">
-                  <label class="form-label">Leader Phone</label>
-                  <input type="tel" id="leaderPhone" class="form-input" readonly
-                         style="opacity:0.6;cursor:not-allowed;border-color:rgba(168,85,247,0.15);" />
+                  <label class="form-label">Leader Phone <span class="editable-hint">✏ editable</span></label>
+                  <input type="tel" id="leaderPhone" class="form-input is-editable"
+                         placeholder="10-digit phone" maxlength="10"
+                         oninput="this.value = this.value.replace(/[^0-9]/g, '')" />
                 </div>
               </div>
             </div>
@@ -1461,7 +1656,7 @@
             <!-- ── EDITABLE: TEAM MEMBERS ───────────────────────────────── -->
             <div class="form-section-sep">
               <div class="form-section-sep__line"></div>
-              <span class="form-section-sep__label">Team Members <span style="font-size:0.6rem;color:#a855f7;letter-spacing:0.1em;">✏ YOU FILL THIS</span> <span style="font-size:0.6rem;color:#f87171;letter-spacing:0.05em;">(min 1 required)</span></span>
+              <span class="form-section-sep__label">Team Members <span style="font-size:0.6rem;color:#a855f7;letter-spacing:0.1em;">✏ EDITABLE</span> <span style="font-size:0.6rem;color:#f87171;letter-spacing:0.05em;">(min 1 required)</span></span>
               <div class="form-section-sep__line"></div>
             </div>
 
@@ -1474,19 +1669,34 @@
               Add Member
             </button>
 
-            <!-- ── MENTOR SESSION ──────────────────────────────────────── -->
+            <!-- ── MENTOR SESSION — PREMIUM PROMO ──────────────────── -->
             <div class="form-section-sep">
               <div class="form-section-sep__line"></div>
-              <span class="form-section-sep__label">Mentor Session</span>
+              <span class="form-section-sep__label">🔥 Upgrade Your Experience</span>
               <div class="form-section-sep__line"></div>
             </div>
 
-            <!-- Mentor checkbox -->
-            <div class="mentor-check-wrap" id="mentorWrap" role="checkbox" aria-checked="false" tabindex="0" aria-label="Add mentor session for ₹300 extra">
-              <div class="custom-checkbox" id="mentorCheckbox" aria-hidden="true"></div>
-              <div class="mentor-check-text">
-                <div class="mentor-check-title">I want a Mentor Session</div>
-                <div class="mentor-check-desc">Get direct Q&amp;A time with an expert mentor during the hackathon. <span class="price-tag">+₹300 extra</span></div>
+            <!-- Mentor promo card -->
+            <div class="mentor-promo-card" id="mentorWrap" role="checkbox" aria-checked="false" tabindex="0" aria-label="Add mentor session for ₹300 extra">
+              <div class="mentor-promo-badge">
+                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                Most Popular Add-on
+              </div>
+              <h3 class="mentor-promo-heading">
+                Get a <span class="gradient-text">Mentor Session</span>
+              </h3>
+              <p class="mentor-promo-desc">
+                Direct 1-on-1 Q&amp;A time with an <strong style="color:rgba(255,255,255,0.8);">industry expert mentor</strong> during the hackathon. Get guidance on your approach, architecture decisions &amp; presentation strategy.
+              </p>
+              <div class="mentor-promo-bottom">
+                <div class="mentor-promo-price">
+                  <span class="price-big">+₹300</span>
+                  <span class="price-label">per team</span>
+                </div>
+                <div class="mentor-promo-toggle" id="mentorToggleBtn">
+                  <div class="mentor-toggle-dot" id="mentorCheckbox"></div>
+                  <span id="mentorToggleLabel">Add to Registration</span>
+                </div>
               </div>
             </div>
 
@@ -1519,15 +1729,27 @@
               <div style="height:1px;background:linear-gradient(to right,transparent,rgba(139,92,246,0.4),transparent);margin:1.5rem 0;"></div>
 
               <!-- Instruction text & Upload -->
-              <div style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1.5rem;">
+              <div style="background:rgba(139,92,246,0.07);border:1px solid rgba(139,92,246,0.2);border-radius:16px;padding:1.25rem 1.5rem;margin-bottom:1rem;">
                 <p style="font-family:var(--font-ui);font-size:0.88rem;color:rgba(255,255,255,0.75);line-height:1.7;margin:0 0 1rem;">
                   <span style="font-size:1.1rem;">📲</span> <strong style="color:#fff;">Scan the QR below</strong> to pay. Then <strong style="color:#a78bfa;">upload your payment screenshot</strong> here:
                 </p>
-                <div style="display:flex;flex-direction:column;gap:0.5rem;">
-                  <input type="file" id="paymentScreenshot" accept="image/*" required
-                         style="background:rgba(0,0,0,0.2);padding:0.75rem;border:1px dashed rgba(139,92,246,0.4);border-radius:8px;color:rgba(255,255,255,0.8);font-family:var(--font-ui);font-size:0.8rem;width:100%;cursor:pointer;" />
-                  <span style="font-size:0.7rem;color:rgba(255,255,255,0.4);">Max size: 5MB (JPG, PNG, JPEG)</span>
+                <div class="file-upload-zone" id="fileUploadZone">
+                  <input type="file" id="paymentScreenshot" accept="image/*" required />
+                  <div class="file-upload-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                  </div>
+                  <p class="file-upload-text"><strong>Click to upload</strong> or drag & drop</p>
+                  <span class="file-upload-hint">JPG, PNG, JPEG • Max 5MB</span>
+                  <span class="file-upload-filename" id="uploadedFileName"></span>
                 </div>
+              </div>
+
+              <!-- ⚠️ UPI Transaction ID warning -->
+              <div style="display:flex;align-items:flex-start;gap:0.7rem;padding:0.85rem 1.1rem;background:rgba(251,191,36,0.06);border:1px solid rgba(251,191,36,0.25);border-radius:12px;margin-bottom:1.5rem;">
+                <span style="font-size:1.1rem;flex-shrink:0;">⚠️</span>
+                <p style="font-family:var(--font-ui);font-size:0.78rem;color:rgba(251,191,36,0.9);line-height:1.6;margin:0;font-weight:500;">
+                  <strong style="color:#fbbf24;">Important:</strong> Make sure the <strong>UPI Transaction ID / UTR number</strong> is clearly visible in your payment screenshot. Screenshots without a visible transaction ID may delay your registration verification.
+                </p>
               </div>
 
               <!-- QR Code -->
@@ -1607,37 +1829,56 @@
           <!-- Email notice -->
           <p class="success-sub" id="successEmailNote" style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-top:0.8rem;"></p>
 
-          <!-- Amount & mentor -->
-          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;margin:1rem 0;">
+
+          <!-- ── BIG THANK YOU HEADING ── -->
+          <div style="width:100%;max-width:420px;text-align:center;margin-bottom:1.5rem;">
+            <p style="font-family:'Bebas Neue',sans-serif;font-size:clamp(1.8rem,5vw,2.6rem);color:#fff;letter-spacing:0.04em;line-height:1.1;margin:0;">
+              Thank You for Registering!
+            </p>
+            <p style="font-size:0.92rem;color:rgba(255,255,255,0.55);margin:0.5rem 0 0;line-height:1.6;">
+              Best of luck 🎉 — can't wait to see you on <strong style="color:#a855f7;">25th April</strong> at the college.
+            </p>
+          </div>
+
+          <!-- Amount & mentor badges -->
+          <div style="display:flex;gap:0.8rem;flex-wrap:wrap;justify-content:center;margin-bottom:1.2rem;">
             <div style="font-family:monospace;font-size:0.78rem;padding:0.4rem 0.9rem;border-radius:8px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:rgba(255,255,255,0.5);" id="successAmountBadge"></div>
             <div style="font-family:monospace;font-size:0.78rem;padding:0.4rem 0.9rem;border-radius:8px;background:rgba(168,85,247,0.07);border:1px solid rgba(168,85,247,0.2);color:#a855f7;" id="successMentorBadge"></div>
           </div>
 
-          <!-- Registration Dashboard Notice -->
-          <div style="width:100%;max-width:380px;padding:1rem 1.2rem;background:rgba(52,211,153,0.08);border:1px solid rgba(52,211,153,0.3);border-radius:12px;margin-bottom:1.5rem;text-align:center;">
-            <p style="margin:0;font-size:0.82rem;color:#34d399;font-weight:600;line-height:1.5;">✨ Successfully Registered!</p>
-            <p style="margin:0.25rem 0 0 0;font-size:0.75rem;color:rgba(52,211,153,0.8);line-height:1.5;">Within an hour you will have access to your team dashboard.</p>
+          <!-- Email notice -->
+          <p class="success-sub" id="successEmailNote" style="font-size:0.8rem;color:rgba(255,255,255,0.35);margin-bottom:1.2rem;"></p>
+
+          <!-- ── WHATSAPP GROUP GUIDELINE ── -->
+          <div style="width:100%;max-width:400px;padding:1rem 1.2rem;background:linear-gradient(135deg,rgba(37,211,102,0.1),rgba(37,211,102,0.05));border:1px solid rgba(37,211,102,0.3);border-radius:14px;margin-bottom:1.4rem;text-align:left;">
+            <div style="display:flex;align-items:center;gap:0.6rem;margin-bottom:0.6rem;">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="#25d366" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0;"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+              <span style="font-size:0.82rem;font-weight:700;color:#25d366;">WhatsApp Group — Important</span>
+            </div>
+            <p style="margin:0;font-size:0.78rem;color:rgba(255,255,255,0.55);line-height:1.65;">
+              Once your payment screenshot is <strong style="color:rgba(255,255,255,0.8);">verified by our team</strong>, you will be added to the official UDBHAV'26 WhatsApp group where all event updates, schedule, and instructions will be shared. Please keep an eye on your messages.
+            </p>
           </div>
 
-          <!-- What's next -->
-          <div style="width:100%;max-width:380px;text-align:left;margin:0.8rem 0 1.5rem;padding:1rem 1.2rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
+          <!-- ── WHAT'S NEXT ── -->
+          <div style="width:100%;max-width:400px;text-align:left;margin-bottom:1.4rem;padding:1rem 1.2rem;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:12px;">
             <p style="font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.2);margin-bottom:0.8rem;font-family:monospace;">What's Next</p>
-            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.55rem;">
-              <li style="font-size:0.8rem;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:0.55rem;"><span style="color:#a855f7;">✓</span> Check your email for the team code</li>
-              <li style="font-size:0.8rem;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:0.55rem;"><span style="color:#a855f7;">→</span> Save your Team Code somewhere safe</li>
-              <li style="font-size:0.8rem;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:0.55rem;"><span style="color:#a855f7;">⏳</span> Be online at 10:45 AM, 25 Apr 2026</li>
-              <li style="font-size:0.8rem;color:rgba(255,255,255,0.45);display:flex;align-items:center;gap:0.55rem;"><span style="color:#a855f7;">💻</span> Bring laptop, charger & ID proof</li>
+            <ul style="list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:0.65rem;">
+              <li style="font-size:0.8rem;color:rgba(255,255,255,0.5);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:#4ade80;flex-shrink:0;margin-top:1px;">✓</span> Our team will verify your payment screenshot within a few hours</li>
+              <li style="font-size:0.8rem;color:rgba(255,255,255,0.5);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:#25d366;flex-shrink:0;margin-top:1px;">💬</span> After verification, you'll be added to the WhatsApp group</li>
+              <li style="font-size:0.8rem;color:rgba(255,255,255,0.5);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:#a855f7;flex-shrink:0;margin-top:1px;">→</span> Save your Team Code — you'll need it for the PS Drop</li>
+              <li style="font-size:0.8rem;color:rgba(255,255,255,0.5);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:#fbbf24;flex-shrink:0;margin-top:1px;">⏳</span> Be ready at <strong style="color:rgba(255,255,255,0.7);">10:45 AM, 25 April 2026</strong> for PS Drop</li>
+              <li style="font-size:0.8rem;color:rgba(255,255,255,0.5);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:#60a5fa;flex-shrink:0;margin-top:1px;">💻</span> Bring your laptop, charger &amp; college ID proof</li>
             </ul>
           </div>
 
-          <!-- PS Drop CTA -->
-          <div style="width:100%;max-width:380px;padding:0.9rem 1.2rem;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.18);border-radius:12px;margin-bottom:1.4rem;text-align:left;">
+          <!-- ── PS DROP REMINDER ── -->
+          <div style="width:100%;max-width:400px;padding:0.9rem 1.2rem;background:rgba(168,85,247,0.06);border:1px solid rgba(168,85,247,0.18);border-radius:12px;margin-bottom:1.4rem;text-align:left;">
             <p style="margin:0;font-size:0.75rem;color:rgba(255,255,255,0.35);line-height:1.6;">📅 <strong style="color:rgba(255,255,255,0.6);">PS Drop: 10:45 AM, 25 April 2026</strong><br>Be ready with your Team Code to select your Problem Statement domain.</p>
           </div>
 
           <!-- CTAs -->
           <div style="display:flex;gap:0.75rem;flex-wrap:wrap;justify-content:center;">
-            <!-- Download Receipt Button -->
             <button onclick="downloadReceipt()" class="success-cta" id="downloadReceiptBtn" style="background:rgba(168,85,247,0.12);border:1px solid rgba(168,85,247,0.35);color:#a855f7;cursor:pointer;">
               <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Download Receipt
@@ -1652,7 +1893,6 @@
             </a>
           </div>
 
-        </div>
 
       </section><!-- /.reg-right -->
 
@@ -1896,7 +2136,9 @@
       gsap.registerPlugin(ScrollTrigger);
       gsap.from(regLeft,  { opacity: 0, x: -40, duration: 1, ease: 'power3.out', delay: 0.15 });
       gsap.from(regRight, { opacity: 0, x:  40, duration: 1, ease: 'power3.out', delay: 0.25 });
-      gsap.from('.step-item', { opacity: 0, y: 20, stagger: 0.1, duration: 0.7, ease: 'power3.out', delay: 0.4 });
+      if (document.querySelector('.step-item')) {
+        gsap.from('.step-item', { opacity: 0, y: 20, stagger: 0.1, duration: 0.7, ease: 'power3.out', delay: 0.4 });
+      }
     }
 
     // ── Agreement checkbox state lives in the standalone script (window.__tcChecked / __conductChecked) ─
@@ -1916,11 +2158,23 @@
       const payLabel         = document.getElementById('payBtnLabel');
       const mentorSelected   = !!window.__mentorOn;
       const membersPayload = [];
+      let missingFields = false;
       (membersContainer || document.body).querySelectorAll('.member-block').forEach(block => {
         const name  = block.querySelector('.dyn-member-name')?.value.trim();
+        const email = block.querySelector('.dyn-member-email')?.value.trim();
         const phone = block.querySelector('.dyn-member-phone')?.value.trim();
-        if (name) membersPayload.push({ name, phone: phone || '' });
+        if (name || email || phone) {
+          if (!name || !email || !phone) {
+            missingFields = true;
+          }
+          membersPayload.push({ name, email: email || '', phone: phone || '' });
+        }
       });
+
+      if (missingFields) {
+        alert('Please fill in all fields (Name, Email, Phone) for each added team member.');
+        return;
+      }
 
       if (membersPayload.length < 1) {
         const apiErr = document.getElementById('apiErrorMsg');
@@ -2046,13 +2300,11 @@
                   success.classList.add('visible');
                   gsap.from(success.children, { opacity: 0, y: 30, stagger: 0.1, duration: 0.6, ease: 'power3.out' });
                 }
-                setTimeout(() => alert('Successfully registered!\n\nNow within an hour you will have access to your team dashboard.'), 300);
               }
             });
           } else {
             form.style.display = 'none';
             success?.classList.add('visible');
-            setTimeout(() => alert('Successfully registered!\n\nNow within an hour you will have access to your team dashboard.'), 300);
           }
         }
         document.getElementById('regRight')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -2496,40 +2748,7 @@
       });
     }
 
-    // 2. "More" desktop dropdown
-    var moreBtn      = document.getElementById('nav-more');
-    var moreDropdown = document.getElementById('moreDropdown');
-    var moreWrap     = document.getElementById('navMoreWrap');
-
-    function openMore() {
-      if (!moreDropdown) return;
-      moreDropdown.classList.remove('closing');
-      moreDropdown.classList.add('open');
-      moreWrap && moreWrap.classList.add('open');
-      moreBtn && moreBtn.setAttribute('aria-expanded', 'true');
-    }
-    function closeMore() {
-      if (!moreDropdown) return;
-      moreDropdown.classList.add('closing');
-      moreDropdown.classList.remove('open');
-      moreWrap && moreWrap.classList.remove('open');
-      moreBtn && moreBtn.setAttribute('aria-expanded', 'false');
-      setTimeout(function() { moreDropdown.classList.remove('closing'); }, 200);
-    }
-
-    if (moreBtn && moreDropdown) {
-      moreBtn.addEventListener('click', function(e) {
-        e.preventDefault();
-        e.stopPropagation();
-        moreDropdown.classList.contains('open') ? closeMore() : openMore();
-      });
-      document.addEventListener('click', function(e) {
-        if (moreWrap && !moreWrap.contains(e.target)) closeMore();
-      });
-      document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') { closeMore(); moreBtn && moreBtn.focus(); }
-      });
-    }
+    // "More" desktop dropdown handled by initMoreDropdown() above
 
 
     // ── TOAST POPUP HELPER ───────────────────────────────────────────────────
@@ -2575,8 +2794,18 @@
           if (!res.ok || !data.success) {
             // Already paid / registered
             if (data.alreadyPaid) {
-              showToast('warn', 'Already Registered',
-                'Team \'' + code + '\' has already completed payment and is registered. Contact support if this is unexpected.');
+              var statusEl = document.getElementById('codeVerifyStatus');
+              if (statusEl) {
+                statusEl.innerHTML = '<div style="margin-top:1rem;padding:1.5rem;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.3);border-radius:12px;text-align:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom:0.5rem;"><polyline points="20 6 9 17 4 12"/></svg><h3 style="color:#4ade80;margin:0 0 0.4rem;font-size:1.1rem;">Already Registered</h3><p style="color:rgba(255,255,255,0.7);margin:0;font-size:0.85rem;line-height:1.5;">Your payment is verified and your registration is complete!<br>No need to register again. We look forward to seeing you at the hackathon.</p></div>';
+                statusEl.style.display = 'block';
+              }
+              showToast('success', 'Registration Complete', 'You have already been registered, no need to register again.');
+              verifyBtn.disabled = true;
+              verifyBtn.innerHTML = '✓ Registered';
+              verifyBtn.style.background = 'rgba(74,222,128,0.15)';
+              verifyBtn.style.color = '#4ade80';
+              verifyBtn.style.borderColor = 'rgba(74,222,128,0.3)';
+              return;
             } else if (res.status === 404) {
               showToast('error', 'Code Not Found',
                 '\'' + code + '\' doesn\'t match any team. Double-check your shortlisting email.');
@@ -2602,8 +2831,8 @@
           verifyBtn.style.background = 'linear-gradient(135deg,#16a34a,#4ade80)';
           verifyBtn.style.opacity = '0.85';
           verifyBtn.style.boxShadow = '0 0 18px rgba(74,222,128,0.3)';
-          // Auto-add the first required member row
-          document.dispatchEvent(new CustomEvent('teamVerified'));
+          // Auto-add the first required member row or load existing members
+          document.dispatchEvent(new CustomEvent('teamVerified', { detail: team }));
           updatePayBtn();
         } catch(err) {
           if (codeErr) codeErr.textContent = 'Network error. Please try again.';
@@ -2618,40 +2847,53 @@
     var addBtn           = document.getElementById('addMemberBtn');
     var memberIdx        = 0;
 
-    function addMemberRow() {
-      if (memberIdx >= 3) return; // max 3 additional members (leader + 3 = 4 total)
+    function addMemberRow(existingMember) {
+      if (document.querySelectorAll('.member-block').length >= 4) return; // max 3 additional members (leader + 3 = 4 total)
       memberIdx++;
+      var isExisting = !!existingMember;
+      var nameVal = isExisting ? (existingMember.name || '') : '';
+      var emailVal = isExisting ? (existingMember.email || '') : '';
+      var phoneVal = isExisting ? (existingMember.phone || '') : '';
+      var editableClass = isExisting ? 'is-editable' : '';
+      var editHint = isExisting ? ' <span class="editable-hint">✏ editable</span>' : '';
+      var removeBtn = '<button type="button" class="remove-member-btn" onclick="(function(btn){ btn.closest(\'.member-block\').remove(); var ab=document.getElementById(\'addMemberBtn\'); if(ab) { ab.style.display=\'\'; } if(typeof window.updatePayBtn===\'function\')window.updatePayBtn(); })(this)"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>Remove</button>';
+
       var row = document.createElement('div');
       row.className = 'member-block';
       row.id = 'dynMember' + memberIdx;
       row.innerHTML =
         '<div class="member-block-header">' +
           '<span class="member-block-title">Member ' + (memberIdx + 1) +
-            ' <span class="opt-badge" style="opacity:.6;font-size:.7rem;font-weight:600">' + (memberIdx === 1 ? 'required' : 'optional') + '</span></span>' +
-          '<button type="button" class="remove-member-btn" onclick="(function(btn){' +
-            'btn.closest(\'.member-block\').remove();' +
-            'window.__memberIdx = Math.max(0, (window.__memberIdx||0)-1);' +
-            'var ab=document.getElementById(\'addMemberBtn\');if(ab)ab.style.display=\'\';' +
-            'if(typeof window.updatePayBtn===\'function\')window.updatePayBtn();' +
-          '})(this)">' +
-            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
-            'Remove</button></div>' +
+            ' <span class="opt-badge" style="opacity:.6;font-size:.7rem;font-weight:600">' + (memberIdx === 1 ? 'required' : 'optional') + '</span>' +
+            (isExisting ? ' <span class="opt-badge" style="background:rgba(168,85,247,0.1);border-color:rgba(168,85,247,0.25);color:#a855f7;">pre-filled</span>' : '') + '</span>' +
+          removeBtn + '</div>' +
+        '<div class="form-row single">' +
+          '<div class="form-field"><label class="form-label">Full Name <span class="req">*</span>' + editHint + '</label>' +
+            '<input type="text" class="form-input dyn-member-name ' + editableClass + '" placeholder="Member full name" autocomplete="off" oninput="this.value = this.value.replace(/[^A-Za-z\\\\s-]/g, \'\')" value="' + nameVal + '" /></div>' +
+        '</div>' +
         '<div class="form-row">' +
-          '<div class="form-field"><label class="form-label">Full Name <span class="req">*</span></label>' +
-            '<input type="text" class="form-input dyn-member-name" placeholder="Member full name" autocomplete="off" /></div>' +
-          '<div class="form-field"><label class="form-label">Phone</label>' +
-            '<input type="tel" class="form-input dyn-member-phone" placeholder="+91 xxxxxxxxxx" autocomplete="off" /></div>' +
+          '<div class="form-field"><label class="form-label">Email <span class="req">*</span>' + editHint + '</label>' +
+            '<input type="email" class="form-input dyn-member-email ' + editableClass + '" placeholder="Email address" autocomplete="off" oninput="this.value = this.value.replace(/[^a-zA-Z0-9.@_-]/g, \'\')" value="' + emailVal + '" required /></div>' +
+          '<div class="form-field"><label class="form-label">Phone <span class="req">*</span>' + editHint + '</label>' +
+            '<input type="tel" class="form-input dyn-member-phone ' + editableClass + '" placeholder="xxxxxxxxxx" autocomplete="off" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, \'\')" value="' + phoneVal + '" required /></div>' +
         '</div>';
       if (membersContainer) membersContainer.appendChild(row);
       window.__memberIdx = memberIdx;
       // Hide Add button when at max
-      if (addBtn && memberIdx >= 3) addBtn.style.display = 'none';
-      updatePayBtn();
+      if (addBtn && document.querySelectorAll('.member-block').length >= 4) addBtn.style.display = 'none';
+      if (typeof updatePayBtn === 'function') updatePayBtn();
     }
 
-    if (addBtn) addBtn.addEventListener('click', addMemberRow);
-    // Add first required member row when team is verified
-    document.addEventListener('teamVerified', function() { if (memberIdx === 0) addMemberRow(); });
+    if (addBtn) addBtn.addEventListener('click', function() { addMemberRow(); });
+    // Add first required member row when team is verified OR load existing members
+    document.addEventListener('teamVerified', function(e) {
+      var members = (e.detail && e.detail.members) || [];
+      if (members.length > 0) {
+        members.forEach(function(m) { addMemberRow(m); });
+      } else if (memberIdx === 0) {
+        addMemberRow();
+      }
+    });
 
     // ── MENTOR SESSION TOGGLE ─────────────────────────────────────────────────
     var mentorWrap  = document.getElementById('mentorWrap');
@@ -2664,8 +2906,13 @@
     function toggleMentor() {
       mentorOn = !mentorOn;
       window.__mentorOn = mentorOn;
-      if (mentorCheck) mentorCheck.classList.toggle('checked', mentorOn);
-      if (mentorWrap)  mentorWrap.setAttribute('aria-checked', mentorOn ? 'true' : 'false');
+      var card = document.getElementById('mentorWrap');
+      if (card) {
+        card.classList.toggle('is-selected', mentorOn);
+        card.setAttribute('aria-checked', mentorOn ? 'true' : 'false');
+      }
+      var toggleLabel = document.getElementById('mentorToggleLabel');
+      if (toggleLabel) toggleLabel.textContent = mentorOn ? '✓ Added' : 'Add to Registration';
       if (totalEl)     totalEl.textContent = mentorOn ? '₹1,100' : '₹800';
       if (breakdownEl) breakdownEl.textContent = mentorOn ? '₹800 base + ₹300 mentor session = ₹1,100' : 'per team';
       var qrImg = document.getElementById('paymentQrImg');
@@ -2745,6 +2992,26 @@
     // ── MENTOR: update total amount display ──────────────────────────────────
     // (already handled above in toggleMentor, but sync total display with amount box)
     var origToggleMentor = window.__origToggleMentor; // just reference for clarity
+
+    // ── FILE UPLOAD ZONE UX ───────────────────────────────────────────────────
+    var fileInput = document.getElementById('paymentScreenshot');
+    var fileZone  = document.getElementById('fileUploadZone');
+    var fileName  = document.getElementById('uploadedFileName');
+    if (fileInput && fileZone) {
+      fileInput.addEventListener('change', function() {
+        if (fileInput.files && fileInput.files.length > 0) {
+          fileZone.classList.add('has-file');
+          if (fileName) fileName.textContent = '✓ ' + fileInput.files[0].name;
+        } else {
+          fileZone.classList.remove('has-file');
+          if (fileName) fileName.textContent = '';
+        }
+      });
+      // Drag and drop visual
+      fileZone.addEventListener('dragover', function(e) { e.preventDefault(); fileZone.style.borderColor = 'rgba(139,92,246,0.7)'; fileZone.style.background = 'rgba(139,92,246,0.12)'; });
+      fileZone.addEventListener('dragleave', function() { fileZone.style.borderColor = ''; fileZone.style.background = ''; });
+      fileZone.addEventListener('drop', function() { fileZone.style.borderColor = ''; fileZone.style.background = ''; });
+    }
 
     // Initial state
     updatePayBtn();

@@ -45,7 +45,7 @@ body {
 }
 
 /* ── Scroll container ──────────────────────────────────────────────────────── */
-.page-scroll-container { /* unwrapped */ }
+/* .page-scroll-container: unwrapped */
 
 
 /* ── Three.js canvas overlay ───────────────────────────────────────────────── */
@@ -85,7 +85,7 @@ body {
   border-radius: 50%;
   pointer-events: none;
   z-index: 6;
-  /* just above canvas1, below hero content */
+  /* Positioned by JS via translate3d — no left/top animation (avoids layout) */
   left: 0;
   top: 0;
   margin-left: -280px;
@@ -95,7 +95,7 @@ body {
       rgba(255, 255, 255, 0.018) 35%,
       transparent 70%);
   will-change: transform;
-  /* position is set by JS via translate3d */
+  transform: translateZ(0); /* promote to GPU layer */
 }
 
 /* ── Navbar ────────────────────────────────────────────────────────────────── */
@@ -377,6 +377,13 @@ body {
   background: rgba(255, 255, 255, 0.08);
   border-color: rgba(255, 255, 255, 0.3);
   box-shadow: 0 6px 28px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.18);
+}
+
+/* Hide nav-menu-btn on desktop */
+@media (min-width: 1025px) {
+  .nav-menu-btn {
+    display: none;
+  }
 }
 
 /* ── MenuToggleIcon (ported from React component) ──────────────── */
@@ -916,7 +923,7 @@ body {
   opacity: 0;
   transform: translateY(40px);
   filter: blur(12px);
-  will-change: opacity, transform, filter;
+  /* GSAP handles will-change during animation */
 }
 
 .hero-cat {
@@ -993,7 +1000,7 @@ body {
   margin-bottom: 0.75rem;
   opacity: 0;
   transform: translateY(14px);
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
   pointer-events: none;
   position: relative;
   z-index: 1;
@@ -1044,7 +1051,7 @@ body {
   width: 100%;
   overflow: hidden;
   padding: 0 0.5rem;
-  will-change: transform;
+  /* GSAP handles will-change during animation */
   position: relative;
   z-index: 1;
 }
@@ -1053,7 +1060,7 @@ body {
   display: inline-block;
   opacity: 0;
   transform: translateY(70px) rotate(4deg);
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
 }
 
 /* ── Hero Subtitle ─────────────────────────────────────────────────────────── */
@@ -1077,7 +1084,7 @@ body {
   text-transform: uppercase;
   opacity: 0;
   transform: translateY(22px);
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
 }
 
 .subtitle-serif {
@@ -1089,7 +1096,7 @@ body {
   line-height: 1.1;
   opacity: 0;
   transform: translateY(22px);
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
 }
 
 /* ── Bottom Corner Labels ──────────────────────────────────────────────────── */
@@ -1113,7 +1120,7 @@ body {
   gap: 0.35rem;
   opacity: 0;
   transform: translateY(18px);
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
 }
 
 .corner-icon--green {
@@ -1417,11 +1424,17 @@ body {
   pointer-events: none;
   overflow: visible;
 }
+/* Ethereal hue-rotate — now CSS-only, was JS RAF mutating SVG attribute 60×/sec */
+@keyframes etherealHueRotate {
+  from { filter: url(#uaEtherFilter) blur(4px) hue-rotate(0deg); }
+  to   { filter: url(#uaEtherFilter) blur(4px) hue-rotate(360deg); }
+}
 .ua-ethereal-inner {
   position: absolute;
   inset: -100px;
   filter: url(#uaEtherFilter) blur(4px);
-  will-change: filter;
+  animation: etherealHueRotate 5.84s linear infinite;
+  /* Removed will-change: filter — CSS animation runs on compositor */
 }
 .ua-ethereal-shadow {
   width: 100%; height: 100%;
@@ -1450,13 +1463,15 @@ body {
 }
 
 .udbhav-about {
-
-
   position: relative;
   z-index: 15;
   background: #000;
   overflow: hidden;
   padding: 100px 0 80px;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+  contain: layout style paint;
 }
 
 
@@ -2341,6 +2356,10 @@ body {
   padding: 120px 0 80px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
+  contain: layout style paint;
 }
 
 /* ── Background elements ── */
@@ -2752,7 +2771,7 @@ body {
 @media (max-width: 900px) {
   .pd-scene { height: 440px; perspective: 850px; }
   .pd-card  { width: 185px; height: 240px; margin-top: -120px; margin-left: -92px; }
-  .pd-card:nth-child(n) { /* override with smaller radius */}
+  /* .pd-card:nth-child(n) override with smaller radius */
   .pd-card:nth-child(1) { transform: rotateY(0deg)   translateZ(300px); }
   .pd-card:nth-child(2) { transform: rotateY(45deg)  translateZ(300px); }
   .pd-card:nth-child(3) { transform: rotateY(90deg)  translateZ(300px); }
@@ -2966,6 +2985,10 @@ body {
   padding: 120px 0 100px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1000px;
+  contain: layout style paint;
 }
 
 /* ── Background ── */
@@ -3313,12 +3336,7 @@ body {
 }
 
 /* All other variants: same neutral ghost look */
-.sch-badge--main,
-.sch-badge--build,
-.sch-badge--break,
-.sch-badge--submit,
-.sch-badge--fun,
-.sch-badge--finale { /* inherits .sch-badge */ }
+/* .sch-badge--main, .sch-badge--build, .sch-badge--break, .sch-badge--submit, .sch-badge--fun, .sch-badge--finale inherits .sch-badge */
 
 /* ── Responsive ── */
 @media (max-width: 600px) {
@@ -3438,6 +3456,10 @@ body {
   padding: 120px 0 80px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+  contain: layout style paint;
 }
 
 /* ── Ambient glow blob ── */
@@ -3860,7 +3882,7 @@ body {
   background-clip: text;
   /* will be animated via GSAP */
   opacity: 0;
-  will-change: transform, opacity;
+  /* GSAP handles will-change during animation */
 }
 
 /* ── Diagonal Marquee ────────────────────────────────────────────────────── */
@@ -3920,7 +3942,7 @@ body {
   /* GSAP animated in */
   opacity: 0;
   transform: translateY(50px);
-  will-change: opacity, transform;
+  /* GSAP handles will-change during animation */
 }
 
 /* "Ready to begin?" heading */
@@ -4411,7 +4433,7 @@ body {
   padding: 1.5rem 0;
   opacity: 0;
   transform: translateX(-24px);
-  will-change: opacity, transform;
+  /* GSAP handles will-change during animation */
 }
 .sch-item + .sch-item { border-top: 1px solid rgba(255,255,255,0.04); }
 
@@ -4482,11 +4504,7 @@ body {
   border-color: rgba(239,68,68,0.3);
   background: rgba(239,68,68,0.08);
 }
-.sch-badge--main,
-.sch-badge--break,
-.sch-badge--submit,
-.sch-badge--fun,
-.sch-badge--finale { /* inherits .sch-badge */ }
+/* .sch-badge--main, .sch-badge--break, .sch-badge--submit, .sch-badge--fun, .sch-badge--finale inherits .sch-badge */
 
 @media (max-width: 768px) {
   .sch-phase-block { grid-template-columns: 1fr; gap: 1rem 0; padding: 2rem 0; }
@@ -4615,7 +4633,7 @@ body {
   text-align: left;
 }
 
-.schtl-card:hover {
+.schtl-card {
   background: rgba(255,255,255,0.04);
 }
 
@@ -4623,13 +4641,9 @@ body {
 .schtl-card-glow {
   position: absolute;
   inset: 0;
-  opacity: 0;
-  transition: opacity 0.5s;
+  opacity: 1;
   pointer-events: none;
   border-radius: 20px;
-}
-.schtl-card:hover .schtl-card-glow {
-  opacity: 1;
 }
 
 /* ── Day / Date header ── */
@@ -4748,7 +4762,7 @@ body {
 /* ── GSAP: initial hidden state — rows slide in from left/right ── */
 .schtl-row {
   opacity: 0;
-  will-change: opacity, transform;
+  /* GSAP handles will-change during animation */
 }
 .schtl-row--left  { transform: translateX(-40px); }
 .schtl-row--right { transform: translateX(40px);  }
@@ -4796,6 +4810,10 @@ body {
   padding: 120px 0 110px;
   z-index: 16;
   overflow: hidden;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 800px;
+  contain: layout style paint;
 }
 .sponsors-bg-glow {
   position: absolute; inset: 0; pointer-events: none; z-index: 0;
@@ -5084,6 +5102,7 @@ body {
     top: 0;
     left: 0;
     right: 0;
+    width: 100%;
     z-index: 9000;
     padding: 0 0.85rem;
     background: rgba(6,6,6,0.93);
@@ -5092,8 +5111,12 @@ body {
     border-bottom: 1px solid rgba(255,255,255,0.07);
     align-items: center;
     justify-content: space-between;
-    height: 46px;
+    height: 52px;
     gap: 0.5rem;
+    /* Reset floating pill styles that mobile-perf.css may set */
+    border-radius: 0;
+    transform: none;
+    box-shadow: none;
   }
 
   /* Logo anchor */
@@ -5189,7 +5212,7 @@ body {
   .mobile-menu-drawer {
     display: block;
     position: fixed;
-    top: 46px;          /* matches navbar height */
+    top: 52px;          /* matches navbar height */
     left: 0;
     right: 0;
     z-index: 8990;
@@ -5847,9 +5870,10 @@ img, video, iframe { max-width: 100%; height: auto; }
   border: 1px solid rgba(255,255,255,0.12); background: rgba(255,255,255,0.06);
   color: rgba(255,255,255,0.52); white-space: nowrap;
 }
-.uab-card--why { grid-column: 2; grid-row: 2; }
+.uab-card--why { grid-column: 2; grid-row: 1 / 3; display: flex; flex-direction: column; }
 .uab-why-grid {
-  display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 4px;
+  display: grid; grid-template-columns: 1fr 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 10px; margin-top: 4px;
+  flex: 1;
 }
 .uab-why-item {
   display: flex; align-items: flex-start; gap: 10px;
@@ -5858,7 +5882,8 @@ img, video, iframe { max-width: 100%; height: auto; }
   transition: background 0.2s, border-color 0.2s;
 }
 .uab-why-item:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.12); }
-.uab-why-icon { font-size: 1.05rem; line-height: 1; flex-shrink: 0; margin-top: 1px; }
+.uab-why-icon { font-size: 1.05rem; line-height: 1; flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; }
+.uab-why-icon svg { width: 20px; height: 20px; flex-shrink: 0; }
 .uab-why-text {
   font-family: 'Inter', sans-serif; font-size: 0.78rem;
   font-weight: 600; color: rgba(255,255,255,0.68); line-height: 1.3;
@@ -6393,6 +6418,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   margin: 0;
   display: -webkit-box;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -6478,6 +6504,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   justify-content: center;
   position: relative;
   height: 460px;
+  perspective: 1000px;
 }
 
 .pdt-sidebar-inner {
@@ -6489,7 +6516,9 @@ img, video, iframe { max-width: 100%; height: auto; }
   width: 100%;
   height: 100%;
   justify-content: center;
+  transform-style: preserve-3d;
 }
+
 
 /* ── Track button ─────────────────────────────────────── */
 .pdt-track-btn {
@@ -6721,33 +6750,57 @@ img, video, iframe { max-width: 100%; height: auto; }
     height: auto;
     flex-direction: row;
     overflow-x: auto;
+    overflow-y: hidden;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    /* Enable horizontal scroll on touch devices */
+    touch-action: pan-x;
+    scroll-snap-type: x proximity;
+    /* Remove perspective that blocks scrolling */
+    perspective: none !important;
+    padding: 8px 0;
   }
   .pdt-sidebar::-webkit-scrollbar { display: none; }
 
   .pdt-sidebar-inner {
     flex-direction: row;
-    gap: 4px;
+    gap: 6px;
     width: max-content;
     height: auto;
+    /* Disable 3D transforms that block touch scrolling */
+    transform-style: flat !important;
+    transform: none !important;
+    padding: 0 4px;
   }
 
   .pdt-track-btn {
     width: auto;
-    padding: 8px 16px;
+    padding: 10px 18px;
     flex-shrink: 0;
+    scroll-snap-align: start;
+    border-radius: 10px;
+    /* Reset 3D transforms for mobile */
+    transform-style: flat !important;
+  }
+
+  .pdt-track-btn:hover {
+    transform: none;
   }
 
   .pdt-track-btn.is-active {
-    transform: scale(1.05);
+    transform: none;
+  }
+
+  .pdt-btn-glow {
+    border-radius: 10px;
   }
 
   .pdt-btn-indicator {
     /* On mobile, put indicator at bottom instead of left */
     left: 50%;
     top: auto;
-    bottom: 0;
+    bottom: 2px;
     transform: translateX(-50%) scaleX(0);
     width: 28px;
     height: 3px;
@@ -6758,8 +6811,9 @@ img, video, iframe { max-width: 100%; height: auto; }
   }
 
   .pdt-btn-label {
-    font-size: 0.85rem;
+    font-size: 0.82rem;
     padding-left: 0;
+    white-space: nowrap;
   }
 
   .pdt-content-panel {
@@ -7043,7 +7097,6 @@ img, video, iframe { max-width: 100%; height: auto; }
   opacity: 1;
   transform: translate(0, 0) scale(1);
   pointer-events: none;
-  aria-hidden: false;
 }
 
 /* Glowing corner L-brackets */
@@ -7099,6 +7152,7 @@ img, video, iframe { max-width: 100%; height: auto; }
   margin: 0 0 10px;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
@@ -7158,17 +7212,13 @@ img, video, iframe { max-width: 100%; height: auto; }
 }
 
 /* Increase scroll travel so there's room for the pin effect */
-body {
-  /* nothing extra needed � sections are min-height:100vh already */
-}
+/* body { nothing extra needed } */
 
 
-/* Dissolve shader canvas � permanently hidden (effect replaced by CSS sticky reveal) */
+/* Dissolve shader canvas - permanently hidden (effect replaced by CSS sticky reveal) */
 .canvas1 {
   display: none !important;
-  pointer-events: none !important;
 }
-
 /* --------------------------------------------------------------
    ABOUT SECTION � MOBILE REWRITE  (= 768px only)
    --------------------------------------------------------------
@@ -7779,6 +7829,10 @@ body {
   overflow: hidden;
   padding: 100px 0 80px;
   min-height: 700px;
+  /* Performance: skip rendering until scrolled into view */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
+  contain: layout style paint;
 }
 
 .prz-container {
@@ -8024,6 +8078,7 @@ body {
   .prz-podium {
     grid-template-columns: 1fr 1fr;
     grid-template-rows: auto auto;
+    height: auto;
   }
   .prz-card--1st {
     grid-column: 1 / -1;
@@ -8044,10 +8099,55 @@ body {
   .prz-podium {
     grid-template-columns: 1fr;
     align-items: stretch;
+    height: auto;
+    gap: 14px;
   }
-  .prz-card--1st { grid-column: 1; flex-direction: column; }
+
+  /* All cards: remove fixed max-height so content is visible */
+  .prz-card {
+    max-height: none;
+    overflow: visible;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 20px;
+  }
+  /* Text always visible on mobile */
+  .prz-card .prz-card-text {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+  .prz-card .prz-champion-tag {
+    opacity: 1;
+    transition: none;
+  }
+
+  /* Reorder: 1st on top, then 2nd, then 3rd */
+  .prz-card--1st {
+    grid-column: 1;
+    order: 1;
+    flex-direction: column;
+    padding: 28px 20px;
+  }
   .prz-card--2nd { order: 2; }
   .prz-card--3rd { order: 3; }
+
+  /* Trophy images properly sized on mobile */
+  .prz-trophy-img {
+    width: 72px;
+    margin-bottom: 4px;
+  }
+
+  /* Amount sizing */
+  .prz-amount {
+    font-size: 1.8rem;
+  }
+
+  .prz-perks li {
+    font-size: 0.68rem;
+    padding: 4px 0;
+  }
+
   .prz-extras { grid-template-columns: 1fr 1fr; gap: 8px; }
   .prz-extra-item { padding: 10px 12px; }
   .prz-extra-text { font-size: 0.65rem; }
@@ -8056,10 +8156,16 @@ body {
 
 /* -- Prize section fixes ----------------------------------------- */
 
-/* 1) Header ? top-left aligned */
+/* 1) Header — top-left aligned */
 .prz-header {
   text-align: left !important;
   margin-bottom: 48px !important;
+}
+
+@media (max-width: 600px) {
+  .prz-header {
+    text-align: center !important;
+  }
 }
 
 /* 2) Cards + extras above the ethereal bg layers */

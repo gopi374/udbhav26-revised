@@ -66,7 +66,11 @@
   <title>UDBHAV'26 — India's Premier 24-Hour Hackathon | Sage University, Indore</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Inter:ital,wght@0,300;0,400;0,500;0,600;0,900;1,300;1,400;1,500;1,600;1,900&family=Montserrat:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;0,800;1,400;1,700&display=swap" rel="stylesheet">
+  <!-- Critical fonts (hero + UI) — render-blocking -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;900&display=swap" rel="stylesheet">
+  <!-- Deferred fonts — loaded async after paint, swapped in when ready -->
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Sora:wght@400;500;600;700&display=swap" onload="this.onload=null;this.rel='stylesheet'">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Serif+Display:ital@0;1&family=Fraunces:ital,wght@0,400;0,700;1,400;1,700&family=Sora:wght@400;500;600;700&display=swap"></noscript>
   <link rel="stylesheet" href="/src/style.css">
   <link rel="stylesheet" href="/mobile-perf.css" />
 </head>
@@ -149,7 +153,7 @@
                       <span class="md-item__desc">Our partners &amp; supporters</span>
                     </div>
                   </a>
-                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/user-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon">
                       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
                     </div>
@@ -252,7 +256,7 @@
           <span class="mmd-link-text">Sponsors</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-        <a href="/team-dashboard.html" class="mmd-link">
+        <a href="/user-dashboard.html" class="mmd-link">
           <span class="mmd-link-icon" aria-hidden="true">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
           </span>
@@ -408,12 +412,14 @@
 
 
       <div class="uab-card uab-card--why">
-        <span class="uab-card-label">03 &mdash; WHY PARTICIPATE</span>
+        <span class="uab-card-label">0 &mdash; WHY PARTICIPATE</span>
         <div class="uab-why-grid">
-          <div class="uab-why-item"><span class="uab-why-icon">&#127942;</span><span class="uab-why-text">Cash Prizes<span class="uab-why-sub">&#8377;45,000 pool</span></span></div>
-          <div class="uab-why-item"><span class="uab-why-icon">&#129309;</span><span class="uab-why-text">Expert Mentors<span class="uab-why-sub">Live guidance</span></span></div>
-          <div class="uab-why-item"><span class="uab-why-icon">&#127758;</span><span class="uab-why-text">Industry Network<span class="uab-why-sub">Real connections</span></span></div>
-          <div class="uab-why-item"><span class="uab-why-icon">&#127919;</span><span class="uab-why-text">Recognition<span class="uab-why-sub">Certificates &amp; fame</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fbbf24"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg></span><span class="uab-why-text">Cash Prizes<span class="uab-why-sub">&#8377;45,000 pool</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#a78bfa"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span><span class="uab-why-text">Expert Mentors<span class="uab-why-sub">Live guidance from pros</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#60a5fa"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span><span class="uab-why-text">Industry Network<span class="uab-why-sub">Real connections</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#4ade80"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span><span class="uab-why-text">Recognition<span class="uab-why-sub">Certificates &amp; spotlight</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#f472b6"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg></span><span class="uab-why-text">Portfolio Boost<span class="uab-why-sub">Ship a real project</span></span></div>
+          <div class="uab-why-item"><span class="uab-why-icon"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:#fb923c"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></span><span class="uab-why-text">Free Swag<span class="uab-why-sub">Merch, meals &amp; more</span></span></div>
         </div>
       </div>
     </div>
@@ -538,8 +544,8 @@
     <div class="pdt-layout" id="pdtLayout">
 
       <!-- LEFT: Track name buttons -->
-      <div class="pdt-sidebar" id="pdtSidebar" style="perspective: 1000px;">
-        <div class="pdt-sidebar-inner" style="transform-style: preserve-3d;">
+      <div class="pdt-sidebar" id="pdtSidebar">
+        <div class="pdt-sidebar-inner">
           <button class="pdt-track-btn is-active" data-pdt-idx="0" style="--track-clr:#f43f5e">
             <div class="pdt-btn-glow"></div>
             <div class="pdt-btn-indicator"></div>
@@ -622,7 +628,6 @@
       <div class="sch-header">
         <span class="sch-pre-label">25 – 26 APRIL 2026</span>
         <h2 class="sch-title">The <em>Schedule</em></h2>
-        <p class="sch-subtitle">24 hours. 4 phases. Every minute counts.</p>
       </div>
 
       <!-- Full Open Timeline (desktop only) — alternating center-line layout -->

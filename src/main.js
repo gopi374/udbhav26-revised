@@ -1,18 +1,15 @@
 /**
  * PORTFOLIO HERO — main.js
  * ─────────────────────────────────────────────────────────────────
- * Merge of:
- *   • Original: Three.js dissolve shader (black→transparent on scroll)
- *   • Original: Lenis smooth scroll → drives uDissolve uniform
- *   • New:      GSAP + ScrollTrigger for hero parallax
- *   • New:      Letter-by-letter name animation on load
- *   • New:      Mouse-tracking radial glow (lerped RAF)
- *   • New:      Staggered entrance for badge, subtitle, corner labels
+ * • Lenis smooth scroll (desktop only)
+ * • GSAP + ScrollTrigger for hero parallax & section reveals
+ * • Letter-by-letter name animation on load
+ * • Mouse-tracking radial glow (GPU-accelerated transform)
+ * • Staggered entrance for badge, subtitle, corner labels
  * ─────────────────────────────────────────────────────────────────
  */
 
 import Lenis from 'lenis';
-import * as THREE from 'three';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 
@@ -64,11 +61,10 @@ if (!IS_TOUCH) {
   const arrow = document.getElementById('cursorArrow');
   if (!arrow) return;
 
-  // Track mouse — center dot on pointer
+  // Track mouse — center dot on pointer (GPU-accelerated transform)
   document.addEventListener('mousemove', (e) => {
-    arrow.style.left = e.clientX + 'px';
-    arrow.style.top  = e.clientY + 'px';
-  });
+    arrow.style.transform = `translate3d(${e.clientX}px, ${e.clientY}px, 0)`;
+  }, { passive: true });
 
   // Grow on hover over interactive elements
   const targets = 'a, button, [role="button"], .nav-link, .btn-cta, .nav-menu-btn, .icon-btn, .dropdown-item';
@@ -107,119 +103,24 @@ const lenis = IS_TOUCH ? null : new Lenis({ autoRaf: false });
 if (lenis) lenis.on('scroll', ScrollTrigger.update);
 
 // ─────────────────────────────────────────────────────────────────
-// Utility
+// Dissolve shader REMOVED — was hidden (display:none) but the
+// WebGL renderer still ran every frame, wasting GPU. Fully gutted.
 // ─────────────────────────────────────────────────────────────────
-function clamp01(v) {
-  return Math.max(0, Math.min(1, v));
-}
 
-// ─────────────────────────────────────────────────────────────────
-// Three.js — original dissolve shader
-// Skipped on touch devices — heavy GPU cost, not needed on mobile.
-// ─────────────────────────────────────────────────────────────────
-const vertexShader = `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`;
+// Hide the canvas1 overlay (no longer needed)
+const _canvas1 = document.querySelector('.canvas1');
+if (_canvas1) { _canvas1.style.display = 'none'; _canvas1.style.pointerEvents = 'none'; }
 
-const fragmentShader = `
-  uniform vec2  uResolution;
-  uniform float uDissolve;   // 0 = fully black, 1 = fully gone
-  uniform vec2  uCenter;     // normalised (0.5, 0.5)
-  varying vec2  vUv;
-
-  float hash(vec2 p) {
-    return fract(sin(dot(p, vec2(127.1, 311.7))) * 43758.5453);
-  }
-  float noise(vec2 p) {
-    vec2 i = floor(p); vec2 f = fract(p);
-    f = f * f * (3.0 - 2.0 * f);
-    return mix(
-      mix(hash(i), hash(i + vec2(1,0)), f.x),
-      mix(hash(i + vec2(0,1)), hash(i + vec2(1,1)), f.x),
-      f.y
-    );
-  }
-  float fbm(vec2 p) {
-    float v = 0.0, a = 0.5, fr = 1.0;
-    for (int i = 0; i < 5; i++) { v += a * noise(p * fr); a *= 0.5; fr *= 2.0; }
-    return v;
-  }
-
-  void main() {
-    float aspect = uResolution.x / uResolution.y;
-
-    vec2  d        = (vUv - uCenter) * vec2(aspect, 1.0);
-    float dist     = length(d);
-    float angle    = atan(d.y, d.x);
-    vec2  pixUv    = floor(vUv * uResolution / 6.0) * 6.0 / uResolution;
-    float noisy    = fbm(pixUv * 80.0) * 0.12 + fbm(vec2(angle * 4.0, 0.0)) * 0.12;
-    float noisyDist= dist + noisy;
-
-    float maxDist  = length(vec2(aspect * 0.5, 0.5));
-    float normDist = noisyDist / maxDist;
-
-    float T     = uDissolve * 1.5;
-    float alpha = smoothstep(T - 0.04, T + 0.04, normDist);
-
-    float edgeZone = smoothstep(T - 0.12, T - 0.04, normDist) *
-                     smoothstep(T + 0.04, T,         normDist);
-    float sparkle  = hash(floor(vUv * uResolution / 4.0)) * edgeZone;
-
-    // Canvas is WHITE — the dissolve fills in white over the dark hero
-    // Sparkle pixels are slightly grey at the jagged dissolving edge
-    float sparkDim = sparkle * 2.2 * (1.0 - uDissolve); // dimmer near edge as dissolve closes
-    vec3  color    = vec3(1.0 - sparkDim * 0.25);        // white minus a hint of grey sparkle
-
-    gl_FragColor = vec4(color, alpha);
-  }
-`;
-
-// ── Three.js setup (desktop only) ──────────────────────────────────────────────
-let renderer = null, material = null, scene = null, camera = null;
-
-if (!IS_TOUCH) {
-  const container = document.querySelector('.canvas1');
-
-  scene    = new THREE.Scene();
-  camera   = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10);
-  camera.position.z = 1;
-
-  renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-  renderer.setClearColor(0x000000, 0);
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  renderer.setSize(window.innerWidth, window.innerHeight);
-  container.appendChild(renderer.domElement);
-
-  material = new THREE.ShaderMaterial({
-    uniforms: {
-      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
-      uDissolve:   { value: 1.0 },
-      uCenter:     { value: new THREE.Vector2(0.5, 0.5) },
-    },
-    vertexShader,
-    fragmentShader,
-    transparent: true,
-  });
-
-  scene.add(new THREE.Mesh(new THREE.PlaneGeometry(2, 2), material));
-
-  // ── Resize handler ────────────────────────────────────────────────────────────
-  window.addEventListener('resize', () => {
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight);
-    ScrollTrigger.refresh();
-  });
-} else {
-  // Mobile resize only needs to refresh ScrollTrigger
-  window.addEventListener('resize', () => ScrollTrigger.refresh());
-}
+// ── Resize handler — just refresh ScrollTrigger ─────────────────
+let _resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => ScrollTrigger.refresh(), 200);
+});
 
 // ─────────────────────────────────────────────────────────────────
 // Mouse glow — lerped radial gradient (desktop only)
+// Uses GPU-accelerated transform instead of layout-thrashing left/top
 // ─────────────────────────────────────────────────────────────────
 const glow = document.getElementById('mouseGlow');
 let mouseX = window.innerWidth  / 2;
@@ -228,10 +129,15 @@ let glowX  = mouseX;
 let glowY  = mouseY;
 
 if (!IS_TOUCH && glow) {
+  // Position glow at center initially with transform (no left/top)
+  glow.style.left = '0';
+  glow.style.top  = '0';
+  glow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
+
   document.addEventListener('mousemove', (e) => {
     mouseX = e.clientX;
     mouseY = e.clientY;
-  });
+  }, { passive: true });
 }
 
 // Smooth glow follow — only runs on desktop
@@ -239,20 +145,28 @@ function tickGlow() {
   if (IS_TOUCH || !glow) return;
   glowX += (mouseX - glowX) * 0.08;
   glowY += (mouseY - glowY) * 0.08;
-  glow.style.left = `${glowX}px`;
-  glow.style.top  = `${glowY}px`;
+  // GPU-accelerated: uses transform instead of left/top (no layout recalc)
+  glow.style.transform = `translate3d(${glowX}px, ${glowY}px, 0)`;
 }
 
 // ─────────────────────────────────────────────────────────────────
-// Unified RAF — Lenis + Three.js renderer + glow lerp
+// Unified ticker — Lenis on GSAP's ticker (single RAF, no double-pump)
 // ─────────────────────────────────────────────────────────────────
-function raf(time) {
-  if (lenis) lenis.raf(time);
-  if (renderer && scene && camera) renderer.render(scene, camera);
-  tickGlow();
-  requestAnimationFrame(raf);
+if (lenis) {
+  gsap.ticker.add((time) => {
+    lenis.raf(time * 1000); // GSAP ticker time is in seconds, Lenis expects ms
+  });
+  gsap.ticker.lagSmoothing(0); // prevent GSAP from trying to catch up on lag
 }
-requestAnimationFrame(raf);
+
+// Glow follows mouse on its own lightweight RAF (only on desktop)
+if (!IS_TOUCH && glow) {
+  function glowLoop() {
+    tickGlow();
+    requestAnimationFrame(glowLoop);
+  }
+  requestAnimationFrame(glowLoop);
+}
 
 // ─────────────────────────────────────────────────────────────────
 // Letter-split hero name
@@ -425,25 +339,33 @@ if (IS_MOBILE) {
   revealEl(cornerRight, cornersStart + 90, 18);
 }
 
-// ─────────────────────────────────────────────────────────────────
-// Dissolve shader DISABLED - replaced by CSS sticky slide-up reveal.
-// Canvas is hidden so it doesn't block mouse events on the hero.
-if (material) material.uniforms.uDissolve.value = 1; // keep transparent
-const _canvas1 = document.querySelector('.canvas1');
-if (_canvas1) { _canvas1.style.display = 'none'; _canvas1.style.pointerEvents = 'none'; }
-if (!IS_TOUCH) heroName.addEventListener('mousemove', (e) => {
-  const rect  = heroName.getBoundingClientRect();
-  const dx    = (e.clientX - rect.left - rect.width  / 2) / (rect.width  / 2); // -1 to +1
-  const dy    = (e.clientY - rect.top  - rect.height / 2) / (rect.height / 2);
+// Dissolve shader fully removed — see import section comment.
+if (!IS_TOUCH) {
+  let _letterRaf = null;
+  let _cachedRect = null;
+  // Cache rect on resize instead of reading it every mouse event
+  const _updateRect = () => { _cachedRect = heroName.getBoundingClientRect(); };
+  _updateRect();
+  window.addEventListener('resize', _updateRect);
 
-  letters.forEach((letter, i) => {
-    const depth  = ((i / (letters.length - 1)) - 0.5) * 2; // -1→+1
-    const shiftX = dx * depth * 7;
-    const shiftY = dy * 4;
-    letter.style.transition = 'transform 0.15s ease';
-    letter.style.transform  = `translate(${shiftX}px, ${shiftY}px)`;
-  });
-});
+  heroName.addEventListener('mousemove', (e) => {
+    if (_letterRaf) return; // throttle to 1 update per frame
+    _letterRaf = requestAnimationFrame(() => {
+      _letterRaf = null;
+      if (!_cachedRect) return;
+      const dx = (e.clientX - _cachedRect.left - _cachedRect.width  / 2) / (_cachedRect.width  / 2);
+      const dy = (e.clientY - _cachedRect.top  - _cachedRect.height / 2) / (_cachedRect.height / 2);
+
+      letters.forEach((letter, i) => {
+        const depth  = ((i / (letters.length - 1)) - 0.5) * 2;
+        const shiftX = dx * depth * 7;
+        const shiftY = dy * 4;
+        letter.style.transition = 'transform 0.15s ease';
+        letter.style.transform  = `translate(${shiftX}px, ${shiftY}px)`;
+      });
+    });
+  }, { passive: true });
+}
 
 if (!IS_TOUCH) heroName.addEventListener('mouseleave', () => {
   letters.forEach(letter => {
@@ -1302,36 +1224,14 @@ document.querySelectorAll('.nav-link').forEach(link => {
 })();
 
 // ─────────────────────────────────────────────────────────────────
-// About section — ethereal hue-rotate animation (paused when off-screen)
+// About section — ethereal hue-rotate
+// REPLACED: Was using requestAnimationFrame to mutate SVG attribute
+// 60×/sec (very expensive). Now driven by CSS @keyframes animation
+// on .ua-ethereal-inner (see style.css) — runs on compositor thread.
+// The JS IntersectionObserver pause is no longer needed since CSS
+// animations are automatically paused by the browser when off-screen
+// via content-visibility: auto on the section.
 // ─────────────────────────────────────────────────────────────────
-(function initUaEthereal() {
-  const hueEl   = document.getElementById('uaEtherHue');
-  const aboutEl = document.getElementById('udbhavAbout');
-  if (!hueEl) return;
-
-  let hue        = 0;
-  let hueRunning = true;
-  let hueRafId   = null;
-  const DEG_PER_FRAME = 360 / (5.84 * 60);
-
-  function animUaEther() {
-    hue = (hue + DEG_PER_FRAME) % 360;
-    hueEl.setAttribute('values', hue.toFixed(2));
-    if (hueRunning) hueRafId = requestAnimationFrame(animUaEther);
-    else hueRafId = null;
-  }
-
-  // Pause when About section is not visible — saves CPU/GPU
-  if ('IntersectionObserver' in window && aboutEl) {
-    const obs = new IntersectionObserver(([entry]) => {
-      hueRunning = entry.isIntersecting;
-      if (hueRunning && !hueRafId) hueRafId = requestAnimationFrame(animUaEther);
-    }, { threshold: 0.01 });
-    obs.observe(aboutEl);
-  }
-
-  hueRafId = requestAnimationFrame(animUaEther);
-})();
 
 // ─────────────────────────────────────────────────────────────────
 // FAQ section — Accordion logic

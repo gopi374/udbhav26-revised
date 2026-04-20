@@ -82,6 +82,7 @@ export async function teamsListHandler(req, res) {
       codedCount:  await Team.countDocuments({ codeGenerated: true }),
     };
 
+    console.log(`[admin/teams] List: total=${total}, page=${page}, status=${status}, q="${q}"`);
     return res.status(200).json({
       success: true,
       teams,
@@ -239,13 +240,27 @@ export async function generateCodesHandler(req, res) {
     await connectDB();
 
     // First: sync any team that already has a code but the flag is not set
+    // Use $and for two $ne conditions on the same 'code' field
     await Team.updateMany(
-      { code: { $exists: true, $ne: null, $ne: '' }, codeGenerated: { $ne: true } },
+      {
+        $and: [
+          { code: { $exists: true } },
+          { code: { $ne: null } },
+          { code: { $ne: '' } },
+        ],
+        codeGenerated: { $ne: true },
+      },
       { $set: { codeGenerated: true } }
     );
 
     // Then: generate codes for teams that have NO code yet
-    const uncodedTeams = await Team.find({ $or: [{ code: { $exists: false } }, { code: null }, { code: '' }] });
+    const uncodedTeams = await Team.find({
+      $or: [
+        { code: { $exists: false } },
+        { code: null },
+        { code: '' },
+      ],
+    });
 
     if (uncodedTeams.length === 0) {
       const synced = await Team.countDocuments({ codeGenerated: true });

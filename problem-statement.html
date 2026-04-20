@@ -572,12 +572,6 @@
   <nav class="navbar" id="navbar">
     <div class="nav-logo">
       <img src="/logo.png" alt="UDBHAV'26 logo" class="nav-logo-img" id="logoImg" />
-      <div class="logo-divider" aria-hidden="true"></div>
-      <span class="tagline-dot" aria-hidden="true"></span>
-      <div class="logo-tagline">
-        <span class="tagline-role">Creative engineer</span>
-        <span class="tagline-motto">building the future</span>
-      </div>
     </div>
     <div class="nav-right">
       <div class="nav-pill" id="navPill">
@@ -613,7 +607,7 @@
                     <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="17.5" r="2.5"/><circle cx="17.5" cy="15.5" r="2.5"/><path d="M8 17V5l12-2v12"/></svg></div>
                     <div class="md-item__body"><span class="md-item__title">Sponsors</span><span class="md-item__desc">Our partners &amp; supporters</span></div>
                   </a>
-                  <a href="/team-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
+                  <a href="/user-dashboard.html" class="md-item" role="menuitem" tabindex="-1">
                     <div class="md-item__icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></div>
                     <div class="md-item__body"><span class="md-item__title">Team Dashboard</span><span class="md-item__desc">View your assigned PS</span></div>
                   </a>
@@ -680,7 +674,7 @@
           <span class="mmd-link-text">Sponsors</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
         </a>
-        <a href="/team-dashboard.html" class="mmd-link">
+        <a href="/user-dashboard.html" class="mmd-link">
           <span class="mmd-link-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg></span>
           <span class="mmd-link-text">Team Dashboard</span>
           <svg class="mmd-link-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
@@ -927,7 +921,7 @@
         <div class="ps-modal__success-label">Problem Statement Assigned!</div>
         <div class="ps-modal__success-ps" id="modalSuccessPs">—</div>
         <p class="ps-modal__success-note">Your team has been locked into this PS.<br>Good luck building!</p>
-        <a class="ps-modal__dashboard-btn" id="modalDashboardBtn" href="/team-dashboard.html">
+        <a class="ps-modal__dashboard-btn" id="modalDashboardBtn" href="/user-dashboard.html">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
           Visit Team Dashboard
         </a>
@@ -1326,7 +1320,7 @@
 
         // Update dashboard link with code param
         const dashBtn = document.getElementById('modalDashboardBtn');
-        if (dashBtn) dashBtn.href = `/team-dashboard.html?code=${encodeURIComponent(code)}`;
+        if (dashBtn) dashBtn.href = `/user-dashboard.html?code=${encodeURIComponent(code)}`;
 
         // Show success step
         document.getElementById('modalSuccessPs').textContent = d.psTitle || psListData.find(p => p.id === pendingPsId)?.title || '—';
@@ -1412,7 +1406,7 @@
         {label:'Problem Statement',icon:'file',description:'PS Drop',href:'/problem-statement.html',color:'#34d399'},
         {label:'Winners',icon:'trophy',description:'Hackathon results',href:'/winners.html',color:'#fbbf24'},
         {label:'Sponsors',icon:'star',description:'Our partners',href:'/sponsors.html',color:'#a855f7'},
-        {label:'Team Dashboard',icon:'users',description:'View your assigned PS',href:'/team-dashboard.html',color:'#22c55e'},
+        {label:'Team Dashboard',icon:'users',description:'View your assigned PS',href:'/user-dashboard.html',color:'#22c55e'},
         {label:'Code of Conduct',icon:'shield',description:'Rules & guidelines',href:'/code-of-conduct.html',color:'#c084fc'},
         {label:'Our Team',icon:'users',description:'Meet the team',href:'/our-team.html',color:'#38bdf8'},
         {label:'Register',icon:'briefcase',description:"Join UDBHAV'26",href:'/register.html',color:'#e879f9'},
