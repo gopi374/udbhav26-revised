@@ -271,7 +271,16 @@ export async function approveMentorshipHandler(req, res) {
     if (!team) return res.status(404).json({ success: false, error: 'Team not found.' });
     
     team.mentorshipStatus = 'approved';
+    team.mentorSession    = true;
     await team.save();
+
+    // Always sync with Registration collection as well
+    if (team.code) {
+      await Registration.findOneAndUpdate(
+        { teamCode: team.code },
+        { $set: { mentorshipStatus: 'approved', mentorSession: true } }
+      );
+    }
     
     return res.status(200).json({ success: true, team });
   } catch (err) {
@@ -335,36 +344,6 @@ export async function generateCodesHandler(req, res) {
     return res.status(200).json({ success: true, generated, teams: results });
   } catch (err) {
     console.error('[admin/teams] generate-codes error:', err);
-    return res.status(500).json({ success: false, error: err.message });
-  }
-}
-
-// ── APPROVE MENTORSHIP  POST /api/admin/teams/:id/approve-mentorship ──────────
-export async function mentorshipApproveHandler(req, res) {
-  if (!authGuard(req, res)) return;
-  try {
-    await connectDB();
-    const { id } = req.params;
-    const team   = await Team.findById(id);
-
-    if (!team) return res.status(404).json({ success: false, error: 'Team not found.' });
-
-    team.mentorshipStatus = 'approved';
-    team.mentorSession    = true;
-    
-    await team.save();
-
-    // Sync with Registration
-    if (team.code) {
-      await Registration.findOneAndUpdate(
-        { teamCode: team.code }, 
-        { $set: { mentorshipStatus: 'approved', mentorSession: true } }
-      );
-    }
-
-    return res.status(200).json({ success: true, message: 'Mentorship approved.' });
-  } catch (err) {
-    console.error('[admin/teams] mentorship-approve error:', err);
     return res.status(500).json({ success: false, error: err.message });
   }
 }

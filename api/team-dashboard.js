@@ -90,6 +90,18 @@ export default async function handler(req, res) {
       members = reg.members || members;
     }
 
+    // ── Auto-approve mentorship for ₹1100 teams ────────────────────────────
+    if (team.totalAmount >= 1100 && team.mentorshipStatus !== 'approved') {
+      const updateFields = { mentorSession: true, mentorshipStatus: 'approved' };
+      await Promise.all([
+        Team.findOneAndUpdate({ code }, { $set: updateFields }),
+        Registration.findOneAndUpdate({ teamCode: code }, { $set: updateFields }),
+      ]);
+      // Reflect in the response object
+      team.mentorSession    = true;
+      team.mentorshipStatus = 'approved';
+    }
+
     // ── PS Selection ────────────────────────────────────────────────────────
     let ps = null;
     if (team.psSelectionId) {

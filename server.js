@@ -150,9 +150,9 @@ app.use('/api/', apiLimiter);
 // Parse JSON bodies — NOTE: webhook handler needs raw body for signature verification
 // We use express.raw for the webhook route and express.json for everything else
 app.use('/api/cashfree-webhook', express.raw({ type: 'application/json' }));
-// Limit body size to 2MB to prevent payload bombs
-app.use(express.json({ limit: '2mb' }));
-app.use(express.urlencoded({ extended: false, limit: '2mb' }));
+// Limit body size to 10MB to accommodate base64-encoded receipt images
+app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: false, limit: '10mb' }));
 
 // ── Clean-URL mapping (Combined Portfolio + Udbhav Hackathon) ────────────────
 const cleanRoutes = {

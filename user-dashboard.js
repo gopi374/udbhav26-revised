@@ -565,35 +565,19 @@ const Dashboard = {
         }
 
         try {
-            // 1. Upload to Cloudinary (using unsigned preset)
-            // USER: Replace with your actual credentials
-            // const CLOUDINARY_URL = 'https://api.cloudinary.com/v1_1/dimq4wo1i/image/upload';
-            // const UPLOAD_PRESET = 'udbhav_receipts';
-            const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`;
-            const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
-
-
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-
-            const uploadRes = await fetch(CLOUDINARY_URL, {
-                method: 'POST',
-                body: formData
+            // Convert image file to base64 string (no external service needed)
+            const base64 = await new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => resolve(reader.result);
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsDataURL(file);
             });
-            const uploadData = await uploadRes.json();
 
-            if (!uploadData.secure_url) {
-                throw new Error('Cloudinary upload failed. Please check your credentials.');
-            }
-
-            const receiptUrl = uploadData.secure_url;
-
-            // 2. Submit to backend
+            // Submit directly to backend with base64 image
             const res = await fetch('/api/mentorship/opt', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ teamCode: this.teamId, receiptUrl })
+                body: JSON.stringify({ teamCode: this.teamId, receiptUrl: base64 })
             });
             const data = await res.json();
             if (data.success) {
@@ -723,7 +707,16 @@ const Dashboard = {
                     receiptInput?.addEventListener('change', (e) => {
                         const file = e.target.files[0];
                         if (file) {
-                            fileLabel.textContent = file.name;
+                            // Validate file size (max 6MB before base64 encoding)
+                            if (file.size > 6 * 1024 * 1024) {
+                                fileLabel.textContent = 'Upload Payment Receipt';
+                                submitBtn.disabled = true;
+                                submitBtn.classList.add('opacity-50', 'cursor-not-allowed');
+                                alert('File too large! Please upload an image smaller than 6MB.');
+                                receiptInput.value = '';
+                                return;
+                            }
+                            fileLabel.textContent = `${file.name} (${(file.size / 1024).toFixed(0)} KB)`;
                             submitBtn.disabled = false;
                             submitBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                         }

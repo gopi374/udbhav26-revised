@@ -34,12 +34,12 @@ export default async function handler(req, res) {
     const [teamUpdate, regUpdate] = await Promise.all([
       Team.findOneAndUpdate(
         { code: formattedCode },
-        { $set: { mentorshipStatus: 'pending', mentorshipReceiptUrl: receiptUrl, mentorSession: true } },
+        { $set: { mentorshipStatus: 'pending', mentorshipReceiptUrl: receiptUrl, mentorSession: true, mentorshipSubmittedAt: new Date() } },
         { new: true }
       ),
       Registration.findOneAndUpdate(
         { teamCode: formattedCode },
-        { $set: { mentorshipStatus: 'pending', mentorshipReceiptUrl: receiptUrl, mentorSession: true } },
+        { $set: { mentorshipStatus: 'pending', mentorshipReceiptUrl: receiptUrl, mentorSession: true, mentorshipSubmittedAt: new Date() } },
         { new: true }
       )
     ]);
