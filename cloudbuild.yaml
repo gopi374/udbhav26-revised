@@ -5,8 +5,8 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 substitutions:
-  _SERVICE_NAME: udbhav2026
-  _REGION: asia-south1
+  _SERVICE_NAME: udbhav26
+  _REGION: asia-southeast1
 
 steps:
   # ── Deploy directly from source to Cloud Run ────────────────────────────────
