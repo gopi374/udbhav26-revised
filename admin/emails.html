@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Bulk Emails — UDBHAV'26 Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+  <style>
+    /* ── Reset ── */
+    *,
+    *::before,
+    *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --clr-bg: #080808;
+      --clr-surface: #0f0f0f;
+      --clr-white: #ffffff;
+      --clr-grey: #888888;
+      --clr-green: #4ade80;
+      --clr-red: #f87171;
+      --clr-blue: #60a5fa;
+      --clr-purple: #a855f7;
+      --font-display: 'Bebas Neue', sans-serif;
+      --font-ui: 'Inter', sans-serif;
+      --sidebar-w: 260px;
+    }
+
+    html {
+      background: #000;
+    }
+
+    body {
+      font-family: var(--font-ui);
+      background: var(--clr-bg);
+      color: var(--clr-white);
+      -webkit-font-smoothing: antialiased;
+      min-height: 100vh;
+    }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+      width: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: #000;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.12);
+      border-radius: 3px;
+    }
+
+    /* Grain */
+    .grain-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99;
+      pointer-events: none;
+      opacity: 0.03;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+      mix-blend-mode: overlay;
+    }
+
+    /* ── SIDEBAR ── */
+    .admin-sidebar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      width: var(--sidebar-w);
+      background: rgba(12, 12, 12, 0.95);
+      border-right: 1px solid rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(30px);
+      z-index: 50;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sidebar-header {
+      padding: 1.5rem 1.4rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .sidebar-logo {
+      height: 28px;
+      width: auto;
+      opacity: 0.85;
+    }
+
+    .sidebar-brand-name {
+      font-family: var(--font-display);
+      font-size: 1.2rem;
+      display: block;
+    }
+
+    .sidebar-nav {
+      flex: 1;
+      padding: 1rem 0.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+    }
+
+    .sidebar-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.7rem 0.8rem;
+      border-radius: 10px;
+      text-decoration: none;
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.5);
+      transition: all 0.2s;
+    }
+
+    .sidebar-link:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .sidebar-link.active {
+      background: rgba(255, 255, 255, 0.08);
+      color: var(--clr-white);
+      font-weight: 600;
+    }
+
+    .sidebar-link.active svg {
+      color: var(--clr-purple);
+    }
+
+    /* ── MAIN ── */
+    .admin-main {
+      margin-left: var(--sidebar-w);
+      min-height: 100vh;
+    }
+
+    .admin-topbar {
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 1rem 2rem;
+      background: rgba(8, 8, 8, 0.85);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .topbar-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+
+    .admin-content {
+      padding: 2rem;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    /* ── UI Components ── */
+    .card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .card-title {
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--clr-purple);
+    }
+
+    .stat-huge {
+      font-size: 3rem;
+      font-family: var(--font-display);
+      color: var(--clr-white);
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 1rem;
+      display: block;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1rem;
+    }
+
+    th {
+      text-align: left;
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      color: rgba(255, 255, 255, 0.4);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+    }
+
+    td {
+      padding: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 0.85rem;
+    }
+
+    .input-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.8rem;
+      margin-bottom: 0.5rem;
+      color: rgba(255, 255, 255, 0.6);
+    }
+
+    .input-field {
+      width: 100%;
+      background: #111;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 0.75rem;
+      border-radius: 8px;
+      font-family: inherit;
+    }
+
+    .input-field:focus {
+      outline: none;
+      border-color: var(--clr-purple);
+    }
+
+    textarea.input-field {
+      min-height: 300px;
+      font-family: monospace;
+      font-size: 0.8rem;
+      line-height: 1.5;
+      resize: vertical;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0.75rem 2rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      font-size: 0.9rem;
+      transition: 0.2s;
+    }
+
+    .btn-primary {
+      background: var(--clr-purple);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #9333ea;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .info-box {
+      background: rgba(96, 165, 250, 0.1);
+      border: 1px solid rgba(96, 165, 250, 0.2);
+      padding: 1rem;
+      border-radius: 8px;
+      margin-bottom: 1.5rem;
+      font-size: 0.85rem;
+      color: #fff;
+      line-height: 1.5;
+    }
+
+    .info-box code {
+      background: rgba(0, 0, 0, 0.5);
+      padding: 2px 6px;
+      border-radius: 4px;
+      color: var(--clr-blue);
+    }
+
+    /* Toggles */
+    .radio-group {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .radio-label {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 0.85rem;
+    }
+
+    .radio-label input {
+      accent-color: var(--clr-purple);
+    }
+
+    /* Toast */
+    .toast-container {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .toast {
+      background: #111;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #fff;
+      padding: 1rem 1.5rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+      animation: toastIn 0.3s forwards;
+    }
+
+    @keyframes toastIn {
+      from {
+        transform: translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateX(0);
+        opacity: 1;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="grain-overlay" aria-hidden="true"></div>
+
+  <!-- Sidebar -->
+  <aside class="admin-sidebar" id="adminSidebar">
+    <div class="sidebar-header">
+      <!-- Muted inline SVG placeholder or img -->
+      <div class="sidebar-brand">
+        <span class="sidebar-brand-name">UDBHAV'26</span>
+      </div>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="/admin/dashboard.html" class="sidebar-link">Dashboard</a>
+      <a href="/admin/registrations.html" class="sidebar-link">Registrations</a>
+      <a href="/admin/team.html" class="sidebar-link">Teams</a>
+      <a href="/admin/submissions.html" class="sidebar-link">Submissions</a>
+      <a href="/admin/emails.html" class="sidebar-link active">Bulk Emails</a>
+    </nav>
+  </aside>
+
+  <!-- Main Content -->
+  <main class="admin-main">
+    <div class="admin-topbar">
+      <div class="topbar-title">Bulk Email Tool</div>
+    </div>
+
+    <div class="admin-content">
+
+      <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 2rem;">
+
+        <!-- Queue Panel -->
+        <div>
+          <div class="card">
+            <div class="radio-group">
+              <label class="radio-label">
+                <input type="radio" name="targetAudience" value="paid" checked onchange="fetchPending()">
+                Paid Teams (Receipts)
+              </label>
+              <label class="radio-label">
+                <input type="radio" name="targetAudience" value="pending" onchange="fetchPending()">
+                Pending Teams (Reminders)
+              </label>
+            </div>
+            <span class="stat-label">Queue Size</span>
+            <div class="stat-huge" id="pendingCount">0</div>
+            <p style="font-size: 0.8rem; color: var(--clr-grey); margin-top: 0.5rem;" id="queueDesc">Teams that are
+              marked 'paid', have a code, but haven't received an email.</p>
+          </div>
+
+          <div class="card" style="max-height: 500px; overflow-y: auto;">
+            <div class="card-title" style="font-size: 1rem;">Queue List</div>
+            <table>
+              <thead>
+                <tr>
+                  <th>Team</th>
+                  <th>Code</th>
+                </tr>
+              </thead>
+              <tbody id="teamsTbody">
+                <tr>
+                  <td colspan="2" style="text-align: center; color: var(--clr-grey);">Loading...</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Editor Panel -->
+        <div>
+          <div class="card">
+            <div class="card-title">Email Studio</div>
+
+            <div class="info-box">
+              <strong>Supported Placeholders:</strong><br>
+              <code>{{TEAM_NAME}}</code> : Will be replaced by the target team's name.<br>
+              <code>{{TEAM_CODE}}</code> : Will be replaced by the target team's code.
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">Email Subject</label>
+              <input type="text" id="emailSubject" class="input-field"
+                value="Your team {{TEAM_NAME}} has succesfully registered for udbhav26" placeholder="Subject...">
+            </div>
+
+            <div class="input-group">
+              <label class="input-label">HTML Template</label>
+              <textarea id="emailTemplate" class="input-field" style="min-height: 400px; font-family: monospace;"
+                placeholder="Paste your HTML here..."><!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    @media only screen and (max-width: 620px) {
+      .container { width: 100% !important; border-radius: 0 !important; }
+      .content-padding { padding: 20px !important; }
+      .team-code { font-size: 22px !important; letter-spacing: 2px !important; }
+    }
+  </style>
+</head>
+
+<body style="margin:0; padding:0; background-color:#f4f4f4; font-family: Arial, sans-serif;">
+
+<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f4; padding: 20px 0;">
+<tr>
+<td align="center">
+
+<table class="container" width="600" cellpadding="0" cellspacing="0" style="max-width:600px; width:100%; background:#ffffff; border-radius:12px; overflow:hidden; margin: 0 auto; box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+
+<!-- Banner -->
+<tr>
+<td>
+<img src="https://img.mailinblue.com/11046946/images/content_library/original/69e4b3cb5e90282e716eb3f9.jpeg" alt="UDBHAV'26" width="600" style="display:block; width:100%; height:auto;">
+</td>
+</tr>
+
+<!-- Content -->
+<tr>
+<td class="content-padding" style="padding: 36px 40px;">
+
+<p style="font-size:15px; color:#222; margin-bottom:16px;">
+Dear Team <strong>{{TEAM_NAME}}</strong>,
+</p>
+
+<p style="font-size:15px; color:#444; line-height:1.6;">
+🎉 Your registration has been <strong>successfully completed</strong>, and your <strong>payment has been received successfully</strong>.
+</p>
+
+<p style="font-size:15px; color:#444; line-height:1.6; margin-bottom:20px;">
+Welcome to <strong>UDBHAV'26</strong>! Your team is now officially confirmed for the hackathon. We’re excited to see what you build 🚀
+</p>
+
+<!-- Team Code -->
+<table width="100%" cellpadding="0" cellspacing="0" style="border-top: 2px solid #6c63ff; border-bottom: 2px solid #6c63ff; margin-bottom: 24px;">
+<tr>
+<td align="center" style="padding: 20px 0;">
+<p style="margin:0; font-size:13px; font-weight:bold; letter-spacing:2px; color:#6c63ff;">
+🔐 YOUR TEAM CODE
+</p>
+
+<p class="team-code" style="margin:10px 0; font-size:32px; font-weight:bold; color:#3d35a0; letter-spacing:5px; font-family:monospace;">
+{{TEAM_CODE}}
+</p>
+</td>
+</tr>
+</table>
+
+<p style="font-size:14px; color:#222; line-height:1.6;">
+⚠️ This Team Code is <strong>confidential</strong>. Do not share it outside your team.
+</p>
+
+<p style="font-size:14px; color:#444; margin-bottom:20px;">
+Save it safely — you’ll need it during the event.
+</p>
+
+<!-- Next Steps -->
+<p style="font-size:14px; font-weight:bold; color:#333;">
+📋 WHAT’S NEXT
+</p>
+
+<ul style="font-size:13px; color:#555; line-height:1.8; padding-left:18px;">
+<li>You will be added to the official WhatsApp group soon</li>
+<li>Further instructions will be shared there</li>
+<li>Keep your Team Code ready for all event activities</li>
+</ul>
+
+<p style="font-size:14px; color:#444;">
+We look forward to seeing you at the event!
+</p>
+
+<!-- Contact Section -->
+<div style="margin-top:25px; padding:15px; background:#f9f9ff; border:1px solid #e0dcff; border-radius:8px;">
+<p style="margin:0 0 8px 0; font-size:14px; font-weight:bold; color:#333;">
+📞 Need Help?
+</p>
+
+<p style="margin:0; font-size:13px; color:#555; line-height:1.6;">
+Rishabh Vyas — +91 9575625112<br>
+Prince Yadav — +91 8591442334
+</p>
+</div>
+
+<p style="margin-top:20px; font-size:15px; color:#222;">
+Warm regards,<br>
+<strong style="color:#6c63ff;">Team UDBHAV'26</strong><br>
+<span style="font-size:13px; color:#888;">Sage University, Indore</span>
+</p>
+
+</td>
+</tr>
+
+<!-- Footer -->
+<tr>
+<td style="background:#f0edff; padding:16px; text-align:center;">
+<p style="font-size:11px; color:#888;">© 2026 UDBHAV'26</p>
+</td>
+</tr>
+
+</table>
+
+</td>
+</tr>
+</table>
+
+</body>
+</html></textarea>
+            </div>
+
+            <div
+              style="margin-bottom: 1.5rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 8px; border: 1px dashed rgba(255,255,255,0.1);">
+              <label class="radio-label" style="margin-bottom: 0.5rem;">
+                <input type="checkbox" id="testModeCheck" onchange="toggleTestMode()"> Enable Single Test Mode
+              </label>
+              <input type="email" id="testEmail" class="input-field" placeholder="test@email.com"
+                style="display: none; margin-top: 0.5rem;">
+            </div>
+
+            <button class="btn btn-primary" id="btnSend" onclick="executeBlaster()">Blast Emails 🚀</button>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </main>
+
+  <div class="toast-container" id="toastContainer"></div>
+
+  <script>
+    const apiHeaders = () => {
+      const token = localStorage.getItem('udbhav_admin_token') || sessionStorage.getItem('udbhav_admin_token');
+      if (!token) window.location.href = '/admin/login.html';
+      return {
+        'Content-Type': 'application/json',
+        'X-Admin-Secret': token
+      };
+    };
+
+    const Toast = (msg, type = 'info') => {
+      const cont = document.getElementById('toastContainer');
+      const el = document.createElement('div');
+      el.className = 'toast';
+      el.style.borderLeft = `4px solid ${type === 'success' ? '#4ade80' : type === 'error' ? '#f87171' : '#60a5fa'}`;
+      el.innerText = msg;
+      cont.appendChild(el);
+      setTimeout(() => { el.style.opacity = 0; setTimeout(() => el.remove(), 300); }, 3000);
+    };
+
+    let pendingTeams = [];
+
+    function toggleTestMode() {
+      const isTest = document.getElementById('testModeCheck').checked;
+      const testInput = document.getElementById('testEmail');
+      const btn = document.getElementById('btnSend');
+      if (isTest) {
+        testInput.style.display = 'block';
+        btn.innerText = 'Send Test Email 🧪';
+        btn.style.background = '#60a5fa';
+        btn.disabled = false;
+      } else {
+        testInput.style.display = 'none';
+        btn.innerText = 'Blast Emails 🚀';
+        btn.style.background = 'var(--clr-purple)';
+        if (pendingTeams.length === 0) btn.disabled = true;
+      }
+    }
+
+    async function fetchPending() {
+      const target = document.querySelector('input[name="targetAudience"]:checked').value;
+      const desc = document.getElementById('queueDesc');
+      if (target === 'paid') {
+        desc.innerText = "Teams that are marked 'paid', have a code, but haven't received an email.";
+      } else {
+        desc.innerText = "Teams that are marked 'pending', waiting for a payment reminder.";
+      }
+
+      try {
+        const res = await fetch(`/api/admin/emails/pending?target=${target}`, { headers: apiHeaders() });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        pendingTeams = data.teams;
+        document.getElementById('pendingCount').innerText = pendingTeams.length;
+
+        const tbody = document.getElementById('teamsTbody');
+        if (pendingTeams.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="2" style="text-align: center; color: var(--clr-green);">Queue is empty! All caught up.</td></tr>';
+          if (!document.getElementById('testModeCheck').checked) {
+            document.getElementById('btnSend').disabled = true;
+          }
+          return;
+        }
+
+        if (!document.getElementById('testModeCheck').checked) {
+          document.getElementById('btnSend').disabled = false;
+        }
+
+        tbody.innerHTML = pendingTeams.map(t => `
+          <tr>
+            <td style="font-weight: 600;">${t.teamName}<br><span style="font-size:0.7em; color:var(--clr-grey); font-weight:normal;">${t.leader.email}</span></td>
+            <td style="font-family: monospace; color: var(--clr-purple);">${t.code || '<span style="color:var(--clr-grey);font-size:0.8em">Pending Code</span>'}</td>
+          </tr>
+        `).join('');
+
+      } catch (err) {
+        Toast(err.message, 'error');
+      }
+    }
+
+    async function executeBlaster() {
+      const subject = document.getElementById('emailSubject').value.trim();
+      const htmlTemplate = document.getElementById('emailTemplate').value.trim();
+      const isTest = document.getElementById('testModeCheck').checked;
+      const testEmail = document.getElementById('testEmail').value.trim();
+
+      let target = document.querySelector('input[name="targetAudience"]:checked').value;
+      if (isTest) target = 'test';
+
+      if (!subject || !htmlTemplate) return Toast('Subject and HTML are required!', 'error');
+
+      if (isTest) {
+        if (!testEmail) return Toast('Please enter a test email address!', 'error');
+      } else {
+        if (pendingTeams.length === 0) return;
+        if (!confirm(`Are you sure you want to blast emails to ${pendingTeams.length} teams right now?`)) return;
+      }
+
+      const btn = document.getElementById('btnSend');
+      const oldText = btn.innerText;
+      btn.innerText = 'Sending...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/admin/emails/send-bulk', {
+          method: 'POST',
+          headers: apiHeaders(),
+          body: JSON.stringify({ subject, htmlTemplate, target, testEmail })
+        });
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error);
+
+        Toast(data.message || `Queued blast for ${data.queued || 0} teams.`, 'success');
+        document.getElementById('emailTemplate').value = ''; // clear
+        fetchPending(); // refresh queue
+      } catch (err) {
+        Toast(err.message, 'error');
+      } finally {
+        btn.innerText = oldText;
+        btn.disabled = false;
+      }
+    }
+
+    // Init
+    fetchPending();
+  </script>
+</body>
+
+</html>

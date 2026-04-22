@@ -49,6 +49,8 @@ const TeamSchema = new mongoose.Schema(
     totalAmount:   { type: Number, default: 800 },  // ₹800 or ₹1100
 
     // ── Payment ───────────────────────────────────────────────────────────
+    confirmationEmailSent: { type: Boolean, default: false },
+    paymentReminderSent: { type: Boolean, default: false },
     paymentStatus: {
       type:    String,
       enum:    ['pending', 'paid', 'failed'],

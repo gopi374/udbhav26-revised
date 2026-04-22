@@ -80,6 +80,14 @@ const Dashboard = {
 
         document.querySelectorAll('.display-team-id').forEach(el => el.textContent = teamData.id);
 
+        // Show team name in header top-left
+        const headerTeamName = document.getElementById('header-team-name');
+        if (headerTeamName && teamData.name) {
+            headerTeamName.textContent = teamData.name;
+        } else if (headerTeamName) {
+            headerTeamName.textContent = teamData.id || '';
+        }
+
         this.showView('dashboard-view');
         this.fetchStats(teamData.id);
     },
@@ -147,6 +155,34 @@ const Dashboard = {
         const loginForm = document.getElementById('login-form');
         const loginError = document.getElementById('loginError');
         const loginBtn = document.getElementById('loginBtn');
+        const teamIdInput = document.getElementById('teamId-input');
+
+        if (teamIdInput) {
+            // Force uppercase and block spaces on typing
+            teamIdInput.addEventListener('keydown', (e) => {
+                if (e.key === ' ' || e.code === 'Space') {
+                    e.preventDefault();
+                }
+            });
+            // Force uppercase + strip spaces on input (handles paste via keyboard too)
+            teamIdInput.addEventListener('input', (e) => {
+                const pos = e.target.selectionStart;
+                e.target.value = e.target.value.toUpperCase().replace(/\s/g, '');
+                e.target.setSelectionRange(pos, pos);
+            });
+            // Strip spaces on paste (handles right-click paste)
+            teamIdInput.addEventListener('paste', (e) => {
+                e.preventDefault();
+                const pasted = (e.clipboardData || window.clipboardData)
+                    .getData('text')
+                    .toUpperCase()
+                    .replace(/\s/g, '');
+                const start = e.target.selectionStart;
+                const end   = e.target.selectionEnd;
+                e.target.value = e.target.value.slice(0, start) + pasted + e.target.value.slice(end);
+                e.target.setSelectionRange(start + pasted.length, start + pasted.length);
+            });
+        }
 
         if (loginForm) {
             loginForm.addEventListener('submit', async (e) => {
@@ -466,6 +502,12 @@ const Dashboard = {
             if (data.success) {
                 this.currentTeamData = data.team;
                 console.log("Team data synchronized:", this.currentTeamData);
+
+                // Update header team name with fresh data from API
+                const headerTeamName = document.getElementById('header-team-name');
+                if (headerTeamName && data.team && data.team.name) {
+                    headerTeamName.textContent = data.team.name;
+                }
             }
         } catch (err) {
             console.error("Failed to fetch team stats:", err);

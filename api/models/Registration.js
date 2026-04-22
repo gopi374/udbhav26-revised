@@ -67,6 +67,8 @@ const RegistrationSchema = new mongoose.Schema(
 
     // ── Registration Status ─────────────────────────────────────────────
     registrationCompleted: { type: Boolean, default: false },
+    confirmationEmailSent: { type: Boolean, default: false },
+    paymentReminderSent: { type: Boolean, default: false },
 
     // ── Mentorship ─────────────────────────────────────────────────────────
     mentor: {

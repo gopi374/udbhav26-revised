@@ -88,6 +88,8 @@
                                 class="login-input"
                                 placeholder="E.g. UDB-PXZA"
                                 autocomplete="off"
+                                spellcheck="false"
+                                style="text-transform: uppercase;"
                                 required
                             />
                         </div>
@@ -114,9 +116,10 @@
             <div class="login-card p-4 md:px-8 py-4 rounded-2xl flex items-center justify-between !opacity-100 !transform-none !shadow-none border-white/5">
                 <div class="flex items-center gap-4">
                     
-                    <div class="flex flex-col">
-                        <h2 class="text-xl font-bold font-heading leading-tight tracking-tight uppercase">UDBHAV'26 <span class="text-white/40"></span></h2>
-                        <p class="text-[9px] text-white/30 tracking-[0.3em] uppercase">Hackathon are Live</p>
+                    <div class="flex items-center gap-3">
+                        <h2 class="text-lg font-bold font-heading leading-tight tracking-tight uppercase text-white/60 whitespace-nowrap">UDBHAV'26</h2>
+                        <span class="text-white/20 font-thin text-2xl select-none">|</span>
+                        <p id="header-team-name" class="text-xl font-black font-heading tracking-tight uppercase text-white truncate max-w-[260px]"></p>
                     </div>
                 </div>
 
