@@ -630,6 +630,11 @@
         Teams
       </a>
 
+      <a href="/admin/team.html" class="sidebar-link" id="navTeams">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Teams
+      </a>
+
       <a href="/admin/submissions.html" class="sidebar-link">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
         Submissions
@@ -1207,7 +1212,13 @@
     function closeModal() { modal?.classList.remove('is-open'); }
     modalClose?.addEventListener('click', closeModal);
     modal?.addEventListener('click', e => { if (e.target === modal) closeModal(); });
-    document.addEventListener('keydown', e => { if (e.key === 'Escape' && modal?.classList.contains('is-open')) closeModal(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') {
+        if (modal?.classList.contains('is-open')) closeModal();
+        const imp = document.getElementById('importModal');
+        if (imp && imp.classList.contains('is-open')) imp.classList.remove('is-open');
+      }
+    });
 
     // -- GENERATE CODES button (still useful for teams collection)
     document.getElementById('generateCodesBtn')?.addEventListener('click', async () => {
@@ -1232,7 +1243,7 @@
     // -- IMPORT MODAL (imports into teams collection for future code verification)
     function showImportModal() {
       const existing = document.getElementById('importModal');
-      if (existing) { existing.style.display = 'flex'; return; }
+      if (existing) { existing.classList.add('is-open'); return; }
 
       if (!window.XLSX) {
         const s = document.createElement('script');
@@ -1242,6 +1253,41 @@
 
       const el = document.createElement('div');
       el.id = 'importModal';
+      el.className = 'modal-overlay';
+      el.innerHTML = `
+        <div class="modal-panel">
+          <div class="modal-header">
+            <div>
+              <h3 class="modal-title">Import Teams</h3>
+              <div class="modal-subtitle">Upload a .xlsx or .csv file</div>
+            </div>
+            <button id="importModalClose" class="modal-close">
+              <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+          </div>
+
+          <p style="color:rgba(255,255,255,0.5); font-size:0.82rem; line-height:1.6; margin-bottom:1.5rem;">
+            Required columns: <code style="color:var(--clr-purple);">Team Name, College Name, Branch, Leader Name, Leader Email, Leader Phone</code><br>
+            Optional: <code style="color:var(--clr-purple);">Member Count, Mentor Session (true/false)</code>
+          </p>
+
+          <label style="display:flex; flex-direction:column; gap:0.5rem; margin-bottom:1rem;">
+            <span style="font-size:0.7rem; color:rgba(255,255,255,0.3); font-weight:700; letter-spacing:0.1em; text-transform:uppercase;">Select File</span>
+            <input type="file" id="importFileInput" accept=".csv,.xlsx,.xls" style="background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.1); border-radius:12px; padding:0.75rem; color:#fff; font-size:0.85rem; width:100%; cursor:pointer;" />
+          </label>
+
+          <div id="importPreview" style="margin-top:1rem; display:none; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); border-radius:12px; padding:1rem;">
+            <div id="importPreviewText" style="font-size:0.75rem; color:rgba(255,255,255,0.4); margin-bottom:0.75rem;"></div>
+            <div id="importPreviewTable" style="overflow-x:auto; max-height:200px;"></div>
+          </div>
+
+          <div id="importMsg" style="margin-top:1rem; font-size:0.82rem; font-weight:500;"></div>
+
+          <div style="display:flex; gap:0.75rem; margin-top:2rem;">
+            <button id="importSubmitBtn" disabled class="action-btn btn--primary" style="flex:1; opacity:0.5;">Import Teams</button>
+            <button id="importCancelBtn" class="action-btn btn--ghost" style="flex:1;">Cancel</button>
+          </div>
+        </div>`;
       el.style.cssText = 'position:fixed;inset:0;z-index:200;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;padding:1rem;';
       el.innerHTML =
         '<div style="background:#0f0f1a;border:1px solid rgba(168,85,247,0.25);border-radius:16px;padding:2rem;max-width:600px;width:100%;max-height:90vh;overflow-y:auto;">' +
@@ -1264,9 +1310,13 @@
         '</div></div>';
       document.body.appendChild(el);
 
-      const closeEl = () => el.style.display = 'none';
-      document.getElementById('importModalClose')?.addEventListener('click', closeEl);
-      document.getElementById('importCancelBtn')?.addEventListener('click', closeEl);
+      // Trigger reflow for transition
+      setTimeout(() => el.classList.add('is-open'), 10);
+
+      const closeImport = () => el.classList.remove('is-open');
+      document.getElementById('importModalClose')?.addEventListener('click', closeImport);
+      document.getElementById('importCancelBtn')?.addEventListener('click', closeImport);
+      el.addEventListener('click', e => { if (e.target === el) closeImport(); });
 
       let parsedTeams = [];
       const colMap = {
@@ -1339,6 +1389,8 @@
           const data = await res.json();
           if (!res.ok) throw new Error(data.error || 'Import failed');
           msg.style.color = '#4ade80';
+          msg.textContent = 'Imported ' + data.imported + ' teams' + (data.skipped ? ', skipped ' + data.skipped : '') + '!';
+          setTimeout(() => { document.getElementById('importModal').classList.remove('is-open'); render(); }, 1500);
           msg.textContent = '✓ Imported ' + data.imported + ' teams' + (data.skipped ? ', skipped ' + data.skipped : '') + '!';
           setTimeout(() => { closeEl(); render(); }, 1500);
         } catch(err) { msg.style.color = '#f87171'; msg.textContent = 'Error: ' + err.message; }

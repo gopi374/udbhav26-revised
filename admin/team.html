@@ -256,6 +256,20 @@
     .badge--pending { background: rgba(251,191,36,0.12); color: var(--clr-amber); border: 1px solid rgba(251,191,36,0.2); }
 
     /* ── MODAL / SLIDE PANEL ── */
+    .detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(8px); z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s; display: flex; justify-content: center; align-items: center; padding: 2rem; }
+    .detail-overlay.is-active { opacity: 1; pointer-events: auto; }
+    .detail-panel { width: 100%; max-width: 600px; max-height: 90vh; background: #0c0c0e; border: 1px solid rgba(255,255,255,0.1); border-radius: 24px; padding: 2.5rem; overflow-y: auto; transform: translateY(20px) scale(0.96); opacity: 0; transition: 0.4s cubic-bezier(0.16,1,0.3,1); position: relative; }
+    .detail-overlay.is-active .detail-panel { transform: translateY(0) scale(1); opacity: 1; }
+    .close-panel {
+      position: absolute; top: 1.25rem; right: 1.25rem;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4); cursor: pointer;
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s; z-index: 10;
+    }
+    .close-panel:hover { background: rgba(255,255,255,0.1); color: #fff; }
+    .close-panel svg { width: 18px; height: 18px; }
     .detail-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(4px); z-index: 100; opacity: 0; pointer-events: none; transition: 0.3s; display: flex; justify-content: flex-end; }
     .detail-overlay.is-active { opacity: 1; pointer-events: auto; }
     .detail-panel { width: 100%; max-width: 500px; background: #0c0c0e; border-left: 1px solid rgba(255,255,255,0.1); padding: 2.5rem; overflow-y: auto; transform: translateX(100%); transition: 0.4s cubic-bezier(0.16,1,0.3,1); position: relative; }
@@ -620,6 +634,7 @@
           <div class="member-item">
             <div class="member-info">
               <span class="member-name">${m.name}</span>
+              <span class="member-phone">${m.phone}</span>
               <span class="member-phone">${m.phone} <span style="opacity:0.5; font-size:0.8em; margin-left:8px;">${m.email || ''}</span></span>
             </div>
           </div>
@@ -631,6 +646,7 @@
 
           <div class="section-title">Participation Status</div>
           <div class="detail-row"><span class="detail-label">Team Code</span><span class="detail-val" style="font-family:monospace; color:var(--clr-purple); font-weight:700;">${t.code || 'Not Assigned'}</span></div>
+          <div class="detail-row"><span class="detail-label">Payment</span><span class="detail-val">${t.paymentStatus === 'paid' ? '<span style="color:var(--clr-green)">Paid (₹'+t.totalAmount+')</span>' : '<span style="color:var(--clr-amber)">Pending</span>'}</span></div>
           <div class="detail-row"><span class="detail-label">Payment</span><span class="detail-val">${paymentSelect}</span></div>
           <div class="detail-row"><span class="detail-label">Registered At</span><span class="detail-val">${new Date(t.createdAt).toLocaleDateString()}</span></div>
 
@@ -645,6 +661,7 @@
           `}
 
           <div class="section-title">Mentorship</div>
+          <div class="detail-row"><span class="detail-label">Mentor Session</span><span class="detail-val">${t.mentorSession ? 'Opted In' : 'Not Opted'}</span></div>
           <div class="detail-row"><span class="detail-label">Mentor Session</span><span class="detail-val">${mentorSelect}</span></div>
           ${t.mentorSession ? `
             <div class="detail-row"><span class="detail-label">Verification</span><span class="detail-val">
@@ -665,6 +682,16 @@
             ` : ''}
           ` : ''}
 
+          <div class="section-title">Team Leader</div>
+          <div class="detail-row"><span class="detail-label">Name</span><span class="detail-val">${t.leader.name}</span></div>
+          <div class="detail-row"><span class="detail-label">Email</span><span class="detail-val">${t.leader.email}</span></div>
+          <div class="detail-row"><span class="detail-label">Phone</span><span class="detail-val">${t.leader.phone}</span></div>
+
+          <div class="section-title">Members (${t.members?.length || 0})</div>
+          ${membersHtml}
+
+          <div style="margin-top:3rem; display:flex; gap:1rem;">
+            <button class="action-btn btn--outline" style="flex:1;" onclick="AdminUI.toast('Exporting team report...')">Export Report</button>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-top:2rem;">
             <div class="section-title" style="margin:0; border:none; padding:0;">Team Members</div>
             <button class="action-btn btn--outline" style="width:auto; padding:0.25rem 0.75rem; margin:0;" onclick="toggleEditMembersMode()">Edit</button>
@@ -892,6 +919,17 @@
       } catch(err) { AdminUI.toast(err.message, 'error'); }
     };
 
+    function closeDetailModal() {
+      document.getElementById('detailOverlay').classList.remove('is-active');
+    }
+
+    document.getElementById('closeDetail').addEventListener('click', closeDetailModal);
+    document.getElementById('detailOverlay').addEventListener('click', (e) => {
+      if (e.target === document.getElementById('detailOverlay')) closeDetailModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeDetailModal();
     document.getElementById('closeDetail').addEventListener('click', () => {
       document.getElementById('detailOverlay').classList.remove('is-active');
     });

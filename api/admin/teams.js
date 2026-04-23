@@ -246,6 +246,8 @@ export async function teamsDeleteHandler(req, res) {
   }
 }
 
+/** GET /api/admin/teams/:id - fetch one team with PS details */
+export async function teamsGetHandler(req, res) {
 // ── GET ONE  GET /api/admin/teams/:id ────────────────────────────────────────
 export async function teamsGetByIdHandler(req, res) {
   if (!authGuard(req, res)) return;

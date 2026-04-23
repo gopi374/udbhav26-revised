@@ -302,16 +302,101 @@ const Dashboard = {
         setVal('cd-seconds', seconds);
     },
 
+    closeActiveModal() {
+        const modals = ['submission-modal', 'mentor-modal'];
+        modals.forEach(id => {
+            const m = document.getElementById(id);
+            if (m) {
+                m.style.display = 'none';
+                m.classList.add('hidden');
+            }
+        });
+        
+        // Reset forms if any
+        const subForm = document.getElementById('submission-form');
+        if (subForm) subForm.reset();
+    },
+
     decryptPS() {
         const d = document.getElementById('ps-decrypting');
         const c = document.getElementById('ps-content');
-        if (d && c) {
+        const noSel = document.getElementById('ps-no-selection');
+        const team = this.currentTeamData || {};
+        const hasPS = !!(team.ps && team.ps.title);
+
+        if (d) {
             d.classList.remove('hidden');
-            c.classList.add('hidden');
+            if (c) c.classList.add('hidden');
+            if (noSel) noSel.classList.add('hidden');
+
             setTimeout(() => {
                 d.classList.add('hidden');
-                c.classList.remove('hidden');
+                if (hasPS) {
+                    if (c) c.classList.remove('hidden');
+                } else {
+                    if (noSel) noSel.classList.remove('hidden');
+                }
             }, 2000);
+        }
+    },
+
+    renderSelectedPS() {
+        const team = this.currentTeamData || {};
+        const ps = team.ps;
+        const releasedEl = document.getElementById('ps-released-info');
+        const contentEl = document.getElementById('ps-content');
+        const noSelEl = document.getElementById('ps-no-selection');
+
+        // Always show the PS section (hide countdown)
+        if (ps && ps.title) {
+            // Show selected PS content
+            const countdownEl = document.getElementById('deployment-countdown');
+            if (countdownEl) countdownEl.classList.add('hidden');
+            if (releasedEl) releasedEl.classList.remove('hidden');
+            if (contentEl) contentEl.classList.remove('hidden');
+            if (noSelEl) noSelEl.classList.add('hidden');
+
+            // Fill in PS details
+            const domainLabel = document.getElementById('ps-domain-label');
+            const titleEl = document.getElementById('ps-title');
+            const descEl = document.getElementById('ps-description');
+            const orderBadge = document.getElementById('ps-order-badge');
+            const selectedAt = document.getElementById('ps-selected-at');
+            const logsEl = document.getElementById('ps-logs');
+
+            if (domainLabel) domainLabel.textContent = ps.domain || '';
+            if (titleEl) titleEl.textContent = ps.title;
+            if (descEl) descEl.textContent = ps.description || '';
+            if (orderBadge) orderBadge.textContent = `PS ${String(ps.order || '').padStart(2, '0')}`;
+
+            if (selectedAt && team.psSelectedAt) {
+                const dt = new Date(team.psSelectedAt);
+                selectedAt.textContent = `Selected at ${dt.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: true, day: 'numeric', month: 'short' })}`;
+            }
+
+            // Build realistic logs
+            if (logsEl) {
+                const selTime = team.psSelectedAt ? new Date(team.psSelectedAt) : new Date();
+                const fmt = (d) => d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', hour12: false, timeZone: 'Asia/Kolkata' });
+                logsEl.innerHTML = `
+                    <div><span class="text-white/20">${fmt(selTime)}</span> Team <span class="text-white/60">${team.code || ''}</span> verified.</div>
+                    <div><span class="text-white/20">${fmt(selTime)}</span> PS ${String(ps.order || '').padStart(2, '0')} — ${ps.domain || 'Domain'} selected.</div>
+                    <div><span class="text-green-500/60">${fmt(selTime)}</span> Selection locked. Good luck!</div>
+                `;
+            }
+
+            this.initializeIcons();
+        } else {
+            // No PS selected — check if countdown is already past
+            const now = new Date().getTime();
+            if (now >= this.targetDate.getTime()) {
+                const countdownEl = document.getElementById('deployment-countdown');
+                if (countdownEl) countdownEl.classList.add('hidden');
+                if (releasedEl) releasedEl.classList.remove('hidden');
+                if (contentEl) contentEl.classList.add('hidden');
+                if (noSelEl) noSelEl.classList.remove('hidden');
+                this.initializeIcons();
+            }
         }
     },
 
@@ -454,7 +539,7 @@ const Dashboard = {
             toast.style.transform = '-translateY(4px)';
             toast.style.opacity = '0';
             setTimeout(() => toast.remove(), 300);
-        }, 300000);
+        }, 5000);
     },
 
     async handleSubmit(form) {
@@ -502,6 +587,7 @@ const Dashboard = {
             if (data.success) {
                 this.currentTeamData = data.team;
                 console.log("Team data synchronized:", this.currentTeamData);
+                this.renderSelectedPS();
 
                 // Update header team name with fresh data from API
                 const headerTeamName = document.getElementById('header-team-name');

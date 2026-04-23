@@ -46,3 +46,8 @@ if (mongoose.models.Submission) {
   delete mongoose.models.Submission;
 }
 export const Submission = mongoose.model('Submission', SubmissionSchema);
+
+// Drop stale indexes (e.g. teamCode_1) that no longer match the schema
+Submission.syncIndexes().catch(err =>
+  console.warn('[Submission] syncIndexes warning (non-fatal):', err.message)
+);

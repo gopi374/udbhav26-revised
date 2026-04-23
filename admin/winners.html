@@ -321,6 +321,12 @@
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
         Registrations
       </a>
+
+      <a href="/admin/team.html" class="sidebar-link" id="navTeams">
+        <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+        Teams
+      </a>
+
       <a href="/admin/team.html" class="sidebar-link">
         <svg fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
         Teams
@@ -877,6 +883,16 @@
     document.getElementById('confirmUnpublishBtn')?.addEventListener('click', doUnpublish);
     document.getElementById('confirmUnpublish')?.addEventListener('click', e => {
       if (e.target === document.getElementById('confirmUnpublish')) document.getElementById('confirmUnpublish').classList.remove('is-open');
+    });
+
+    // Handle ESC key for all modals
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        const pub = document.getElementById('confirmPublish');
+        const unpub = document.getElementById('confirmUnpublish');
+        if (pub && pub.classList.contains('is-open')) pub.classList.remove('is-open');
+        if (unpub && unpub.classList.contains('is-open')) unpub.classList.remove('is-open');
+      }
     });
 
     // Quick-add buttons

@@ -61,6 +61,7 @@ import {
 } from './api/admin/registrations.js';
 import {
   teamsListHandler,
+  teamsGetHandler,
   teamsAddHandler,
   teamsImportHandler,
   teamsUpdateHandler,
@@ -249,6 +250,7 @@ app.post('/api/admin/emails/send-bulk', mountHandler(sendBulkEmailsHandler));
 // ── Admin Teams API ───────────────────────────────────────────────────────────
 // IMPORTANT: static paths (/import, /generate-codes, /view) must come BEFORE /:id
 app.get   ('/api/admin/teams',                mountHandler(teamsListHandler));
+app.get   ('/api/admin/teams/:id',            mountHandler(teamsGetHandler));
 app.get   ('/api/admin/teams/view',           mountHandler(teamsViewHandler));       // panel
 app.post  ('/api/admin/teams/import',         mountHandler(teamsImportHandler));
 app.post  ('/api/admin/teams/generate-codes', mountHandler(generateCodesHandler));

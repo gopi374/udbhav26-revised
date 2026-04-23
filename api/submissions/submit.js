@@ -22,6 +22,12 @@ export default async function handler(req, res) {
   try {
     await connectDB();
 
+    // One-time: drop stale indexes (e.g. teamCode_1) that don't match schema
+    if (!handler._indexesSynced) {
+      await Submission.syncIndexes();
+      handler._indexesSynced = true;
+    }
+
     const newSubmission = await Submission.create({
       teamId,
       type,
